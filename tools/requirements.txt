@@ -1,0 +1,2 @@
+# OASA Compliance Validation Tooling
+jsonschema>=4.20.0

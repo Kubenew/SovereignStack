@@ -1,0 +1,43 @@
+{
+  "oasa_version": "2026.1",
+  "enforce_zero_exfiltration": true,
+  "oasa_compliance_lock": true,
+  "compliance_level": "STRICT",
+  "air_gapped": true,
+  "network": {
+    "allow_wan": false,
+    "allowed_egress_cidrs": [],
+    "dns_mode": "LOCAL_ONLY"
+  },
+  "encryption": {
+    "algorithm": "AES-256-GCM",
+    "key_management": "TPM_2.0",
+    "key_rotation_days": 90
+  },
+  "hardware_security": {
+    "tpm_required": true,
+    "tpm_version": "2.0",
+    "hsm_type": null,
+    "secure_boot": true
+  },
+  "compute": {
+    "vram_budget_gb": 24,
+    "quantization_formats": ["FP16", "INT4", "AWQ"],
+    "accelerator_backends": ["NVIDIA_CUDA"]
+  },
+  "ingestion": {
+    "allow_disk_cache": false,
+    "supported_formats": ["PDF", "TIFF", "DOCX", "HTML"]
+  },
+  "audit": {
+    "enabled": true,
+    "log_format": "JSON",
+    "immutable": true,
+    "retention_days": 365
+  },
+  "api": {
+    "openai_compatible": true,
+    "base_url": "http://localhost:8080/v1",
+    "endpoints": ["/v1/chat/completions", "/v1/embeddings"]
+  }
+}

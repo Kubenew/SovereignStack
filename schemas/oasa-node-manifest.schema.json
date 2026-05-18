@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Kubenew/SovereignStack/schemas/oasa-node-manifest.schema.json",
+  "title": "OASA Sovereign Node Manifest",
+  "description": "Describes a single Sovereign Node — its identity, hardware inventory, deployed models, and current compliance status. Used by orchestration tooling (privatecloud) for fleet management.",
+  "type": "object",
+  "properties": {
+    "node_id": {
+      "type": "string",
+      "description": "Unique identifier for this Sovereign Node.",
+      "pattern": "^sn-[a-f0-9]{12}$",
+      "examples": ["sn-0a1b2c3d4e5f"]
+    },
+    "hostname": {
+      "type": "string",
+      "description": "DNS hostname or FQDN of the node."
+    },
+    "oasa_version": {
+      "type": "string",
+      "description": "OASA specification version the node conforms to.",
+      "pattern": "^\\d{4}\\.\\d+$"
+    },
+    "location": {
+      "type": "object",
+      "description": "Physical geography binding (Axiom 1 — data sovereignty).",
+      "properties": {
+        "country_code": {
+          "type": "string",
+          "description": "ISO 3166-1 alpha-2 country code.",
+          "pattern": "^[A-Z]{2}$",
+          "examples": ["DE", "US", "NL"]
+        },
+        "region": {
+          "type": "string",
+          "description": "Free-form region label (e.g., data center ID, campus name).",
+          "examples": ["dc-frankfurt-01", "hq-building-a"]
+        },
+        "jurisdiction": {
+          "type": "string",
+          "description": "Legal jurisdiction governing this node's data.",
+          "examples": ["EU-GDPR", "US-HIPAA", "CH-FADP"]
+        }
+      },
+      "required": ["country_code"],
+      "additionalProperties": false
+    },
+    "hardware": {
+      "type": "object",
+      "description": "Hardware inventory reported by the node.",
+      "properties": {
+        "cpu": {
+          "type": "string",
+          "examples": ["AMD EPYC 9654", "Intel Xeon w9-3595X"]
+        },
+        "ram_gb": {
+          "type": "integer",
+          "minimum": 16
+        },
+        "gpu": {
+          "type": "array",
+          "description": "GPU devices available for inference.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "model": {
+                "type": "string",
+                "examples": ["NVIDIA A100 80GB", "NVIDIA RTX 4090", "Apple M3 Ultra"]
+              },
+              "vram_gb": {
+                "type": "number"
+              },
+              "backend": {
+                "type": "string",
+                "enum": ["NVIDIA_CUDA", "APPLE_METAL", "AMD_ROCM"]
+              }
+            },
+            "required": ["model", "vram_gb", "backend"]
+          }
+        },
+        "tpm_present": {
+          "type": "boolean"
+        },
+        "tpm_version": {
+          "type": "string",
+          "enum": ["1.2", "2.0"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "deployed_models": {
+      "type": "array",
+      "description": "Models currently loaded on this node.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "examples": ["sovereign-llama3-70b-turboquant", "mistral-7b-int4"]
+          },
+          "quantization": {
+            "type": "string",
+            "enum": ["FP16", "INT8", "INT4", "INT2", "AWQ", "GPTQ", "GGUF"]
+          },
+          "vram_used_gb": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["LOADED", "LOADING", "ERROR", "EVICTED"]
+          }
+        },
+        "required": ["name", "quantization", "status"]
+      }
+    },
+    "compliance_status": {
+      "type": "object",
+      "description": "Current compliance state of this node.",
+      "properties": {
+        "last_audit": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of the last compliance audit."
+        },
+        "passed": {
+          "type": "boolean",
+          "description": "Whether the node passed its last compliance audit."
+        },
+        "violations": {
+          "type": "array",
+          "description": "List of compliance violations detected.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "axiom": {
+                "type": "string",
+                "enum": ["ZERO_EXFILTRATION", "HARDWARE_AGNOSTICISM", "API_IDEMPOTENCY"]
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["CRITICAL", "WARNING", "INFO"]
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": ["axiom", "severity", "message"]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "node_id",
+    "hostname",
+    "oasa_version",
+    "location",
+    "hardware"
+  ],
+  "additionalProperties": false
+}

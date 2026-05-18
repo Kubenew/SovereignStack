@@ -5,22 +5,44 @@ Version: **2026.1**
 Status: **Architecture Blueprint**  
 Target: **Local-First, Air-Gapped, High-Efficiency Enterprise AI Infrastructure**
 
-This repository contains the **OASA specification**, defining an open standard for building sovereign AI infrastructure using the Kubenew ecosystem:
-
-- **privatecloud** (Sovereign orchestration / air-gapped K8s appliance)
-- **TurboQuant-v3** (execution optimization / quantization runtime)
-- **turboprivate-ai** (enterprise LLM gateway + policy engine)
-- **pdf2struct** (deterministic ingestion of unstructured documents)
-- **TurboMemory** (local memory & vector isolation)
+[![Schema Validation](https://github.com/Kubenew/SovereignStack/actions/workflows/validate.yml/badge.svg)](https://github.com/Kubenew/SovereignStack/actions/workflows/validate.yml)
 
 ---
 
-## Contents
+This repository contains the **OASA specification**, defining an open standard for building sovereign AI infrastructure using the [Kubenew](https://github.com/Kubenew) ecosystem:
 
-- `OASA.md` — full specification document
-- `schemas/` — compliance schemas (placeholders, extensible)
-- `examples/` — OpenAI-compatible proxy examples
-- `LICENSE` — Apache-2.0 (recommended for open standards)
+| Component | Role |
+|---|---|
+| **[privatecloud](https://github.com/Kubenew/privatecloud)** | Sovereign orchestration / air-gapped K8s appliance |
+| **[TurboQuant-v3](https://github.com/Kubenew/TurboQuant-v3)** | Execution optimization / quantization runtime |
+| **[turboprivate-ai](https://github.com/Kubenew/turboprivate-ai)** | Enterprise LLM gateway + policy engine |
+| **[pdf2struct](https://github.com/Kubenew/pdf2struct)** | Deterministic ingestion of unstructured documents |
+| **[TurboMemory](https://github.com/Kubenew/TurboMemory)** | Local memory & vector isolation |
+
+---
+
+## Repository Contents
+
+```
+SovereignStack/
+├── OASA.md                                  # Full specification document
+├── CONTRIBUTING.md                          # How to contribute
+├── LICENSE                                  # Apache-2.0
+├── schemas/
+│   ├── oasa-compliance.schema.json          # Node compliance configuration
+│   ├── oasa-node-manifest.schema.json       # Sovereign Node inventory & status
+│   └── oasa-request.schema.json             # OpenAI-compatible request format
+├── examples/
+│   ├── openai_proxy_request.sh              # Bash — curl examples
+│   ├── openai_proxy_request.py              # Python — SDK & requests examples
+│   └── sample_compliance.json               # Fully compliant reference config
+├── tools/
+│   ├── validate_compliance.py               # Schema validator CLI
+│   └── requirements.txt                     # Python dependencies
+└── .github/
+    └── workflows/
+        └── validate.yml                     # CI — schema & syntax validation
+```
 
 ---
 
@@ -32,29 +54,65 @@ It rejects the thin-client SaaS model and instead mandates the **Sovereign Node 
 
 ---
 
-## Quick Summary
+## The Three Axioms
 
-OASA is built around four mandatory layers:
-
-1. **OASA-Ingest** — deterministic extraction (pdf2struct)
-2. **OASA-Memory** — encrypted vector store + KV cache (TurboMemory)
-3. **OASA-Compute** — adaptive quantized execution (TurboQuant + turboprivate-ai)
-4. **OASA-Node** — air-gapped orchestration runtime (privatecloud)
+1. **Zero Exfiltration** — No data leaves the node without cryptographically signed consent.
+2. **Hardware Agnosticism** — Run on commodity hardware via aggressive quantization (FP16 → INT4/INT2).
+3. **API Idempotency** — Drop-in replacement for OpenAI APIs. Zero code changes required.
 
 ---
 
-## OpenAI-Compatible Drop-In Standard
+## The Four Layers
 
-OASA mandates OpenAI-compatible endpoints:
+```
+┌──────────────────────────────────────────────┐
+│  1. OASA-Ingest   (pdf2struct)               │
+│     Deterministic document extraction        │
+├──────────────────────────────────────────────┤
+│  2. OASA-Memory   (TurboMemory)              │
+│     Encrypted vector store + KV cache        │
+├──────────────────────────────────────────────┤
+│  3. OASA-Compute  (TurboQuant + turboprivate)│
+│     Adaptive quantized execution             │
+├──────────────────────────────────────────────┤
+│  4. OASA-Node     (privatecloud)             │
+│     Air-gapped K8s orchestration             │
+└──────────────────────────────────────────────┘
+```
 
-- `/v1/chat/completions`
-- `/v1/embeddings`
+---
 
-So enterprises can migrate by changing:
+## Quick Start
+
+### 1. Drop-In API Migration
 
 ```bash
 export OPENAI_BASE_URL="http://localhost:8080/v1"
 export OASA_ENFORCE_COMPLIANCE="STRICT"
+```
+
+Existing LangChain, AutoGPT, or internal tools work immediately.
+
+### 2. Validate Your Configuration
+
+```bash
+pip install -r tools/requirements.txt
+
+# Validate a config
+python tools/validate_compliance.py examples/sample_compliance.json
+
+# Generate a compliant template
+python tools/validate_compliance.py --generate-template > my-config.json
+```
+
+### 3. Try the Examples
+
+```bash
+# Bash
+bash examples/openai_proxy_request.sh
+
+# Python (uses openai SDK or plain requests)
+python examples/openai_proxy_request.py
 ```
 
 ---
@@ -69,15 +127,34 @@ The answer becomes:
 
 > "Not if we comply with OASA."
 
+| Regulation | OASA Coverage |
+|---|---|
+| GDPR (EU) | Zero Exfiltration, jurisdiction routing, audit logs |
+| HIPAA (US) | Encryption at rest, air-gapped compute, access logging |
+| NIS2 (EU) | Hardware security modules, immutable audit trail |
+| SOX (US) | Deterministic ingestion, tamper-evident logs |
+| DORA (EU) | Operational resilience via air-gapped orchestration |
+
 ---
 
-## Status
+## Schemas
 
-This is a blueprint-level specification.  
-Reference implementations are maintained in the associated repositories.
+| Schema | Purpose |
+|---|---|
+| [`oasa-compliance.schema.json`](schemas/oasa-compliance.schema.json) | Full node compliance configuration |
+| [`oasa-node-manifest.schema.json`](schemas/oasa-node-manifest.schema.json) | Node identity, hardware, deployed models |
+| [`oasa-request.schema.json`](schemas/oasa-request.schema.json) | OASA-extended OpenAI request format |
+
+All schemas follow **JSON Schema Draft 2020-12** with full descriptions, enums, and examples.
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on spec changes, schema contributions, and coding style.
 
 ---
 
 ## License
 
-Apache-2.0
+Apache-2.0 — see [LICENSE](LICENSE).

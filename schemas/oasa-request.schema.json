@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Kubenew/SovereignStack/schemas/oasa-request.schema.json",
+  "title": "OASA Chat Completion Request",
+  "description": "Extends the standard OpenAI chat completion request with OASA compliance fields. This schema validates the JSON body sent to /v1/chat/completions on a Sovereign Node.",
+  "type": "object",
+  "properties": {
+    "model": {
+      "type": "string",
+      "description": "Model identifier. Should reference a locally deployed, quantized model.",
+      "examples": [
+        "sovereign-llama3-70b-turboquant",
+        "mistral-7b-int4",
+        "phi-3-medium-awq"
+      ]
+    },
+    "messages": {
+      "type": "array",
+      "description": "Standard OpenAI messages array.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["system", "user", "assistant", "tool"]
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": ["role", "content"]
+      },
+      "minItems": 1
+    },
+    "temperature": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0.7
+    },
+    "max_tokens": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 2048
+    },
+    "stream": {
+      "type": "boolean",
+      "default": false
+    },
+    "oasa_compliance_lock": {
+      "type": "boolean",
+      "description": "When true, the proxy enforces all OASA axioms for this request. No fallback to external APIs is permitted.",
+      "default": true
+    },
+    "oasa_audit_tag": {
+      "type": "string",
+      "description": "Optional tag written to the audit log alongside this request. Useful for compliance tracing (e.g., ticket IDs, department codes).",
+      "maxLength": 256,
+      "examples": ["AUDIT-2026-04821", "dept:legal", "proj:contract-review"]
+    },
+    "oasa_jurisdiction": {
+      "type": "string",
+      "description": "Override the default jurisdiction for this request. The proxy will route only to nodes within the specified jurisdiction.",
+      "examples": ["EU-GDPR", "US-HIPAA"]
+    }
+  },
+  "required": ["model", "messages"],
+  "additionalProperties": true
+}
