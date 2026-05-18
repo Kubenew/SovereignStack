@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sovereign-core-appliance
+  namespace: sovereign-stack
+  labels:
+    oasa.compliance/layer: compute
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sovereign-ai-node
+  template:
+    metadata:
+      labels:
+        app: sovereign-ai-node
+        oasa.compliance/layer: compute
+    spec:
+      # Vynucení, že pod poběží pouze na hardwaru s fyzickým TPM 2.0 modulem
+      nodeSelector:
+        hardware.security/tpm: "2.0"
+        hardware.compute/gpu: "nvidia-cuda"
+      
+      containers:
+      - name: runtime-shield-proxy
+        image: kubenew/turboprivate-ai:latest
+        imagePullPolicy: IfNotPresent
+        
+        # Spuštění skrze váš aktivní ochranný wrapper monitorující úniky paměti
+        command: ["python3", "tools/runtime_shield.py"]
+        args: 
+        - "--config"
+        - "/etc/oasa/sovereign-stack.yaml"
+        - "--cmd"
+        - "python3 -m turboprivate_ai.main --port 8080"
+        
+        ports:
+        - containerPort: 8080
+          name: openai-api
+          
+        resources:
+          limits:
+            cpu: "8"
+            memory: 32Gi
+            nvidia.com/gpu: "1" # Alokace přesně jedné fyzické karty (např. RTX 3090 / A100)
+          requests:
+            cpu: "4"
+            memory: 16Gi
+            nvidia.com/gpu: "1"
+            
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/oasa
+        # Využití pouze volatilní RAM (tmpfs) pro zpracování embeddingů, bez zápisu na disk
+        - name: volatile-ctx-storage
+          mountPath: /dev/shm
+          
+      volumes:
+      - name: config-volume
+        configMap:
+          name: oasa-stack-config
+      - name: volatile-ctx-storage
+        emptyDir:
+          medium: Memory # Vynucuje, že úložiště je uloženo čistě v RAM a při restartu okamžitě mizí

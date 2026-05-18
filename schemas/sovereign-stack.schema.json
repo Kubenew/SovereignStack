@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Kubenew/SovereignStack/schemas/sovereign-stack.schema.json",
+  "title": "Sovereign Stack Manifest (Enterprise Appliance)",
+  "description": "Schema for sovereign-stack.yaml — the definitive declarative manifest that defines an entire OASA-compliant Sovereign Enterprise Appliance.",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "OASA specification version.",
+      "pattern": "^\\d{4}\\.\\d+$"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "tier": { "type": "string" },
+        "compliance_profile": { "type": "string" }
+      },
+      "required": ["name", "compliance_profile"]
+    },
+    "node_infrastructure": {
+      "type": "object",
+      "properties": {
+        "engine": { "type": "string" },
+        "air_gapped_enforcement": { "type": "boolean" },
+        "storage": {
+          "type": "object",
+          "properties": {
+            "ephemeral_encrypted": { "type": "boolean" },
+            "encryption_algorithm": { "type": "string" },
+            "hardware_tpm_binding": { "type": "boolean" }
+          }
+        },
+        "network_isolation": {
+          "type": "object",
+          "properties": {
+            "allow_wan": { "type": "boolean" },
+            "dns_mode": { "type": "string" },
+            "allowed_internal_cidrs": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["air_gapped_enforcement"]
+    },
+    "data_ingestion": {
+      "type": "object",
+      "properties": {
+        "service_name": { "type": "string" },
+        "max_parallel_workers": { "type": "integer" },
+        "memory_processing_mode": { "type": "string", "enum": ["VOLATILE_RAM_ONLY"] },
+        "enforce_strict_json_schema": { "type": "boolean" },
+        "input_formats": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "cognitive_memory": {
+      "type": "object",
+      "properties": {
+        "backend": { "type": "string" },
+        "vector_dimensions": { "type": "integer" },
+        "encryption_at_rest": { "type": "boolean" },
+        "context_ttl_seconds": { "type": "integer" },
+        "kv_cache_isolation": { "type": "boolean" }
+      }
+    },
+    "compute_execution": {
+      "type": "object",
+      "properties": {
+        "gateway": { "type": "string" },
+        "optimization_engine": { "type": "string" },
+        "precision": { "type": "string" },
+        "openai_api_compatibility": { "type": "boolean" },
+        "hardware": {
+          "type": "object",
+          "properties": {
+            "accelerator": { "type": "string" },
+            "vram_budget_gb": { "type": "number" },
+            "allow_cpu_fallback": { "type": "boolean" }
+          }
+        },
+        "runtime_protection": {
+          "type": "object",
+          "properties": {
+            "enforce_compliance_lock": { "type": "boolean" },
+            "memory_leak_threshold_mb": { "type": "integer" },
+            "max_token_context": { "type": "integer" }
+          }
+        }
+      },
+      "required": ["gateway", "hardware", "runtime_protection"]
+    }
+  },
+  "required": ["version", "node_infrastructure", "compute_execution"],
+  "additionalProperties": false
+}

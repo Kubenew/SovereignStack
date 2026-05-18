@@ -124,11 +124,46 @@ Each Sovereign Node is described by a [Node Manifest](schemas/oasa-node-manifest
 
 ---
 
-## 3. Protocol Compliance & Workflow Embedding
+## 3. Deployment Manifest (sovereign-stack.yaml)
+
+OASA defines a single declarative manifest format, `sovereign-stack.yaml` (analogous to `docker-compose.yml`), which defines the entire stack for a node.
+
+```yaml
+version: "2026.1"
+node:
+  id: "sovereign-node-alpha"
+  compliance_level: "STRICT"
+  air_gapped: true
+
+infrastructure:
+  orchestrator: "privatecloud"
+  storage:
+    vector_backend: "TurboMemory"
+    encryption: "AES-256-GCM"
+
+ingestion:
+  engine: "pdf2struct"
+
+compute:
+  gateway: "turboprivate-ai"
+  optimization: "TurboQuant-v3"
+  models:
+    - name: "qwen-2.5-72b-oasa"
+      quantization: "INT4"
+      vram_budget_gb: 24
+```
+
+This manifest is validated by the [Sovereign Stack Schema](schemas/sovereign-stack.schema.json).
+
+---
+
+## 4. Protocol Compliance & Workflow Embedding
 
 To become an enterprise standard, OASA mandates an **OpenAI-Compliant Reverse Proxy Schema**.
 
-### Example: OpenAI-Compatible Request
+### OASA-Lock: The "Poison Pill"
+
+Every request to a Sovereign Node **must** include `"oasa_compliance_lock": true`.
 
 ```json
 {
@@ -139,6 +174,12 @@ To become an enterprise standard, OASA mandates an **OpenAI-Compliant Reverse Pr
   "oasa_jurisdiction": "EU-GDPR"
 }
 ```
+
+If the local AI engine fails, the gateway has a choice:
+- **Without OASA-Lock:** Fall back to OpenAI cloud APIs → **data exfiltration** → GDPR/HIPAA fines.
+- **With OASA-Lock:** Return `503 Service Unavailable` → **zero data leaves the node**.
+
+For an enterprise, a 503 error is inconvenient. A GDPR fine of 4% of annual revenue is catastrophic. OASA-Lock guarantees the safe failure mode. See the [OASA-Lock Specification](schemas/oasa-lock.md) for details.
 
 The request schema is formally defined in [`schemas/oasa-request.schema.json`](schemas/oasa-request.schema.json). OASA extends the standard OpenAI payload with three fields:
 
@@ -189,7 +230,20 @@ A [GitHub Actions workflow](.github/workflows/validate.yml) runs automatically o
 
 ---
 
-## 5. Path to Compliance Dominance
+## 6. Sovereign Playground
+
+Developers can spin up a complete OASA-compliant stack locally in 2 minutes using Docker Compose. This allows immediate testing of quantized models without sending data to the cloud.
+
+```bash
+cd playground/
+docker compose up -d
+```
+
+See the [Playground Documentation](playground/README.md) for instructions.
+
+---
+
+## 7. Path to Compliance Dominance
 
 Publishing OASA as an open GitHub specification creates a framework for auditing AI usage.
 
@@ -213,7 +267,7 @@ The technical answer becomes:
 
 ---
 
-## 6. Reference Implementations
+## 8. Reference Implementations
 
 OASA is designed as a unified stack:
 
@@ -227,7 +281,7 @@ OASA is designed as a unified stack:
 
 ---
 
-## 7. Future Extensions (Planned)
+## 9. Future Extensions (Planned)
 
 - **OASA Policy Engine Standard** — fine-grained allow/deny rules per model, user, and department
 - **OASA Immutable Audit Log** — append-only log chain with Merkle-tree verification
@@ -237,7 +291,7 @@ OASA is designed as a unified stack:
 
 ---
 
-## 8. Compliance Checklist
+## 10. Compliance Checklist
 
 > Use `tools/validate_compliance.py` to automate this checklist against your node configuration.
 
@@ -255,7 +309,7 @@ OASA is designed as a unified stack:
 
 ---
 
-## 9. Glossary
+## 11. Glossary
 
 | Term | Definition |
 |---|---|
@@ -268,7 +322,7 @@ OASA is designed as a unified stack:
 
 ---
 
-## 10. Status
+## 12. Status
 
 This document is an architecture blueprint.  
 Implementations may vary but must preserve OASA axioms and compliance metrics.

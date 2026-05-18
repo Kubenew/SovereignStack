@@ -1,22 +1,19 @@
 #!/usr/bin/env python3
 """
-OASA Compliance Validator
-=========================
+OASA Compliance Validator & Active System Auditor
+=================================================
 
-Validates JSON configuration files against the OASA compliance schema.
-Use this to audit Sovereign Node configurations before deployment.
+Validates JSON configuration files against the OASA compliance schema
+and performs runtime hardware/network isolation infrastructure audits.
 
 Usage:
-    # Validate a single file
+    # Validate a single configuration file
     python validate_compliance.py ../examples/sample_compliance.json
 
-    # Validate with a specific schema
-    python validate_compliance.py config.json --schema ../schemas/oasa-compliance.schema.json
+    # Actively audit the host system infrastructure against a configuration
+    python validate_compliance.py ../examples/sample_compliance.json --audit-host
 
-    # Validate all JSON files in a directory
-    python validate_compliance.py --dir /etc/oasa/configs/
-
-    # Generate a compliant template
+    # Generate a compliant deployment template
     python validate_compliance.py --generate-template
 """
 
@@ -25,6 +22,9 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import os
+import socket
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -107,7 +107,6 @@ def load_json(path: Path) -> Any:
 def validate_document(
     document: dict[str, Any],
     schema: dict[str, Any],
-    source: str = "<stdin>",
 ) -> list[str]:
     """Validate *document* against *schema*. Returns a list of error strings."""
     validator = Draft202012Validator(schema)
@@ -130,10 +129,72 @@ def print_result(source: str, errors: list[str]) -> bool:
         return True
 
 
+# -- Active Infrastructure Auditing Additions -----------------------------
+def audit_host_infrastructure(config: dict[str, Any]) -> list[str]:
+    """
+    Performs real-time, low-level integration tests on the host environment
+    to ensure physical infrastructure matches the declared OASA config limits.
+    """
+    audit_errors: list[str] = []
+    print("\nExecuting OASA Active Infrastructure Live Audit...")
+    print("=" * 60)
+
+    # 1. Network Leak Test (Exfiltration Verification)
+    if config.get("air_gapped") or not config.get("network", {}).get("allow_wan", True):
+        print("[AUDIT] Verifying WAN air-gap state via socket probe...")
+        try:
+            # Attempting to resolve and touch an external primary root DNS node
+            socket.create_connection(("1.1.1.1", 53), timeout=1.5)
+            audit_errors.append("  [FAIL] [NETWORK] Host breached isolation. WAN connection established to 1.1.1.1.")
+        except (socket.timeout, OSError):
+            print("  [PASS] [NETWORK] Local environment confirmed air-gapped (Egress blocked).")
+
+    # 2. Hardware Security (TPM 2.0 Inspection)
+    if config.get("hardware_security", {}).get("tpm_required", False):
+        print("[AUDIT] Inspecting physical Trusted Platform Module (TPM)...")
+        if sys.platform.startswith("linux"):
+            tpm_path = Path("/dev/tpm0")
+            if not tpm_path.exists():
+                audit_errors.append("  [FAIL] [HARDWARE] TPM device node (/dev/tpm0) absent. Hardware identity unverified.")
+            else:
+                print("  [PASS] [HARDWARE] Hardware TPM 2.0 interface initialized.")
+        elif sys.platform == "win32":
+            try:
+                out = subprocess.check_output("wmic /namespace:\\\\root\\CIMV2\\Security\\MicrosoftTpm path Win32_Tpm get IsEnabled_InitialValue", shell=True)
+                if b"TRUE" not in out:
+                    audit_errors.append("  [FAIL] [HARDWARE] Windows TPM verification failed or disabled.")
+            except subprocess.SubprocessError:
+                audit_errors.append("  [FAIL] [HARDWARE] Failed executing TPM telemetry script command.")
+        else:
+            print("  [WARN] [HARDWARE] Automated TPM validation skipped on unsupported OS environment.")
+
+    # 3. Accelerator Verification (VRAM Allocation Safety Caps)
+    backends = config.get("compute", {}).get("accelerator_backends", [])
+    if "NVIDIA_CUDA" in backends:
+        print("[AUDIT] Polling NVIDIA CUDA hardware management interfaces...")
+        try:
+            # Query nvidia-smi for total standalone VRAM capacity safely
+            vram_raw = subprocess.check_output(
+                ["nvidia-smi", "--query-gpu=memory.total", "--format=csv,noheader,nounits"],
+                text=True
+            )
+            total_vram = int(vram_raw.strip().split("\n")[0]) // 1024
+            target_budget = config.get("compute", {}).get("vram_budget_gb", 0)
+            
+            if total_vram < target_budget:
+                audit_errors.append(f"  [FAIL] [COMPUTE] VRAM shortfall. Target requires {target_budget}GB, found {total_vram}GB.")
+            else:
+                print(f"  [PASS] [COMPUTE] Target VRAM requirements met ({total_vram}GB physical ceiling available).")
+        except (subprocess.SubprocessError, FileNotFoundError, ValueError):
+            audit_errors.append("  [FAIL] [COMPUTE] CUDA system runtime tools (nvidia-smi) missing or unreadable.")
+
+    return audit_errors
+
+
 # -- CLI --------------------------------------------------------------------
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Validate OASA compliance configurations.",
+        description="Validate OASA compliance configurations and audit running host architectures.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
@@ -159,6 +220,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--generate-template",
         action="store_true",
         help="Print a fully compliant template to stdout and exit.",
+    )
+    parser.add_argument(
+        "--audit-host",
+        action="store_true",
+        help="Execute hardware/network live isolation probing checks against verified configuration limits.",
     )
     return parser
 
@@ -193,27 +259,43 @@ def main() -> int:
 
     # Validate each file
     all_passed = True
+    validated_config: dict[str, Any] | None = None
+
     for filepath in files:
         if not filepath.exists():
             print(f"[WARN] Skipping (not found): {filepath}")
             continue
         try:
             document = load_json(filepath)
+            if not validated_config:
+                validated_config = document  # Cache first valid document for active host audit mode
         except json.JSONDecodeError as exc:
             print(f"[FAIL] {filepath}  (invalid JSON: {exc})")
             all_passed = False
             continue
 
-        errors = validate_document(document, schema, source=str(filepath))
+        errors = validate_document(document, schema)
         if not print_result(str(filepath), errors):
             all_passed = False
 
+    # Execute Runtime Active Host Audit
+    if args.audit_host and all_passed and validated_config:
+        audit_errors = audit_host_infrastructure(validated_config)
+        print("-" * 60)
+        if audit_errors:
+            print(f"[FAIL] Host system failed structural OASA compliance audit ({len(audit_errors)} issue(s)).")
+            for err in audit_errors:
+                print(err)
+            all_passed = False
+        else:
+            print("[OK] Host physical system verified secure and fully OASA compliant.")
+
     print("-" * 60)
     if all_passed:
-        print("[OK] All files passed OASA compliance validation.")
+        print("[OK] OASA validation operations completed successfully.")
         return 0
     else:
-        print("[ERROR] Some files failed validation. See errors above.")
+        print("[ERROR] Architectural non-compliance detected.")
         return 1
 
 

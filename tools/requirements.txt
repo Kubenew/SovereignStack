@@ -1,2 +1,4 @@
 # OASA Compliance Validation Tooling
 jsonschema>=4.20.0
+PyYAML>=6.0.1
+psutil>=5.9.0

@@ -1,0 +1,56 @@
+# Sovereign Playground — Sovereign Node Configuration
+# This is the config file mounted into the gateway container.
+
+version: "2026.1"
+
+node:
+  id: "playground-node-001"
+  hostname: "oasa-playground"
+  compliance_level: "STRICT"
+  air_gapped: true
+  location:
+    country_code: "DE"
+    region: "local-dev"
+    jurisdiction: "EU-GDPR"
+
+infrastructure:
+  orchestrator: "privatecloud"
+  storage:
+    vector_backend: "TurboMemory"
+    encryption: "AES-256-GCM"
+    tpm_binding: false            # Relaxed for playground
+  network:
+    allow_wan: false
+    dns_mode: "LOCAL_ONLY"
+
+ingestion:
+  engine: "pdf2struct"
+  max_volatile_ram_mb: 2048
+  allow_disk_cache: false
+
+compute:
+  gateway: "turboprivate-ai"
+  optimization: "TurboQuant-v3"
+  hardware_target: "auto"
+  models:
+    - name: "playground-model"
+      quantization: "GGUF"
+      vram_budget_gb: 8
+      priority: 1
+
+api:
+  listen: "0.0.0.0:8080"
+  base_path: "/v1"
+  openai_compatible: true
+  oasa_lock:
+    enabled: true
+    on_local_failure: "BLOCK"
+    block_external_apis:
+      - "api.openai.com"
+      - "api.anthropic.com"
+
+audit:
+  enabled: true
+  log_format: "JSON"
+  immutable: true
+  retention_days: 30

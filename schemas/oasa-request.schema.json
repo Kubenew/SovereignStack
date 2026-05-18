@@ -49,7 +49,8 @@
     },
     "oasa_compliance_lock": {
       "type": "boolean",
-      "description": "When true, the proxy enforces all OASA axioms for this request. No fallback to external APIs is permitted.",
+      "description": "REQUIRED. The OASA-Lock 'poison pill'. When true, the proxy enforces all OASA axioms for this request. If the local AI engine fails, the proxy MUST return 503 Service Unavailable instead of falling back to any external API (OpenAI, Anthropic, etc.). This prevents accidental exfiltration of prompts, embeddings, and confidential data. For STRICT compliance, this field must always be true.",
+      "const": true,
       "default": true
     },
     "oasa_audit_tag": {
@@ -64,6 +65,6 @@
       "examples": ["EU-GDPR", "US-HIPAA"]
     }
   },
-  "required": ["model", "messages"],
+  "required": ["model", "messages", "oasa_compliance_lock"],
   "additionalProperties": true
 }

@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: oasa-strict-airgap-policy
+  namespace: sovereign-stack
+spec:
+  podSelector:
+    matchLabels:
+      oasa.compliance/layer: compute
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Povoluje provoz pouze z interních firemních pods (např. ingestion pipeline / pdf2struct)
+  - from:
+    - podSelector:
+        matchLabels:
+          oasa.compliance/layer: ingestion
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  # Absolutní blokace WAN. Povolen je pouze interní DNS klastru (kube-dns) pro vnitřní směrování
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
