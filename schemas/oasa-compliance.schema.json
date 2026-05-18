@@ -1,0 +1,26 @@
+{
+  "title": "OASA Compliance Schema",
+  "type": "object",
+  "properties": {
+    "oasa_version": {
+      "type": "string"
+    },
+    "enforce_zero_exfiltration": {
+      "type": "boolean"
+    },
+    "encryption": {
+      "type": "string"
+    },
+    "tpm_required": {
+      "type": "boolean"
+    },
+    "air_gapped": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "oasa_version",
+    "enforce_zero_exfiltration",
+    "air_gapped"
+  ]
+}
