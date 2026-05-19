@@ -1,0 +1,23 @@
+{
+  "title": "OASA-Ingest Output Schema",
+  "type": "object",
+  "properties": {
+    "doc_id": {
+      "type": "string"
+    },
+    "source_filename": {
+      "type": "string"
+    },
+    "sha256": {
+      "type": "string"
+    },
+    "pages": {
+      "type": "array"
+    }
+  },
+  "required": [
+    "doc_id",
+    "sha256",
+    "pages"
+  ]
+}

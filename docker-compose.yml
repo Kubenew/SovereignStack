@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  gateway:
+    build: .
+    command: uvicorn services.gateway_service:app --host 0.0.0.0 --port 8080
+    ports: ["8080:8080"]
+    env_file: [.env]
+
+  ingest:
+    build: .
+    command: uvicorn services.ingest_service:app --host 0.0.0.0 --port 8081
+    ports: ["8081:8081"]
+    volumes: ["./data:/app/data"]
+    env_file: [.env]
+
+  memory:
+    build: .
+    command: uvicorn services.memory_service:app --host 0.0.0.0 --port 8082
+    ports: ["8082:8082"]
+    volumes: ["./data:/app/data"]
+    env_file: [.env]
+
+  compute:
+    build: .
+    command: uvicorn services.compute_service:app --host 0.0.0.0 --port 8083
+    ports: ["8083:8083"]
+    env_file: [.env]
