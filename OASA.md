@@ -397,13 +397,53 @@ OASA is designed as a unified stack:
 
 ---
 
-## 9. Future Extensions (Planned)
+## 9. Advanced Enterprise Extension Specifications
 
-- **OASA Policy Engine Standard** — fine-grained allow/deny rules per model, user, and department
-- **OASA Immutable Audit Log** — append-only log chain with Merkle-tree verification
-- **OASA Secure Federation** — controlled cross-node inference with encrypted model sharding
-- **OASA Secure Update Protocol** — cryptographically signed model weight updates
-- **OASA Telemetry Standard** — privacy-preserving performance metrics (no prompt data)
+To support large-scale deployment inside highly regulated institutions (e.g. banking, defense, and healthcare), OASA specifies five core enterprise control systems.
+
+### 9.1 Identity & Access Control Standard (OASA-Auth)
+Sovereign nodes MUST integrate with institutional Identity Providers (IdP) using open standards to authenticate clients and enforce Role-Based Access Control (RBAC).
+
+- **Protocol**: OpenID Connect (OIDC) / OAuth2 authorization code flows.
+- **Provider Reference**: Keycloak, LDAP, Active Directory.
+- **Enforcement**: The Gateway proxy MUST intercept all inbound OpenAI-compatible completions. It must validate the bearer JWT token signature, expiration (`exp`), and matching audience (`aud`).
+- **RBAC Scopes**:
+  - `inference:write` — Permitted to submit prompt completion requests.
+  - `memory:write` — Permitted to embed new vector documents.
+  - `compliance:read` — Permitted to pull immutable local audit logs.
+
+### 9.2 Observability & Telemetry Standard (OASA-Observe)
+Enterprise deployments require strict logging, metrics, and distributed tracing. However, telemetry collection must adhere to Axiom 1 (Zero Exfiltration) and stay bounded locally.
+
+- **Metrics Collection**: Promoted via **Prometheus** format endpoints exposed by the Gateway and compute node (`/metrics`).
+- **Tracing**: Gateway and Memory engines MUST emit trace headers conforming to **OpenTelemetry** standards.
+- **Local Isolation**: Telemetry sinks (e.g. Grafana, OpenTelemetry Collectors) must be deployed *within* the secure network namespace. External APM (e.g. Datadog SaaS) endpoints are prohibited unless routed via a local encrypted proxy.
+
+### 9.3 Policy Engine & Inference Governance (OASA-Policy)
+Before a prompt reaches the local inference engine, it must pass through automated compliance screening.
+
+- **Reference Engine**: Open Policy Agent (OPA).
+- **Format**: Rego Policy-as-Code files.
+- **Policy Enforcement rules**:
+  - **Data Loss Prevention (DLP)**: Block prompts containing raw patterns resembling Social Security Numbers, credit card numbers, or proprietary API keys.
+  - **Inference Rate-Limiting**: Enforce hard token budgets per department or user scope.
+  - **Model Access Control**: Restrict high-parameter models (e.g. 70B+) to users with specific RBAC flags.
+
+### 9.4 Model Registry & Weight Provenance (OASA-Registry)
+To prevent supply chain attacks and guarantee model reproducibility:
+
+- **Approved Model List**: Nodes MUST only pull weights from a local/internal Model Registry registry.
+- **Signed Weights**: Weights must be cryptographically signed (using Sigstore/Cosign or standard PGPs). The compute runner must verify signatures against the trusted internal key before loading parameters into VRAM.
+- **Hash Integrity**: Manifest definitions must include the exact SHA-256 hash of the weight tensors.
+
+### 9.5 Secure Inference Sandboxing (OASA-Sandbox)
+Because model execution involves dynamic compute graphs and unverified library code, executing workloads in standard root containers is unacceptable.
+
+- **Sandbox Runtime**: Execution layers must run isolated by a micro-VM or custom kernel filter:
+  - **gVisor**: Intercepts guest system calls, translating them safely before hitting the host Linux kernel (runsc runtime).
+  - **Kata Containers**: Runs workloads inside lightweight hardware-isolated VMs using dedicated hypervisors.
+  - **Firecracker**: Micro-VM runner for isolated CPU-heavy fallback inference.
+- **Confidential Compute**: Where supported, memory pages must be encrypted using hardware enclaves (AMD SEV-SNP or Intel TDX).
 
 ---
 
@@ -422,6 +462,11 @@ OASA is designed as a unified stack:
 - [ ] Secure Boot enabled
 - [ ] Key rotation policy ≤ 90 days
 - [ ] Jurisdiction-aware request routing
+- [ ] **[ENTERPRISE]** OIDC JWT authentication enforced at Gateway
+- [ ] **[ENTERPRISE]** Local OpenTelemetry distributed tracing and metrics active
+- [ ] **[ENTERPRISE]** OPA Policy-as-Code checks validated per request
+- [ ] **[ENTERPRISE]** Model weight tensor SHA-256 signature verified on startup
+- [ ] **[ENTERPRISE]** Inference execution runs within a gVisor/Kata sandbox
 
 ---
 
@@ -435,6 +480,9 @@ OASA is designed as a unified stack:
 | **Compliance Lock** | Runtime flag that enforces all OASA axioms per-request |
 | **Jurisdiction Routing** | Routing inference to nodes within a specific legal boundary |
 | **Finansialization (Д → Д')** | Extraction of value through financial abstraction rather than production |
+| **gVisor / Kata** | Secure container sandbox layers preventing host kernel breakouts |
+| **OPA (Open Policy Agent)** | Standard policy-as-code evaluation engine for governance checks |
+| **Keycloak / OIDC** | Enterprise single-sign-on and token validation interfaces |
 
 ---
 
@@ -444,3 +492,4 @@ This document is an architecture blueprint.
 Implementations may vary but must preserve OASA axioms and compliance metrics.
 
 Schemas and validation tooling are maintained alongside the specification to enable automated compliance verification.
+

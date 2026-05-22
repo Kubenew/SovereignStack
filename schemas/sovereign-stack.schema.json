@@ -19,6 +19,19 @@
         },
         "encryption": {
           "type": "string"
+        },
+        "sandboxing": {
+          "type": "object",
+          "properties": {
+            "runtime": {
+              "type": "string",
+              "enum": ["gvisor", "kata", "firecracker", "none"]
+            },
+            "confidential_compute": {
+              "type": "boolean"
+            }
+          },
+          "required": ["runtime", "confidential_compute"]
         }
       },
       "required": [
@@ -27,10 +40,100 @@
         "tpm_required",
         "encryption"
       ]
+    },
+    "services": {
+      "type": "object",
+      "properties": {
+        "gateway": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "listen": { "type": "string" },
+            "identity": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "provider": { "type": "string" },
+                "issuer_url": { "type": "string" },
+                "client_id": { "type": "string" }
+              },
+              "required": ["enabled", "provider", "issuer_url", "client_id"]
+            },
+            "policy": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "engine": { "type": "string" },
+                "policy_path": { "type": "string" }
+              },
+              "required": ["enabled", "engine", "policy_path"]
+            },
+            "observability": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "opentelemetry_endpoint": { "type": "string" },
+                "prometheus_enabled": { "type": "boolean" }
+              },
+              "required": ["enabled", "opentelemetry_endpoint", "prometheus_enabled"]
+            }
+          },
+          "required": ["enabled", "listen"]
+        },
+        "ingest": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "listen": { "type": "string" }
+          },
+          "required": ["enabled", "listen"]
+        },
+        "memory": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "listen": { "type": "string" },
+            "vector_backend": { "type": "string" }
+          },
+          "required": ["enabled", "listen", "vector_backend"]
+        },
+        "compute": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "listen": { "type": "string" },
+            "backend": { "type": "string" },
+            "vram_budget_gb": { "type": "integer" },
+            "registry": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "registry_url": { "type": "string" },
+                "require_signed_weights": { "type": "boolean" }
+              },
+              "required": ["enabled", "registry_url", "require_signed_weights"]
+            }
+          },
+          "required": ["enabled", "listen", "backend", "vram_budget_gb"]
+        }
+      },
+      "required": ["gateway", "ingest", "memory", "compute"]
+    },
+    "models": {
+      "type": "object",
+      "properties": {
+        "allowed": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["allowed"]
     }
   },
   "required": [
     "oasa_version",
-    "node"
+    "node",
+    "services",
+    "models"
   ]
 }

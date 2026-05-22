@@ -225,6 +225,59 @@
         }
       },
       "additionalProperties": false
+    },
+    "identity": {
+      "type": "object",
+      "description": "OASA-Auth compliance — identity provider configurations.",
+      "properties": {
+        "sso_enabled": { "type": "boolean", "default": true },
+        "sso_provider": { "type": "string", "enum": ["keycloak", "ldap", "active_directory"], "default": "keycloak" },
+        "rbac_enabled": { "type": "boolean", "default": true }
+      },
+      "required": ["sso_enabled", "sso_provider", "rbac_enabled"],
+      "additionalProperties": false
+    },
+    "observability": {
+      "type": "object",
+      "description": "OASA-Observe compliance — local distributed tracing and metrics configs.",
+      "properties": {
+        "opentelemetry_enabled": { "type": "boolean", "default": true },
+        "prometheus_metrics_enabled": { "type": "boolean", "default": true },
+        "local_sink_only": { "type": "boolean", "default": true }
+      },
+      "required": ["opentelemetry_enabled", "prometheus_metrics_enabled", "local_sink_only"],
+      "additionalProperties": false
+    },
+    "policy": {
+      "type": "object",
+      "description": "OASA-Policy compliance — Rego/OPA policy governance configs.",
+      "properties": {
+        "opa_enabled": { "type": "boolean", "default": true },
+        "dlp_enabled": { "type": "boolean", "default": true },
+        "rate_limiting_enabled": { "type": "boolean", "default": true }
+      },
+      "required": ["opa_enabled", "dlp_enabled", "rate_limiting_enabled"],
+      "additionalProperties": false
+    },
+    "model_registry": {
+      "type": "object",
+      "description": "OASA-Registry compliance — signed weight verification rules.",
+      "properties": {
+        "require_signatures": { "type": "boolean", "default": true },
+        "allowed_registries": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["require_signatures"],
+      "additionalProperties": false
+    },
+    "sandboxing": {
+      "type": "object",
+      "description": "OASA-Sandbox compliance — runtime sandboxing requirements.",
+      "properties": {
+        "runtime": { "type": "string", "enum": ["gvisor", "kata", "firecracker", "none"], "default": "gvisor" },
+        "confidential_compute": { "type": "boolean", "default": false }
+      },
+      "required": ["runtime", "confidential_compute"],
+      "additionalProperties": false
     }
   },
   "required": [

@@ -22,7 +22,56 @@ def temp_files(tmp_path):
             "name": "test-node",
             "air_gapped": True,
             "tpm_required": False,
-            "encryption": "AES-256-GCM"
+            "encryption": "AES-256-GCM",
+            "sandboxing": {
+                "runtime": "none",
+                "confidential_compute": False
+            }
+        },
+        "services": {
+            "gateway": {
+                "enabled": True,
+                "listen": "0.0.0.0:8080",
+                "identity": {
+                    "enabled": False,
+                    "provider": "mock",
+                    "issuer_url": "http://mock",
+                    "client_id": "mock"
+                },
+                "policy": {
+                    "enabled": False,
+                    "engine": "mock",
+                    "policy_path": "mock"
+                },
+                "observability": {
+                    "enabled": False,
+                    "opentelemetry_endpoint": "http://mock",
+                    "prometheus_enabled": False
+                }
+            },
+            "ingest": {
+                "enabled": True,
+                "listen": "0.0.0.0:8081"
+            },
+            "memory": {
+                "enabled": True,
+                "listen": "0.0.0.0:8082",
+                "vector_backend": "local-json"
+            },
+            "compute": {
+                "enabled": True,
+                "listen": "0.0.0.0:8083",
+                "backend": "local",
+                "vram_budget_gb": 24,
+                "registry": {
+                    "enabled": False,
+                    "registry_url": "http://mock",
+                    "require_signed_weights": False
+                }
+            }
+        },
+        "models": {
+            "allowed": ["test-model"]
         }
     }
     with open(stack_yaml, "w", encoding="utf-8") as f:

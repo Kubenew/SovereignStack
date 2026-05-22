@@ -5,6 +5,8 @@ from unittest.mock import patch, MagicMock
 
 # Set environment variables for testing before importing the app
 os.environ["OASA_ENFORCE_COMPLIANCE"] = "STRICT"
+os.environ["OASA_ENFORCE_AUTH"] = "DEVELOPMENT"
+os.environ["OASA_ENFORCE_POLICY"] = "DEVELOPMENT"
 os.environ["COMPUTE_URL"] = "http://mock-compute"
 os.environ["MEMORY_URL"] = "http://mock-memory"
 os.environ["DATA_DIR"] = "./data_test"
@@ -53,7 +55,6 @@ def test_gateway_strict_with_lock_success(mock_post):
     mock_memory_response.status_code = 200
     mock_memory_response.json.return_value = {"context": "Some context"}
     
-    # We patch requests.post to return mock responses
     def side_effect(url, *args, **kwargs):
         if "compute" in url:
             return mock_compute_response
@@ -132,3 +133,90 @@ def test_gateway_non_strict_fallback(mock_post):
         assert response.status_code == 200
         res_json = response.json()
         assert "[FALLBACK - api.openai.com]" in res_json["choices"][0]["message"]["content"]
+
+# =============================================================================
+# NEW ENTERPRISE FEATURE TESTS (JWT Authentication & OPA Policy Enforcement)
+# =============================================================================
+
+def test_gateway_auth_strict_missing_token():
+    # If auth is STRICT, request should fail with 401 if token is missing
+    with patch.dict(os.environ, {"OASA_ENFORCE_AUTH": "STRICT"}):
+        payload = {
+            "model": "sovereign-llama3",
+            "messages": [{"role": "user", "content": "Hello"}],
+            "oasa_compliance_lock": True
+        }
+        response = client.post("/v1/chat/completions", json=payload)
+        assert response.status_code == 401
+        res_json = response.json()
+        assert "A valid Keycloak/OIDC Bearer token is required" in res_json["error"]["message"]
+
+def test_gateway_auth_strict_invalid_token():
+    # If auth is STRICT, invalid token should fail with 401
+    with patch.dict(os.environ, {"OASA_ENFORCE_AUTH": "STRICT"}):
+        payload = {
+            "model": "sovereign-llama3",
+            "messages": [{"role": "user", "content": "Hello"}],
+            "oasa_compliance_lock": True
+        }
+        headers = {"Authorization": "Bearer bad-token"}
+        response = client.post("/v1/chat/completions", json=payload, headers=headers)
+        assert response.status_code == 401
+
+def test_gateway_auth_strict_unauthorized_role():
+    # If token has valid format but missing required role, fail with 403
+    with patch.dict(os.environ, {"OASA_ENFORCE_AUTH": "STRICT"}):
+        payload = {
+            "model": "sovereign-llama3",
+            "messages": [{"role": "user", "content": "Hello"}],
+            "oasa_compliance_lock": True
+        }
+        headers = {"Authorization": "Bearer mock-unauthorized-role"}
+        response = client.post("/v1/chat/completions", json=payload, headers=headers)
+        assert response.status_code == 403
+        res_json = response.json()
+        assert "inference write permissions" in res_json["error"]["message"]
+
+@patch("requests.post")
+def test_gateway_auth_strict_success_token(mock_post):
+    # Valid auth token and role should pass authentication checks
+    mock_compute_response = MagicMock()
+    mock_compute_response.status_code = 200
+    mock_compute_response.json.return_value = {"response": "Success"}
+    mock_post.return_value = mock_compute_response
+
+    with patch.dict(os.environ, {"OASA_ENFORCE_AUTH": "STRICT"}):
+        payload = {
+            "model": "sovereign-llama3",
+            "messages": [{"role": "user", "content": "Hello"}],
+            "oasa_compliance_lock": True
+        }
+        headers = {"Authorization": "Bearer mock-valid-token"}
+        response = client.post("/v1/chat/completions", json=payload, headers=headers)
+        assert response.status_code == 200
+
+def test_gateway_policy_strict_dlp_block_ssn():
+    # Prompts containing SSNs should be blocked by OPA policy checks
+    with patch.dict(os.environ, {"OASA_ENFORCE_POLICY": "STRICT"}):
+        payload = {
+            "model": "sovereign-llama3",
+            "messages": [{"role": "user", "content": "My Social Security Number is 000-12-3456."}],
+            "oasa_compliance_lock": True
+        }
+        response = client.post("/v1/chat/completions", json=payload)
+        assert response.status_code == 403
+        res_json = response.json()
+        assert "PII" in res_json["error"]["message"]
+
+def test_gateway_policy_strict_dlp_block_credit_card():
+    # Prompts containing credit cards should be blocked by OPA policy checks
+    with patch.dict(os.environ, {"OASA_ENFORCE_POLICY": "STRICT"}):
+        payload = {
+            "model": "sovereign-llama3",
+            "messages": [{"role": "user", "content": "Charge to card 1111-2222-3333-4444."}],
+            "oasa_compliance_lock": True
+        }
+        response = client.post("/v1/chat/completions", json=payload)
+        assert response.status_code == 403
+        res_json = response.json()
+        assert "credit card" in res_json["error"]["message"]
