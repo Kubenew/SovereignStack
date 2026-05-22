@@ -1,0 +1,46 @@
+apiVersion: node.k8s.io/v1
+kind: RuntimeClass
+metadata:
+  name: gvisor
+  labels:
+    oasa.compliance.tier: production-airgapped
+handler: runsc # Maps to the local container runtime (e.g. containerd with runsc plugin)
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sovereign-compute-sandbox
+  namespace: sovereign-stack
+  labels:
+    app: sovereign-compute
+    oasa.compliance.tier: production-airgapped
+spec:
+  runtimeClassName: gvisor # Binds execution to the secure gVisor sandbox
+  containers:
+  - name: inference-engine
+    image: sovereignstack/turboquant-v3:latest
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 10001
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      limits:
+        cpu: "16"
+        memory: 64Gi
+        nvidia.com/gpu: "1" # Restricts VRAM access to dedicated host hardware
+      requests:
+        cpu: "8"
+        memory: 32Gi
+        nvidia.com/gpu: "1"
+    volumeMounts:
+    - name: model-weights-volume
+      mountPath: /models
+      readOnly: true
+  volumes:
+  - name: model-weights-volume
+    persistentVolumeClaim:
+      claimName: sovereign-models-pvc

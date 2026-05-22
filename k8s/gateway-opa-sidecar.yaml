@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sovereign-opa-policy
+  namespace: sovereign-stack
+data:
+  inference.rego: |
+    package oasa.inference
+    default allow = false
+    allow {
+        count(violations) == 0
+    }
+    violations[msg] {
+        re_match(`\d{3}-\d{2}-\d{4}`, input.prompt)
+        msg := "PII-Block-SSN: Prompt contains Social Security Number"
+    }
+    violations[msg] {
+        re_match(`\d{4}-\d{4}-\d{4}-\d{4}`, input.prompt)
+        msg := "PII-Block-CreditCard: Prompt contains Credit Card Number"
+    }
+    violations[msg] {
+        input.model == "sovereign-llama3"
+        not user_has_role("inference:write")
+        msg := "RBAC-Model-Access: Accessing llama3 model requires inference write role"
+    }
+    user_has_role(role) {
+        input.auth.roles[_] == role
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sovereign-gateway-deployment
+  namespace: sovereign-stack
+  labels:
+    app: sovereign-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sovereign-gateway
+  template:
+    metadata:
+      labels:
+        app: sovereign-gateway
+    spec:
+      containers:
+      - name: gateway-proxy
+        image: sovereignstack/gateway-service:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: OASA_ENFORCE_AUTH
+          value: "STRICT"
+        - name: OASA_ENFORCE_POLICY
+          value: "STRICT"
+        - name: OPA_URL
+          value: "http://localhost:8181/v1/data/oasa/inference"
+        - name: COMPUTE_URL
+          value: "http://localhost:8083"
+        - name: MEMORY_URL
+          value: "http://sovereign-memory:8082"
+        - name: DATA_DIR
+          value: "/app/data"
+        volumeMounts:
+        - name: audit-logs
+          mountPath: /app/data
+      
+      - name: opa-sidecar
+        image: openpolicyagent/opa:latest
+        ports:
+        - containerPort: 8181
+        args:
+        - "run"
+        - "--server"
+        - "--addr=localhost:8181"
+        - "/policies/inference.rego"
+        volumeMounts:
+        - name: policy-volume
+          mountPath: /policies
+      
+      volumes:
+      - name: audit-logs
+        persistentVolumeClaim:
+          claimName: gateway-audit-pvc
+      - name: policy-volume
+        configMap:
+          name: sovereign-opa-policy

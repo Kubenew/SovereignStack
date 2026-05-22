@@ -80,6 +80,18 @@ The following threat model maps potential attack vectors against OASA mitigation
 
 ---
 
+## 🔒 Advanced Threat Mitigations
+
+### Prompt Injection & Instruction Hijacking Defense
+SovereignStack implements dynamic query interceptors at the gateway proxy. In addition to scanning for PII, the proxy evaluates the input against strict policy rules to identify typical prompt injection signatures (e.g., system instructions override text). These filters are declared as policy-as-code in [inference.rego](file:///C:/Users/Orcl/.gemini/antigravity-ide/scratch/SovereignStack/policies/inference.rego) and run on every call before passing tokens to the LLM context.
+
+### Model Weights Tamper Protection
+To guarantee the authenticity of cognitive workloads:
+1. **SHA-256 Verification**: The compute service computes the SHA-256 hash of all model weight files at launch and compares them to the values declared in `sovereign-stack.yaml`.
+2. **Registry Signatures**: Model weights are checked for signatures signed by institutional certificates (e.g. via Cosign) to prevent supply chain modifications.
+
+---
+
 ## 📐 Regulatory Compliance Matrix
 
 OASA protocols are engineered to comply with major global regulatory frameworks out of the box.
