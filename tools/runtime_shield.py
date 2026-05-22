@@ -2,8 +2,8 @@
 """
 OASA Runtime Shield Wrapper
 ===========================
-Обеспечивает изоляцию ИИ-движков во время выполнения (Runtime).
-Контролирует утечки RAM/VRAM и предотвращает скрытую сетевую активность.
+Provides runtime isolation for AI inference engines.
+Monitors RAM/VRAM leaks and blocks unauthorized outbound network activity.
 
 Usage:
     python runtime_shield.py --config ../sovereign-stack.yaml --cmd "python -m turboprivate_ai.main"
@@ -16,7 +16,7 @@ import sys
 import psutil
 import socket
 from pathlib import Path
-import yaml # Требуется PyYAML (pip install pyyaml)
+import yaml # Requires PyYAML (pip install pyyaml)
 
 class RuntimeShield:
     def __init__(self, config_path: str, command: str):
@@ -24,8 +24,8 @@ class RuntimeShield:
         self.command = command
         self.process = None
         
-        # Параметры защиты из YAML
-        # Обратная совместимость: поддержка как старой (compute), так и новой (compute_execution) структуры
+        # Protection parameters from YAML
+        # Backward compatibility: supports both old (compute) and new (compute_execution) structures
         compute_cfg = self.config.get("compute_execution", self.config.get("compute", {}))
         runtime_prot = compute_cfg.get("runtime_protection", {})
         
@@ -40,24 +40,24 @@ class RuntimeShield:
             return yaml.safe_load(f)
 
     def verify_network_isolation(self) -> bool:
-        """Проверяет, не открыл ли процесс ИИ несанкционированные внешние соединения."""
+        """Verifies if the AI process opened unauthorized outbound connections."""
         if not self.air_gapped:
             return True
             
-        print("[SHIELD] Проверка сетевой изоляции контура...")
+        print("[SHIELD] Verifying network isolation loop...")
         try:
-            # Попытка установить внешнее соединение
+            # Attempt to establish outbound connection
             socket.create_connection(("8.8.8.8", 53), timeout=1.0)
-            return False # Если соединение успешно — изоляция пробита!
+            return False # If connection is successful — isolation breached!
         except (socket.timeout, OSError):
-            return True # Сеть надежно заблокирована
+            return True # Network is securely isolated
 
     def monitor_loop(self):
-        """Основной цикл контроля за выполнением процесса ИИ."""
-        print(f"[SHIELD] Запуск суверенного ИИ-процесса: {self.command}")
+        """Main monitoring loop for the AI process execution."""
+        print(f"[SHIELD] Launching sovereign AI process: {self.command}")
         print("=" * 60)
         
-        # Запуск целевого ИИ-движка в изолированном подпроцессе
+        # Start target AI engine in isolated subprocess
         self.process = subprocess.Popen(
             self.command,
             shell=True,
@@ -68,54 +68,56 @@ class RuntimeShield:
 
         psutil_proc = psutil.Process(self.process.pid)
         
-        # Небольшая задержка, чтобы процесс успел выделить базовую память
+        # Small delay to allow base memory allocation
         time.sleep(1)
         initial_memory = psutil_proc.memory_info().rss / (1024 * 1024)
-        print(f"[SHIELD] Базовое потребление памяти процессом: {initial_memory:.2f} MB")
+        print(f"[SHIELD] Base process memory allocation: {initial_memory:.2f} MB")
 
         try:
             while self.process.poll() is None:
-                time.sleep(2) # Интервал проверки — каждые 2 секунды
+                time.sleep(2) # Check interval — every 2 seconds
                 
-                # 1. Контроль утечек памяти (Memory Leak Protection)
+                # 1. Memory Leak Protection
                 current_memory = psutil_proc.memory_info().rss / (1024 * 1024)
                 mem_drift = current_memory - initial_memory
                 
-                print(f"[TELEMETRY] Текущая RAM: {current_memory:.2f} MB | Дрейф: {mem_drift:.2f} MB")
+                print(f"[TELEMETRY] Current RAM: {current_memory:.2f} MB | Memory Drift: {mem_drift:.2f} MB")
 
                 if mem_drift > self.mem_threshold_mb:
-                    print(f"\n[ALERT] КРИТИЧЕСКАЯ УТЕЧКА ПАМЯТИ: Превышен лимит в {self.mem_threshold_mb} MB.")
+                    print(f"\n[ALERT] CRITICAL MEMORY LEAK: Exceeded limit of {self.mem_threshold_mb} MB.")
                     self.terminate_incident("MEMORY_EXCEEDED")
                     break
 
-                # 2. Контроль сетевого трафика во время выполнения
+                # 2. Network Isolation Check
                 if not self.verify_network_isolation():
-                    print("\n[ALERT] НАРУШЕНИЕ БЕЗОПАСНОСТИ: Обнаружена несанкционированная WAN-активность!")
+                    print("\n[ALERT] SECURITY BREACH: Unauthorized WAN activity detected!")
                     self.terminate_incident("NETWORK_VIOLATION")
                     break
 
         except KeyboardInterrupt:
-            print("\n[SHIELD] Ручная остановка процесса пользователем.")
+            print("\n[SHIELD] Process manually stopped by user.")
             self.terminate_incident("MANUAL_STOP")
 
     def terminate_incident(self, reason: str):
-        """Аварийное уничтожение процесса (Kill Switch) при фиксации инцидента."""
+        """Emergency termination of the process (Kill Switch) in case of an incident."""
         if self.process and self.process.poll() is None:
-            print(f"[KILL SWITCH] Аварийное уничтожение ИИ-контекста. Причина: {reason}")
+            print(f"[KILL SWITCH] Emergency termination of AI context. Reason: {reason}")
             self.process.kill()
             self.process.wait()
             
             if self.compliance_lock:
-                print("[COMPLIANCE LOCK] АКТИВИРОВАН ПОЛНЫЙ БЛОК НОДЫ. Все внешние API-интерфейсы заморожены.")
+                print("[COMPLIANCE LOCK] FULL NODE BLOCK ACTIVATED. All external API interfaces frozen.")
             sys.exit(1)
-        print("[SHIELD] ИИ-процесс успешно завершил работу.")
+        print("[SHIELD] AI process completed successfully.")
         sys.exit(0)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="OASA Runtime Shield")
-    parser.add_argument("--config", type=str, required=True, help="Путь к sovereign-stack.yaml")
-    parser.add_argument("--cmd", type=str, required=True, help="Команда запуска ИИ-модели/прокси")
+    parser.add_argument("--config", type=str, required=True, help="Path to sovereign-stack.yaml")
+    parser.add_argument("--cmd", type=str, required=True, help="Command to run AI model/proxy")
     args = parser.parse_args()
 
     shield = RuntimeShield(args.config, args.cmd)
     shield.monitor_loop()
+
+

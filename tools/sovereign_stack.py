@@ -110,13 +110,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
         print("ERROR: 'jsonschema' required. Run: pip install jsonschema", file=sys.stderr)
         return 1
 
-    schema_path = Path(args.schema) if args.schema else SCHEMAS_DIR / "oasa-compliance.schema.json"
-    if not schema_path.exists():
-        print(f"ERROR: Schema not found: {schema_path}", file=sys.stderr)
-        return 2
-
-    schema = load_json(schema_path)
-    banner(f"OASA Compliance Validation  (Schema: {schema_path.name})")
+    banner("OASA Compliance Validation")
 
     files: list[Path] = [Path(f) for f in args.files]
     all_passed = True
@@ -148,6 +142,30 @@ def cmd_validate(args: argparse.Namespace) -> int:
                 all_passed = False
                 continue
 
+        # Dynamic Schema Auto-Detection
+        if args.schema:
+            selected_schema_path = Path(args.schema)
+        else:
+            if isinstance(document, dict) and "node" in document and "oasa_version" in document:
+                selected_schema_path = SCHEMAS_DIR / "sovereign-stack.schema.json"
+            elif isinstance(document, dict) and ("node_id" in document or "deployed_models" in document):
+                selected_schema_path = SCHEMAS_DIR / "oasa-node-manifest.schema.json"
+            else:
+                selected_schema_path = SCHEMAS_DIR / "oasa-compliance.schema.json"
+
+        if not selected_schema_path.exists():
+            status(str(filepath), f"Schema file not found: {selected_schema_path}", ok=False)
+            all_passed = False
+            continue
+
+        try:
+            schema = load_json(selected_schema_path)
+        except Exception as exc:
+            status(str(filepath), f"Failed to load schema {selected_schema_path.name}: {exc}", ok=False)
+            all_passed = False
+            continue
+
+        print(f"  Validating {filepath.name} against schema: {selected_schema_path.name}")
         validator = Draft202012Validator(schema)
         errors = list(validator.iter_errors(document))
 
@@ -200,18 +218,24 @@ def audit_host_infrastructure(config: dict[str, Any]) -> list[str]:
             pass # Local environment confirmed air-gapped
 
     # 2. Hardware Security (TPM 2.0 Inspection)
-    if config.get("hardware_security", {}).get("tpm_required", False):
+    tpm_required = config.get("hardware_security", {}).get("tpm_required", False) or config.get("node", {}).get("tpm_required", False)
+    if tpm_required:
         if platform.system() == "Linux":
             tpm_path = Path("/dev/tpm0")
             if not tpm_path.exists():
                 audit_errors.append("[HARDWARE] TPM device node (/dev/tpm0) absent. Hardware identity unverified.")
         elif platform.system() == "Windows":
             try:
-                out = subprocess.check_output("wmic /namespace:\\\\root\\CIMV2\\Security\\MicrosoftTpm path Win32_Tpm get IsEnabled_InitialValue", shell=True)
-                if b"TRUE" not in out:
+                result = subprocess.run(
+                    ["powershell", "-Command",
+                     "Get-CimInstance -Namespace root/cimv2/security/microsofttpm "
+                     "-ClassName Win32_Tpm | Select-Object -Property IsEnabled_InitialValue"],
+                    capture_output=True, text=True, timeout=10,
+                )
+                if "True" not in result.stdout:
                     audit_errors.append("[HARDWARE] Windows TPM verification failed or disabled.")
-            except subprocess.SubprocessError:
-                audit_errors.append("[HARDWARE] Failed executing TPM telemetry script command (Run as Administrator).")
+            except Exception:
+                audit_errors.append("[HARDWARE] Failed executing TPM telemetry script command via PowerShell.")
 
     # 3. Accelerator Verification (VRAM Allocation Safety Caps)
     # Check if this is a sovereign-stack.yaml (has compute.models) or oasa-compliance.schema.json (has compute)

@@ -150,7 +150,8 @@ def audit_host_infrastructure(config: dict[str, Any]) -> list[str]:
             print("  [PASS] [NETWORK] Local environment confirmed air-gapped (Egress blocked).")
 
     # 2. Hardware Security (TPM 2.0 Inspection)
-    if config.get("hardware_security", {}).get("tpm_required", False):
+    tpm_required = config.get("hardware_security", {}).get("tpm_required", False) or config.get("node", {}).get("tpm_required", False)
+    if tpm_required:
         print("[AUDIT] Inspecting physical Trusted Platform Module (TPM)...")
         if sys.platform.startswith("linux"):
             tpm_path = Path("/dev/tpm0")
@@ -160,11 +161,18 @@ def audit_host_infrastructure(config: dict[str, Any]) -> list[str]:
                 print("  [PASS] [HARDWARE] Hardware TPM 2.0 interface initialized.")
         elif sys.platform == "win32":
             try:
-                out = subprocess.check_output("wmic /namespace:\\\\root\\CIMV2\\Security\\MicrosoftTpm path Win32_Tpm get IsEnabled_InitialValue", shell=True)
-                if b"TRUE" not in out:
+                result = subprocess.run(
+                    ["powershell", "-Command",
+                     "Get-CimInstance -Namespace root/cimv2/security/microsofttpm "
+                     "-ClassName Win32_Tpm | Select-Object -Property IsEnabled_InitialValue"],
+                    capture_output=True, text=True, timeout=10,
+                )
+                if "True" not in result.stdout:
                     audit_errors.append("  [FAIL] [HARDWARE] Windows TPM verification failed or disabled.")
-            except subprocess.SubprocessError:
-                audit_errors.append("  [FAIL] [HARDWARE] Failed executing TPM telemetry script command.")
+                else:
+                    print("  [PASS] [HARDWARE] Hardware TPM 2.0 interface initialized.")
+            except Exception:
+                audit_errors.append("  [FAIL] [HARDWARE] Failed executing TPM telemetry script command via PowerShell.")
         else:
             print("  [WARN] [HARDWARE] Automated TPM validation skipped on unsupported OS environment.")
 
@@ -202,19 +210,19 @@ def build_parser() -> argparse.ArgumentParser:
         "files",
         nargs="*",
         type=Path,
-        help="JSON file(s) to validate.",
+        help="JSON/YAML file(s) to validate.",
     )
     parser.add_argument(
         "--schema",
         type=Path,
-        default=DEFAULT_SCHEMA,
-        help=f"Path to the JSON schema (default: {DEFAULT_SCHEMA.name}).",
+        default=None,
+        help="Path to the JSON schema (default: auto-detected per-file).",
     )
     parser.add_argument(
         "--dir",
         type=Path,
         default=None,
-        help="Directory of JSON files to validate (recursive).",
+        help="Directory of JSON/YAML files to validate (recursive).",
     )
     parser.add_argument(
         "--generate-template",
@@ -242,20 +250,13 @@ def main() -> int:
     files: list[Path] = list(args.files or [])
     if args.dir:
         files.extend(sorted(args.dir.rglob("*.json")))
+        files.extend(sorted(args.dir.rglob("*.yaml")))
+        files.extend(sorted(args.dir.rglob("*.yml")))
 
     if not files:
         parser.print_help()
-        print("\nError: provide at least one JSON file or use --dir.", file=sys.stderr)
+        print("\nError: provide at least one JSON/YAML file or use --dir.", file=sys.stderr)
         return 2
-
-    # Load schema
-    if not args.schema.exists():
-        print(f"Error: schema not found at {args.schema}", file=sys.stderr)
-        return 2
-
-    schema = load_json(args.schema)
-    print(f"Schema: {args.schema.name}  (OASA {schema.get('title', 'unknown')})")
-    print("-" * 60)
 
     # Validate each file
     all_passed = True
@@ -265,15 +266,56 @@ def main() -> int:
         if not filepath.exists():
             print(f"[WARN] Skipping (not found): {filepath}")
             continue
-        try:
-            document = load_json(filepath)
-            if not validated_config:
-                validated_config = document  # Cache first valid document for active host audit mode
-        except json.JSONDecodeError as exc:
-            print(f"[FAIL] {filepath}  (invalid JSON: {exc})")
+
+        # Parse file based on extension
+        document = None
+        if filepath.suffix in (".yaml", ".yml"):
+            try:
+                import yaml  # noqa: WPS433
+                with open(filepath, encoding="utf-8") as fh:
+                    document = yaml.safe_load(fh)
+            except ImportError:
+                print(f"[WARN] PyYAML not installed. Skipping YAML file: {filepath}")
+                continue
+            except Exception as exc:
+                print(f"[FAIL] {filepath}  (YAML parse error: {exc})")
+                all_passed = False
+                continue
+        else:
+            try:
+                document = load_json(filepath)
+            except json.JSONDecodeError as exc:
+                print(f"[FAIL] {filepath}  (invalid JSON: {exc})")
+                all_passed = False
+                continue
+
+        if not validated_config:
+            validated_config = document  # Cache first valid document for active host audit mode
+
+        # Dynamic Schema Auto-Detection
+        if args.schema:
+            selected_schema_path = args.schema
+        else:
+            if isinstance(document, dict) and "node" in document and "oasa_version" in document:
+                selected_schema_path = DEFAULT_SCHEMA.parent / "sovereign-stack.schema.json"
+            elif isinstance(document, dict) and ("node_id" in document or "deployed_models" in document):
+                selected_schema_path = DEFAULT_SCHEMA.parent / "oasa-node-manifest.schema.json"
+            else:
+                selected_schema_path = DEFAULT_SCHEMA
+
+        if not selected_schema_path.exists():
+            print(f"[FAIL] Schema not found at {selected_schema_path}")
             all_passed = False
             continue
 
+        try:
+            schema = load_json(selected_schema_path)
+        except Exception as exc:
+            print(f"[FAIL] Failed to load schema {selected_schema_path.name}: {exc}")
+            all_passed = False
+            continue
+
+        print(f"Validating {filepath.name} against schema: {selected_schema_path.name}")
         errors = validate_document(document, schema)
         if not print_result(str(filepath), errors):
             all_passed = False
