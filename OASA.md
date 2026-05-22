@@ -26,7 +26,123 @@ Local ingestion and execution layers must serve as a **drop-in replacement** for
 
 ---
 
-## 2. The Four-Layer Architectural Stack
+## 2. The Four-Layer Architectural Stack & Trust Boundaries
+
+### Visual Architectural Stack
+
+```mermaid
+flowchart TD
+    subgraph SovereignNode ["Sovereign Node — Core Layers"]
+        L1["1. DATA INGESTION LAYER\npdf2struct: Strict Deterministic Extraction"]
+        L2["2. MEMORY & CONTEXT LAYER\nTurboMemory: Vector Isolation & Local KV"]
+        L3["3. EXECUTION & OPTIMIZATION\nTurboQuant Engine: Runtime AWQ/INT4 Abstraction"]
+        L4["4. SOVEREIGN ORCHESTRATION\nprivatecloud Node: Air-Gapped K8s Appliance"]
+
+        L1 --> L2 --> L3 --> L4
+    end
+```
+
+### Trust Boundary & Threat Model
+
+OASA establishes strict cryptographic and physical isolation barriers to prevent unauthorized data exfiltration. The threat model diagram below shows how every data flow terminates within the trusted sovereign boundary, and how all exfiltration vectors to the public WAN are architecturally blocked:
+
+```mermaid
+graph TD
+    subgraph TrustedBoundary ["TRUSTED SOVEREIGN BOUNDARY — Physical / Geo-Fenced"]
+        direction TB
+
+        subgraph IngestZone ["Ingestion Zone — RAM-Only Processing"]
+            U["User Ingest Request"] -->|Plaintext Corporate Data| I["Layer 1: pdf2struct"]
+            I -->|Deterministic RAM-only Extract| SV["Schema-Validated JSON"]
+        end
+
+        subgraph MemoryZone ["Memory Zone — Encrypted at Rest"]
+            SV -->|Structured Chunks| E["AES-256-GCM Encryption Engine"]
+            E --> V[("Local Encrypted Vector DB")]
+            E --> KVC[("Encrypted KV Cache")]
+            K["TPM 2.0 / HSM Module"] -.->|Hardware-bound Key Binding| E
+            SE["Secure Enclave"] -.->|Key Derivation| K
+        end
+
+        subgraph ComputeZone ["Compute Zone — Air-Gapped Inference"]
+            U2["User Chat Request"] -->|OpenAI-Compatible Payload| G["Layer 3: turboprivate-ai Gateway"]
+            V -->|Encrypted Context Retrieval| G
+            KVC -->|Session KV State| G
+            G -->|oasa_compliance_lock: true| P{"OASA Policy Engine"}
+            P -->|Authorized| C["TurboQuant-v3 Compute Engine"]
+            P -->|Rejected| R400["400 Bad Request"]
+            C -->|Local Compute Fails| LOCK{"OASA-Lock Decision"}
+            LOCK -->|STRICT Mode| L503["503 Service Unavailable"]
+            LOCK -.->|BLOCKED Path| EXT["api.openai.com"]
+        end
+
+        subgraph AuditZone ["Audit Zone — Tamper-Evident Logging"]
+            G -.->|Every Request| AL["Immutable Audit Log"]
+            AL -.->|oasa_audit_tag + Timestamp| AR[("Append-Only Log Store")]
+        end
+    end
+
+    subgraph UntrustedZone ["UNTRUSTED PUBLIC WAN — ALL VECTORS BLOCKED"]
+        direction TB
+        X1(("Telemetry Exfiltration")) -.->|DROPPED| FW["Network Egress Firewall"]
+        X2(("Weight Update Leak")) -.->|DROPPED| FW
+        X3(("Prompt Data Leak")) -.->|DROPPED| FW
+        EXT -.->|BLOCKED by OASA-Lock| FW
+    end
+
+    style TrustedBoundary fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    style UntrustedZone fill:#ffebee,stroke:#c62828,stroke-width:2px,stroke-dasharray: 5 5
+    style FW fill:#ff3333,stroke:#333,stroke-width:3px
+    style L503 fill:#f9f,stroke:#333,stroke-width:2px
+    style EXT fill:#ff9999,stroke:#333,stroke-width:2px,stroke-dasharray: 5 5
+    style R400 fill:#fff3e0,stroke:#e65100,stroke-width:2px
+```
+
+### GPU Quantization & VRAM Budget Layout
+
+This diagram illustrates how quantized model layers are distributed within a strict VRAM budget. The OASA standard requires that total memory consumption (weights + KV cache + activations) must fit within the declared `vram_budget_gb` or the runtime **refuses to load**:
+
+```mermaid
+block-beta
+    columns 4
+    block:header:4
+        columns 4
+        h1["FP16 Weights\n(2 bytes/param)"]
+        h2["INT8 Weights\n(1 byte/param)"]
+        h3["INT4/AWQ Weights\n(0.5 bytes/param)"]
+        h4["KV Cache + Activations\n(Dynamic)"]
+    end
+    block:example:4
+        columns 4
+        e1["70B x 2B = 140 GB\n(Exceeds 24 GB budget)"]
+        e2["70B x 1B = 70 GB\n(Exceeds 24 GB budget)"]
+        e3["70B x 0.5B = 35 GB\n(Fits 48 GB budget)"]
+        e4["~2-6 GB\n(Context dependent)"]
+    end
+
+    style h1 fill:#ffcdd2
+    style h2 fill:#fff9c4
+    style h3 fill:#c8e6c9
+    style h4 fill:#bbdefb
+```
+
+#### VRAM Budget Reference Table
+
+| Model Size | FP16 | INT8 | INT4/AWQ | INT2 | KV Cache (8K ctx) | Total INT4 + KV |
+|---|---|---|---|---|---|---|
+| **8B** | 16 GB | 8 GB | 4 GB | 2 GB | ~0.5 GB | **~4.5 GB** |
+| **14B** | 28 GB | 14 GB | 7 GB | 3.5 GB | ~0.8 GB | **~7.8 GB** |
+| **32B** | 64 GB | 32 GB | 16 GB | 8 GB | ~1.5 GB | **~17.5 GB** |
+| **70B** | 140 GB | 70 GB | 35 GB | 17.5 GB | ~2.5 GB | **~37.5 GB** |
+| **123B** | 246 GB | 123 GB | 61.5 GB | 30.75 GB | ~2.5 GB | **~64 GB** |
+
+> **Use the VRAM Calculator** to estimate exact requirements for your specific deployment configuration:
+> ```bash
+> python tools/vram_calculator.py --params 70B --quant INT4 --context 8192 --batch 2
+> python tools/vram_calculator.py --autodetect
+> ```
+
+The previous ASCII diagram is preserved below for text-only environments:
 
 ```
 ┌─────────────────────────────────────────────────────────┐

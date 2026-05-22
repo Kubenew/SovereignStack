@@ -1,10 +1,13 @@
 version: "3.9"
+
 services:
   gateway:
     build: .
     command: uvicorn services.gateway_service:app --host 0.0.0.0 --port 8080
     ports: ["8080:8080"]
     env_file: [.env]
+    networks:
+      - sovereign-isolated
 
   ingest:
     build: .
@@ -12,6 +15,8 @@ services:
     ports: ["8081:8081"]
     volumes: ["./data:/app/data"]
     env_file: [.env]
+    networks:
+      - sovereign-isolated
 
   memory:
     build: .
@@ -19,9 +24,19 @@ services:
     ports: ["8082:8082"]
     volumes: ["./data:/app/data"]
     env_file: [.env]
+    networks:
+      - sovereign-isolated
 
   compute:
     build: .
     command: uvicorn services.compute_service:app --host 0.0.0.0 --port 8083
     ports: ["8083:8083"]
     env_file: [.env]
+    networks:
+      - sovereign-isolated
+
+networks:
+  sovereign-isolated:
+    driver: bridge
+    internal: true
+    name: sovereign-isolated-net
