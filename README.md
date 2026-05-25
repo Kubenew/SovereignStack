@@ -9,6 +9,13 @@
 </p>
 
 <p align="center">
+  <a href="CONFORMANCE.md"><img src="badges/oasa-compatible.svg" alt="OASA Compatible" height="28"></a>
+  <a href="CONFORMANCE.md"><img src="badges/oasa-l2.svg" alt="OASA Verified" height="28"></a>
+  <a href="CONFORMANCE.md"><img src="badges/oasa-certified.svg" alt="OASA Certified" height="28"></a>
+  <a href="https://github.com/Kubenew/SovereignStack/actions/workflows/oasa-conformance.yml"><img src="https://github.com/Kubenew/SovereignStack/actions/workflows/oasa-conformance.yml/badge.svg" alt="OASA Conformance"></a>
+</p>
+
+<p align="center">
   <a href="OASA.md"><img src="https://img.shields.io/badge/OASA-2026.1-blueviolet.svg?style=for-the-badge" alt="OASA Specification"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge" alt="License"/></a>
   <a href="#compliance-auditing"><img src="https://img.shields.io/badge/Compliance-STRICT_Lock-success.svg?style=for-the-badge" alt="Compliance Status"/></a>
@@ -223,15 +230,46 @@ SovereignStack is built to enable robust monetization channels while satisfying 
 
 ---
 
-## 🗺️ Future Roadmap
+## 📦 Helm Chart (Enterprise Kubernetes Deployment)
 
-| Phase | Feature | Description |
-|---|---|---|
-| **Q3 2026** | OASA Merkle-Tree Auditing | Append-only, cryptographically verified logging chains |
-| **Q4 2026** | Secure Weight Federation | Sharded, cross-node local inference without sharing weight updates |
-| **Q1 2027** | Hardware Enclave Ingest | Ingestion processing within secure hardware enclaves (Intel SGX / AMD SEV) |
-| **Q2 2027** | OASA Telemetry Standard | Privacy-preserving performance metrics (zero prompt data exposure) |
-| **Q3 2027** | Secure Update Protocol | Cryptographically signed model weight distribution and rollback |
+For production air-gapped deployments, SovereignStack now includes a full Helm chart with vLLM inference engine:
+
+```bash
+# Deploy the complete stack
+helm install sovereign-stack ./charts/sovereignstack \
+  --namespace sovereign-stack --create-namespace \
+  --set vllm.model.name="Qwen/Qwen2.5-7B-Instruct" \
+  --set global.air_gapped=true
+```
+
+**Chart features:** vLLM inference with PagedAttention, strict NetworkPolicies (zero egress), OPA sidecar for DLP/RBAC, gVisor sandboxing, persistent model weight volumes, and multi-GPU tensor parallelism.
+
+## 🚀 vLLM Inference Backend
+
+SovereignStack now defaults to **vLLM** — a high-performance inference engine with OpenAI-compatible API, continuous batching, AWQ/GPTQ/FP8 quantization, FlashAttention, and `HF_HUB_OFFLINE=1` for air-gapped operation. Try it locally:
+
+```bash
+docker compose up --build -d
+curl -X POST http://localhost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer mock-valid-token" \
+  -d '{"model":"Qwen/Qwen2.5-7B-Instruct","messages":[{"role":"user","content":"Hello"}],"oasa_compliance_lock":true}'
+```
+
+## 🗺️ Roadmap
+
+| Status | Phase | Feature | Description |
+|---|---|---|---|
+| ✅ | **2026.1** | **Helm Chart** | Full K8s Helm chart for enterprise air-gapped deployment |
+| ✅ | **2026.1** | **vLLM Integration** | Production inference with PagedAttention, AWQ, Tensor Parallel |
+| ✅ | **2026.1** | **Dynamic VRAM Scaling** | Automatic context window sizing from hardware budget |
+| ✅ | **2026.1** | **OPA Policy Engine** | Enterprise DLP, prompt injection, and RBAC via sidecar |
+| ✅ | **2026.1** | **CI/CD Test Matrix** | Multi-Python version, schema validation, Helm lint |
+| 🚧 | **Q3 2026** | OASA Merkle-Tree Auditing | Append-only, cryptographically verified logging chains |
+| 🚧 | **Q4 2026** | Secure Weight Federation | Sharded, cross-node inference without sharing weights |
+| 🚧 | **Q1 2027** | Hardware Enclave Ingest | SGX/SEV-SNP confidential computing for ingestion |
+| 🚧 | **Q2 2027** | OASA Telemetry Standard | Privacy-preserving performance metrics |
+| 🚧 | **Q3 2027** | Secure Update Protocol | Cosign-signed model weight distribution |
 
 ---
 
@@ -242,23 +280,27 @@ SovereignStack/
 ├── OASA.md                     # Full OASA specification
 ├── README.md                   # This file
 ├── install.sh                  # 1-Click sovereign deployment
-├── docker-compose.yml          # Local isolated stack orchestration
+├── docker-compose.yml          # Local isolated stack orchestration (vLLM + services)
 ├── sovereign-stack.yaml        # OASA node manifest
 ├── requirements.txt            # Python dependencies
+├── charts/                     # Helm Charts for enterprise K8s deployment
+│   └── sovereignstack/         # Full Helm chart with vLLM, gateway, memory, ingest
 ├── services/                   # Microservice implementations
-│   ├── gateway_service.py      # OpenAI-compatible proxy gateway
+│   ├── gateway_service.py      # OpenAI-compatible proxy gateway (vLLM backend)
 │   ├── ingest_service.py       # pdf2struct document ingestion
 │   ├── memory_service.py       # TurboMemory vector store
-│   └── compute_service.py      # TurboQuant inference engine
+│   └── compute_service.py      # Legacy mock compute engine
 ├── tools/                      # CLI utilities
-│   ├── vram_calculator.py      # VRAM budget estimation
+│   ├── vram_calculator.py      # VRAM budget estimation + dynamic context sizing
 │   ├── benchmark.py            # Performance & compatibility suite
 │   ├── sovereign_stack.py      # Unified validation & audit CLI
+│   ├── runtime_shield.py       # Memory drift & exfiltration watchdog
 │   └── validate_compliance.py  # Schema compliance validator
 ├── schemas/                    # JSON Schema definitions
 ├── tests/                      # Automated test suites
 ├── examples/                   # Integration examples (Bash, Python)
-├── k8s/                        # Kubernetes manifests
+├── policies/                   # OPA Rego policy files (DLP, RBAC, safety)
+├── k8s/                        # Raw Kubernetes manifests
 └── playground/                 # Docker-based local playground
 ```
 

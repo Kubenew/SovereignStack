@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "sovereignstack.fullname" . }}-models-pvc
+  namespace: {{ include "sovereignstack.namespace" . }}
+  labels:
+    {{- include "sovereignstack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: model-storage
+spec:
+  storageClassName: {{ .Values.vllm.modelStorage.storageClass }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.vllm.modelStorage.size }}
+{{- if .Values.vllm.modelStorage.hostPathEnabled }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "sovereignstack.fullname" . }}-models-pv
+  labels:
+    {{- include "sovereignstack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: model-storage
+spec:
+  storageClassName: {{ .Values.vllm.modelStorage.storageClass }}
+  capacity:
+    storage: {{ .Values.vllm.modelStorage.size }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: {{ .Values.vllm.modelStorage.hostPath }}
+    type: DirectoryOrCreate
+{{- end }}

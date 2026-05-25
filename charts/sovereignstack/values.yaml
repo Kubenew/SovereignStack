@@ -1,0 +1,195 @@
+# =============================================================================
+# SovereignStack Helm Values — OASA-Compliant Enterprise AI Stack
+# =============================================================================
+# This file configures the full SovereignStack deployment on Kubernetes.
+# All settings are designed for air-gapped, zero-exfiltration operation.
+# =============================================================================
+
+# Global settings applied to all components
+global:
+  namespace: sovereign-stack
+  # Air-gap enforcement: when true, all egress traffic is blocked
+  air_gapped: true
+  # Compliance mode: STRICT or DEVELOPMENT
+  compliance_mode: STRICT
+  # Encryption algorithm for data at rest
+  encryption: AES-256-GCM
+  # TPM binding for hardware key storage
+  tpm_binding: true
+
+# =============================================================================
+# vLLM Inference Engine Configuration
+# =============================================================================
+vllm:
+  enabled: true
+  image:
+    repository: vllm/vllm-openai
+    tag: v0.7.2
+    pullPolicy: IfNotPresent
+
+  # Model configuration — loaded from local PV (air-gapped)
+  model:
+    # Path relative to /data/ inside the container
+    name: "Qwen/Qwen2.5-7B-Instruct"
+    # Maximum model context length in tokens
+    maxModelLen: 4096
+    # GPU memory utilization fraction (0.0 - 1.0)
+    gpuMemoryUtilization: 0.90
+    # Quantization: awq, gptq, fp8, or "" (none)
+    quantization: awq
+    # Tensor parallel size for multi-GPU
+    tensorParallelSize: 1
+    # Pipeline parallel size
+    pipelineParallelSize: 1
+    # Enable FlashAttention backend
+    flashAttention: true
+    # vLLM serving port
+    port: 8000
+
+  # Resource allocation
+  resources:
+    limits:
+      cpu: 8
+      memory: 32Gi
+      nvidia.com/gpu: 1
+    requests:
+      cpu: 4
+      memory: 16Gi
+      nvidia.com/gpu: 1
+
+  # Node selector for GPU nodes
+  nodeSelector:
+    nvidia.com/gpu.present: "true"
+
+  # Tolerations for GPU nodes
+  tolerations: []
+
+  # Persistent storage for model weights
+  modelStorage:
+    storageClass: local-path
+    size: 100Gi
+    # Set to true if models are pre-loaded on host path
+    hostPathEnabled: false
+    hostPath: /opt/sovereignstack/models
+
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 8000
+
+# =============================================================================
+# Gateway Service Configuration (OpenAI-compatible proxy)
+# =============================================================================
+gateway:
+  enabled: true
+  image:
+    repository: sovereignstack/gateway-service
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  replicaCount: 2
+
+  env:
+    OASA_ENFORCE_COMPLIANCE: STRICT
+    OASA_ENFORCE_AUTH: STRICT
+    OASA_ENFORCE_POLICY: STRICT
+    OASA_OPENTELEMETRY_ENABLED: "true"
+    COMPUTE_URL: "http://sovereignstack-vllm:8000"
+    MEMORY_URL: "http://sovereignstack-memory:8082"
+    DATA_DIR: /app/data
+
+  resources:
+    limits:
+      cpu: 2
+      memory: 4Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+  service:
+    type: ClusterIP
+    port: 8080
+
+  # Enable OPA sidecar for policy enforcement
+  opaSidecar:
+    enabled: true
+    image: openpolicyagent/opa:latest
+
+# =============================================================================
+# Memory Service Configuration (Vector Store)
+# =============================================================================
+memory:
+  enabled: true
+  image:
+    repository: sovereignstack/memory-service
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  port: 8082
+  vectorBackend: local-json
+
+  persistence:
+    size: 10Gi
+    storageClass: local-path
+
+  resources:
+    limits:
+      cpu: 1
+      memory: 2Gi
+    requests:
+      cpu: 200m
+      memory: 512Mi
+
+# =============================================================================
+# Ingestion Service Configuration (Document Processing)
+# =============================================================================
+ingest:
+  enabled: true
+  image:
+    repository: sovereignstack/ingest-service
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  port: 8081
+
+  persistence:
+    size: 20Gi
+    storageClass: local-path
+
+  resources:
+    limits:
+      cpu: 2
+      memory: 4Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+# =============================================================================
+# Network Policy Configuration (Air-Gap Enforcement)
+# =============================================================================
+networkPolicy:
+  enabled: true
+  # When true, all egress is blocked except kube-dns
+  strictEgress: true
+
+# =============================================================================
+# gVisor RuntimeClass for sandboxed inference
+# =============================================================================
+gVisor:
+  enabled: false
+  runtimeClass: gvisor
+
+# =============================================================================
+# Monitoring & Observability
+# =============================================================================
+monitoring:
+  enabled: false
+  prometheus:
+    enabled: false
+  grafana:
+    enabled: false
+
+# =============================================================================
+# Global image pull secrets (if using private registry in air-gap)
+# =============================================================================
+imagePullSecrets: []

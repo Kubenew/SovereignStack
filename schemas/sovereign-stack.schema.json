@@ -1,139 +1,103 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "SovereignStack Node Manifest Schema",
   "type": "object",
+  "required": ["version", "metadata", "node_infrastructure"],
   "properties": {
-    "oasa_version": {
-      "type": "string"
+    "version": {
+      "type": "string",
+      "description": "OASA specification version",
+      "pattern": "^\\d{4}\\.\\d+$"
     },
-    "node": {
+    "metadata": {
       "type": "object",
+      "required": ["name", "tier", "compliance_profile"],
       "properties": {
-        "name": {
-          "type": "string"
-        },
-        "air_gapped": {
-          "type": "boolean"
-        },
-        "tpm_required": {
-          "type": "boolean"
-        },
-        "encryption": {
-          "type": "string"
-        },
-        "sandboxing": {
+        "name": { "type": "string" },
+        "tier": { "type": "string" },
+        "compliance_profile": { "type": "string" }
+      }
+    },
+    "node_infrastructure": {
+      "type": "object",
+      "required": ["engine", "air_gapped_enforcement"],
+      "properties": {
+        "engine": { "type": "string" },
+        "air_gapped_enforcement": { "type": "boolean" },
+        "storage": {
           "type": "object",
           "properties": {
-            "runtime": {
-              "type": "string",
-              "enum": ["gvisor", "kata", "firecracker", "none"]
-            },
-            "confidential_compute": {
-              "type": "boolean"
-            }
-          },
-          "required": ["runtime", "confidential_compute"]
+            "ephemeral_encrypted": { "type": "boolean" },
+            "encryption_algorithm": { "type": "string" },
+            "hardware_tpm_binding": { "type": "boolean" }
+          }
+        },
+        "network_isolation": {
+          "type": "object",
+          "properties": {
+            "allow_wan": { "type": "boolean" },
+            "dns_mode": { "type": "string" },
+            "allowed_internal_cidrs": { "type": "array", "items": { "type": "string" } }
+          }
         }
-      },
-      "required": [
-        "name",
-        "air_gapped",
-        "tpm_required",
-        "encryption"
-      ]
+      }
+    },
+    "data_ingestion": {
+      "type": "object",
+      "properties": {
+        "service_name": { "type": "string" },
+        "max_parallel_workers": { "type": "integer" },
+        "memory_processing_mode": { "type": "string" },
+        "input_formats": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "cognitive_memory": {
+      "type": "object",
+      "properties": {
+        "backend": { "type": "string" },
+        "vector_dimensions": { "type": "integer" },
+        "encryption_at_rest": { "type": "boolean" },
+        "context_ttl_seconds": { "type": "integer" }
+      }
+    },
+    "compute_execution": {
+      "type": "object",
+      "properties": {
+        "gateway": { "type": "string" },
+        "optimization_engine": { "type": "string" },
+        "precision": { "type": "string" },
+        "hardware": {
+          "type": "object",
+          "properties": {
+            "accelerator": { "type": "string" },
+            "vram_budget_gb": { "type": "number" },
+            "allow_cpu_fallback": { "type": "boolean" }
+          }
+        },
+        "runtime_protection": {
+          "type": "object",
+          "properties": {
+            "enforce_compliance_lock": { "type": "boolean" },
+            "memory_leak_threshold_mb": { "type": "number" },
+            "max_token_context": { "type": "integer" }
+          }
+        }
+      }
     },
     "services": {
       "type": "object",
       "properties": {
-        "gateway": {
-          "type": "object",
-          "properties": {
-            "enabled": { "type": "boolean" },
-            "listen": { "type": "string" },
-            "identity": {
-              "type": "object",
-              "properties": {
-                "enabled": { "type": "boolean" },
-                "provider": { "type": "string" },
-                "issuer_url": { "type": "string" },
-                "client_id": { "type": "string" }
-              },
-              "required": ["enabled", "provider", "issuer_url", "client_id"]
-            },
-            "policy": {
-              "type": "object",
-              "properties": {
-                "enabled": { "type": "boolean" },
-                "engine": { "type": "string" },
-                "policy_path": { "type": "string" }
-              },
-              "required": ["enabled", "engine", "policy_path"]
-            },
-            "observability": {
-              "type": "object",
-              "properties": {
-                "enabled": { "type": "boolean" },
-                "opentelemetry_endpoint": { "type": "string" },
-                "prometheus_enabled": { "type": "boolean" }
-              },
-              "required": ["enabled", "opentelemetry_endpoint", "prometheus_enabled"]
-            }
-          },
-          "required": ["enabled", "listen"]
-        },
-        "ingest": {
-          "type": "object",
-          "properties": {
-            "enabled": { "type": "boolean" },
-            "listen": { "type": "string" }
-          },
-          "required": ["enabled", "listen"]
-        },
-        "memory": {
-          "type": "object",
-          "properties": {
-            "enabled": { "type": "boolean" },
-            "listen": { "type": "string" },
-            "vector_backend": { "type": "string" }
-          },
-          "required": ["enabled", "listen", "vector_backend"]
-        },
-        "compute": {
-          "type": "object",
-          "properties": {
-            "enabled": { "type": "boolean" },
-            "listen": { "type": "string" },
-            "backend": { "type": "string" },
-            "vram_budget_gb": { "type": "integer" },
-            "registry": {
-              "type": "object",
-              "properties": {
-                "enabled": { "type": "boolean" },
-                "registry_url": { "type": "string" },
-                "require_signed_weights": { "type": "boolean" }
-              },
-              "required": ["enabled", "registry_url", "require_signed_weights"]
-            }
-          },
-          "required": ["enabled", "listen", "backend", "vram_budget_gb"]
-        }
-      },
-      "required": ["gateway", "ingest", "memory", "compute"]
+        "gateway": { "type": "object" },
+        "ingest": { "type": "object" },
+        "memory": { "type": "object" },
+        "compute": { "type": "object" }
+      }
     },
     "models": {
       "type": "object",
       "properties": {
-        "allowed": {
-          "type": "array",
-          "items": { "type": "string" }
-        }
-      },
-      "required": ["allowed"]
+        "allowed": { "type": "array", "items": { "type": "string" } }
+      }
     }
-  },
-  "required": [
-    "oasa_version",
-    "node",
-    "services",
-    "models"
-  ]
+  }
 }

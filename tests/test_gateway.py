@@ -10,6 +10,7 @@ os.environ["OASA_ENFORCE_POLICY"] = "DEVELOPMENT"
 os.environ["COMPUTE_URL"] = "http://mock-compute"
 os.environ["MEMORY_URL"] = "http://mock-memory"
 os.environ["DATA_DIR"] = "./data_test"
+os.environ["INFERENCE_BACKEND"] = "legacy"
 
 from services.gateway_service import app
 

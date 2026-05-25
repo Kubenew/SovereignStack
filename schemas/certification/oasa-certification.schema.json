@@ -1,0 +1,151 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/Kubenew/SovereignStack/main/schemas/certification/oasa-certification.schema.json",
+  "title": "OASA Certification Attestation Schema",
+  "description": "Machine-readable attestation format for OASA Conformance Certification",
+  "type": "object",
+  "required": ["oasa_version", "certification", "subject", "tests"],
+  "properties": {
+    "oasa_version": {
+      "type": "string",
+      "description": "OASA specification version",
+      "pattern": "^\\d{4}\\.\\d+$"
+    },
+    "certification": {
+      "type": "object",
+      "required": ["level", "status", "issued"],
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["L1", "L2", "L3"],
+          "description": "Certification level achieved"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "expired", "revoked", "suspended"],
+          "description": "Current certification status"
+        },
+        "issued": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 date when certification was issued"
+        },
+        "expires": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 date when certification expires"
+        },
+        "badge_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the certification badge SVG"
+        },
+        "registry_entry": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the public registry entry"
+        }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "required": ["name", "version", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Product or organization name"
+        },
+        "version": {
+          "type": "string",
+          "description": "Version of the certified implementation"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["inference-engine", "gateway", "memory-store", "ingestion-pipeline", "platform", "node", "hardware-appliance"],
+          "description": "Type of implementation"
+        },
+        "homepage": {
+          "type": "string",
+          "format": "uri",
+          "description": "Project or product homepage"
+        },
+        "contact": {
+          "type": "string",
+          "format": "email",
+          "description": "Contact email for certification inquiries"
+        }
+      }
+    },
+    "tests": {
+      "type": "object",
+      "required": ["passed", "failed", "skipped", "suite_version"],
+      "properties": {
+        "passed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of tests passed"
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of tests failed"
+        },
+        "skipped": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of tests skipped"
+        },
+        "suite_version": {
+          "type": "string",
+          "description": "Version of the conformance test suite used"
+        },
+        "details": {
+          "type": "array",
+          "description": "Detailed test results",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "status": { "type": "string", "enum": ["pass", "fail", "skip"] },
+              "duration_ms": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "security_audit": { "type": "string", "format": "uri" },
+        "sbom": { "type": "string", "format": "uri" },
+        "signature": { "type": "string", "format": "uri" },
+        "conformance_report": { "type": "string", "format": "uri" },
+        "source_repository": { "type": "string", "format": "uri" }
+      }
+    },
+    "hardware": {
+      "type": "object",
+      "properties": {
+        "tpm_version": { "type": "string" },
+        "gpu_models": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "confidential_compute": {
+          "type": "boolean"
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "properties": {
+        "algorithm": { "type": "string" },
+        "digest": { "type": "string" },
+        "certificate_chain": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

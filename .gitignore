@@ -147,6 +147,14 @@ activemq-data/
 # SageMath parsed files
 *.sage.py
 
+# Data directory (local state, audit logs, embeddings)
+data/
+data_test/audit.log
+data_test/ingest/
+
+# Generated reports
+reports/
+
 # Environments
 .env
 .envrc

@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sovereignstack.fullname" . }}-config
+  namespace: {{ include "sovereignstack.namespace" . }}
+  labels:
+    {{- include "sovereignstack.labels" . | nindent 4 }}
+data:
+  sovereign-stack.yaml: |
+    version: "2026.1"
+    metadata:
+      name: "{{ .Release.Name }}-sovereign-enterprise-appliance"
+      tier: "production-airgapped"
+      compliance_profile: "OASA-STRICT-GDPR-HIPAA"
+    node_infrastructure:
+      engine: "privatecloud-k8s"
+      air_gapped_enforcement: {{ .Values.global.air_gapped }}
+      storage:
+        ephemeral_encrypted: true
+        encryption_algorithm: "{{ .Values.global.encryption }}"
+        hardware_tpm_binding: {{ .Values.global.tpm_binding }}
+      network_isolation:
+        allow_wan: false
+        dns_mode: "LOCAL_ONLY"
+        allowed_internal_cidrs:
+          - "10.0.0.0/8"
+          - "192.168.0.0/16"
+    data_ingestion:
+      service_name: "pdf2struct-pipeline"
+      max_parallel_workers: 4
+      memory_processing_mode: "VOLATILE_RAM_ONLY"
+      enforce_strict_json_schema: true
+      input_formats:
+        - "PDF"
+        - "TIFF"
+        - "DOCX"
+    cognitive_memory:
+      backend: "TurboMemory-Isolated"
+      vector_dimensions: 4096
+      encryption_at_rest: true
+      context_ttl_seconds: 3600
+      kv_cache_isolation: true
+    compute_execution:
+      gateway: "vllm-openai"
+      optimization_engine: "vLLM"
+      precision: "{{ .Values.vllm.model.quantization | default "AWQ" | upper }}"
+      openai_api_compatibility: true
+      hardware:
+        accelerator: "NVIDIA_CUDA"
+        vram_budget_gb: 24
+        allow_cpu_fallback: false
+      runtime_protection:
+        enforce_compliance_lock: true
+        memory_leak_threshold_mb: 512
+        max_token_context: {{ .Values.vllm.model.maxModelLen }}
+
+  audit.log: |
+    # SovereignStack Immutable Audit Log
+    # Deployed: {{ now | date "2006-01-02T15:04:05Z07:00" }}
+    # Release: {{ .Release.Name }}
+    # Compliance: {{ .Values.global.compliance_mode }}

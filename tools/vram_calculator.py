@@ -362,6 +362,7 @@ def main():
     parser.add_argument("--budget", type=float, default=0.0, help="Specify VRAM target hardware budget in GB manually")
     parser.add_argument("--autodetect", action="store_true", help="Auto-detect local host GPU VRAM and run simulation against it")
     parser.add_argument("--compare", action="store_true", help="Show comparison table across all quantization formats")
+    parser.add_argument("--budget-context", action="store_true", help="Calculate maximum context window size for given VRAM budget")
     
     args = parser.parse_args()
 
@@ -421,6 +422,27 @@ def main():
     # Comparison table
     if args.compare:
         run_comparison_table(params_b, args.context, args.batch, layers, kv_heads, head_dim, budget)
+
+    # Dynamic context window sizing from budget
+    if args.budget_context and budget > 0:
+        weight_vram = params_b * QUANT_PRECISIONS.get(args.quant.upper(), 0.5)
+        act_overhead = 1.0 + (params_b * 0.01) + (args.context / 8192.0)
+        remaining = budget - weight_vram - act_overhead
+        if remaining > 0:
+            bytes_per_token = 2 * layers * kv_heads * head_dim * 2
+            tokens_per_gb = (1024**3) / bytes_per_token
+            max_context = int(remaining * tokens_per_gb)
+            batch_factor = args.batch
+            max_context = max_context // batch_factor
+            print(f"\n  Dynamic Context Sizing ({budget} GB budget):")
+            print(f"  {'-'*45}")
+            print(f"  Weights ({args.quant:<4}):       {weight_vram:>6.1f} GB")
+            print(f"  Activation overhead:  {act_overhead:>6.1f} GB")
+            print(f"  Available for KV:     {remaining:>6.1f} GB")
+            print(f"  Max context window:   {max_context:>6,} tokens (batch={args.batch})")
+            print(f"  {'-'*45}")
+        else:
+            print(f"\n  [FAIL] Model weights ({weight_vram:.1f} GB) exceed budget ({budget} GB)")
 
 if __name__ == "__main__":
     main()

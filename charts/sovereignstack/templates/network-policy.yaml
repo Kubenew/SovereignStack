@@ -1,0 +1,77 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "sovereignstack.fullname" . }}-airgap
+  namespace: {{ include "sovereignstack.namespace" . }}
+  labels:
+    {{- include "sovereignstack.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: api-backend
+      ports:
+        - protocol: TCP
+          port: 8000
+        - protocol: TCP
+          port: 8080
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: ingestion-pipeline
+      ports:
+        - protocol: TCP
+          port: 8082
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: api-backend
+      ports:
+        - protocol: TCP
+          port: 8082
+  egress:
+    {{- if .Values.networkPolicy.strictEgress }}
+    # In strict air-gap mode, only allow kube-dns (internal cluster DNS)
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+    {{- else }}
+    # Allow all internal cluster traffic
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+    {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "sovereignstack.fullname" . }}-gateway-ingress
+  namespace: {{ include "sovereignstack.namespace" . }}
+  labels:
+    {{- include "sovereignstack.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: api-backend
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8080
+{{- end }}

@@ -17,57 +17,51 @@ def temp_files(tmp_path):
     # Create sample configuration files for testing schema auto-detection
     stack_yaml = tmp_path / "sovereign-stack.yaml"
     stack_data = {
-        "oasa_version": "2026.1",
-        "node": {
+        "version": "2026.1",
+        "metadata": {
             "name": "test-node",
-            "air_gapped": True,
-            "tpm_required": False,
-            "encryption": "AES-256-GCM",
-            "sandboxing": {
-                "runtime": "none",
-                "confidential_compute": False
+            "tier": "production-airgapped",
+            "compliance_profile": "OASA-STRICT-GDPR-HIPAA"
+        },
+        "node_infrastructure": {
+            "engine": "privatecloud-k8s",
+            "air_gapped_enforcement": True,
+            "storage": {
+                "ephemeral_encrypted": True,
+                "encryption_algorithm": "AES-256-GCM",
+                "hardware_tpm_binding": False
+            },
+            "network_isolation": {
+                "allow_wan": False,
+                "dns_mode": "LOCAL_ONLY",
+                "allowed_internal_cidrs": ["10.0.0.0/8"]
             }
         },
-        "services": {
-            "gateway": {
-                "enabled": True,
-                "listen": "0.0.0.0:8080",
-                "identity": {
-                    "enabled": False,
-                    "provider": "mock",
-                    "issuer_url": "http://mock",
-                    "client_id": "mock"
-                },
-                "policy": {
-                    "enabled": False,
-                    "engine": "mock",
-                    "policy_path": "mock"
-                },
-                "observability": {
-                    "enabled": False,
-                    "opentelemetry_endpoint": "http://mock",
-                    "prometheus_enabled": False
-                }
-            },
-            "ingest": {
-                "enabled": True,
-                "listen": "0.0.0.0:8081"
-            },
-            "memory": {
-                "enabled": True,
-                "listen": "0.0.0.0:8082",
-                "vector_backend": "local-json"
-            },
-            "compute": {
-                "enabled": True,
-                "listen": "0.0.0.0:8083",
-                "backend": "local",
+        "data_ingestion": {
+            "service_name": "pdf2struct-pipeline",
+            "max_parallel_workers": 4,
+            "memory_processing_mode": "VOLATILE_RAM_ONLY",
+            "input_formats": ["PDF", "DOCX"]
+        },
+        "cognitive_memory": {
+            "backend": "local-json",
+            "vector_dimensions": 4096,
+            "encryption_at_rest": True,
+            "context_ttl_seconds": 3600
+        },
+        "compute_execution": {
+            "gateway": "vllm-openai",
+            "optimization_engine": "vLLM",
+            "precision": "INT4",
+            "hardware": {
+                "accelerator": "NVIDIA_CUDA",
                 "vram_budget_gb": 24,
-                "registry": {
-                    "enabled": False,
-                    "registry_url": "http://mock",
-                    "require_signed_weights": False
-                }
+                "allow_cpu_fallback": False
+            },
+            "runtime_protection": {
+                "enforce_compliance_lock": True,
+                "memory_leak_threshold_mb": 512,
+                "max_token_context": 8192
             }
         },
         "models": {

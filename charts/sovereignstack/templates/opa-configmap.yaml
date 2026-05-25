@@ -1,0 +1,44 @@
+{{- if .Values.gateway.opaSidecar.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sovereignstack.fullname" . }}-opa-policy
+  namespace: {{ include "sovereignstack.namespace" . }}
+  labels:
+    {{- include "sovereignstack.labels" . | nindent 4 }}
+data:
+  inference.rego: |
+    package oasa.inference
+
+    default allow = false
+
+    allow {
+        count(violations) == 0
+    }
+
+    violations[msg] {
+        re_match(`\d{3}-\d{2}-\d{4}`, input.prompt)
+        msg := "PII-Block-SSN: Prompt contains Social Security Number"
+    }
+
+    violations[msg] {
+        re_match(`\d{4}-\d{4}-\d{4}-\d{4}`, input.prompt)
+        msg := "PII-Block-CreditCard: Prompt contains Credit Card Number"
+    }
+
+    violations[msg] {
+        lower_prompt := lower(input.prompt)
+        re_match(`(ignore|bypass|override|forget)\s+(previous|system|prior|initial)\s+(instruction|rule|prompt|setting)`, lower_prompt)
+        msg := "Safety-Prompt-Injection: Prompt injection attempt detected"
+    }
+
+    violations[msg] {
+        input.model == "sovereign-llama3"
+        not user_has_role("inference:write")
+        msg := "RBAC-Model-Access: sovereign-llama3 requires inference:write role"
+    }
+
+    user_has_role(role) {
+        input.auth.roles[_] == role
+    }
+{{- end }}

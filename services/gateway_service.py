@@ -1,12 +1,14 @@
 from fastapi import FastAPI, HTTPException, status, Request, Header
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 import os, requests, uuid, json, re
 from datetime import datetime, timezone
 
 app = FastAPI(title="OASA Gateway Service", version="2026.1")
 
-COMPUTE_URL = os.getenv("COMPUTE_URL", "http://compute:8083")
+# Backend selection: vllm (OpenAI-compatible) or legacy (mock compute)
+BACKEND = os.getenv("INFERENCE_BACKEND", "vllm").lower()
+COMPUTE_URL = os.getenv("COMPUTE_URL", "http://vllm:8000")
 MEMORY_URL = os.getenv("MEMORY_URL", "http://memory:8082")
 DATA_DIR = os.getenv("DATA_DIR", "/app/data")
 AUDIT_PATH = os.path.join(DATA_DIR, "audit.log")
@@ -18,6 +20,9 @@ class ChatCompletionRequest(BaseModel):
     use_rag: bool = True
     oasa_audit_tag: str | None = None
     oasa_jurisdiction: str | None = None
+    temperature: float | None = 0.2
+    max_tokens: int | None = 1024
+    stream: bool | None = False
 
 def audit(event: dict):
     event["ts"] = datetime.now(timezone.utc).isoformat()
@@ -172,6 +177,9 @@ def chat(payload: ChatCompletionRequest, request: Request, authorization: str | 
             }
         )
 
+    # =========================================================================
+    # Inference Execution
+    # =========================================================================
     context = ""
     if payload.use_rag:
         try:
@@ -181,21 +189,53 @@ def chat(payload: ChatCompletionRequest, request: Request, authorization: str | 
         except Exception:
             context = ""
 
-    # Call local compute engine
-    try:
-        r = requests.post(
-            f"{COMPUTE_URL}/completion",
-            json={"model": payload.model, "prompt": user_prompt, "context": context},
-            timeout=10
-        )
-        compute_failed = (r.status_code != 200)
-    except Exception:
-        compute_failed = True
+    # Build the messages with optional RAG context
+    messages = list(payload.messages)
+    if context:
+        messages.insert(0, {"role": "system", "content": f"Relevant context:\n{context[:2000]}"})
+
+    compute_failed = False
+    answer = ""
+
+    if BACKEND == "vllm":
+        # vLLM native OpenAI-compatible API
+        vllm_payload = {
+            "model": payload.model,
+            "messages": messages,
+            "temperature": payload.temperature or 0.2,
+            "max_tokens": payload.max_tokens or 1024,
+            "stream": False,
+        }
+        try:
+            r = requests.post(
+                f"{COMPUTE_URL}/v1/chat/completions",
+                json=vllm_payload,
+                timeout=30
+            )
+            if r.status_code == 200:
+                data = r.json()
+                answer = data["choices"][0]["message"]["content"]
+            else:
+                compute_failed = True
+        except Exception:
+            compute_failed = True
+    else:
+        # Legacy mock compute backend
+        try:
+            r = requests.post(
+                f"{COMPUTE_URL}/completion",
+                json={"model": payload.model, "prompt": user_prompt, "context": context},
+                timeout=10
+            )
+            compute_failed = (r.status_code != 200)
+            if not compute_failed:
+                answer = r.json().get("response", "")
+        except Exception:
+            compute_failed = True
 
     # If local compute fails, handle compliance lock
     if compute_failed:
         if payload.oasa_compliance_lock:
-            # Audit the Lock enforcement event
             audit({
                 "type": "oasa_lock_enforced",
                 "id": request_id,
@@ -214,7 +254,6 @@ def chat(payload: ChatCompletionRequest, request: Request, authorization: str | 
                 }
             )
         else:
-            # Non-strict mode, exfiltrate to external simulated cloud service
             audit({
                 "type": "exfiltration_warning",
                 "id": request_id,
@@ -223,8 +262,6 @@ def chat(payload: ChatCompletionRequest, request: Request, authorization: str | 
                 "trace_id": trace_id
             })
             answer = f"[FALLBACK - api.openai.com] Simulated cloud fallback response for prompt: {user_prompt}"
-    else:
-        answer = r.json().get("response", "")
 
     # Audit the response
     res_audit = {

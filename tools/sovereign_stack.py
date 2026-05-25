@@ -146,7 +146,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
         if args.schema:
             selected_schema_path = Path(args.schema)
         else:
-            if isinstance(document, dict) and "node" in document and "oasa_version" in document:
+            if isinstance(document, dict) and (("node" in document and "oasa_version" in document) or ("version" in document and "metadata" in document and "node_infrastructure" in document)):
                 selected_schema_path = SCHEMAS_DIR / "sovereign-stack.schema.json"
             elif isinstance(document, dict) and ("node_id" in document or "deployed_models" in document):
                 selected_schema_path = SCHEMAS_DIR / "oasa-node-manifest.schema.json"
@@ -257,7 +257,7 @@ def audit_host_infrastructure(config: dict[str, Any]) -> list[str]:
                 ["nvidia-smi", "--query-gpu=memory.total", "--format=csv,noheader,nounits"],
                 text=True
             )
-            total_vram = int(vram_raw.strip().split("\\n")[0]) // 1024
+            total_vram = int(vram_raw.strip().split("\n")[0]) // 1024
             if total_vram < target_budget:
                 audit_errors.append(f"[COMPUTE] VRAM shortfall. Target requires {target_budget}GB, found {total_vram}GB.")
         except (subprocess.SubprocessError, FileNotFoundError, ValueError):
@@ -469,6 +469,22 @@ def cmd_check_hardware(args: argparse.Namespace) -> int:
         issues.append("No GPU detected (CPU-only mode reduces throughput)")
     if total_ram_gb < 16:
         issues.append(f"Low RAM ({total_ram_gb} GB) — minimum 16 GB recommended")
+
+    # --- Dynamic Context Window Recommendations ---
+    if total_vram > 0:
+        print("\n  Dynamic Context Window Recommendations:")
+        print(f"  {'Model':<25} {'Quant':<8} {'Context':<12} {'VRAM Used':<10}")
+        print(f"  {'-'*25} {'-'*8} {'-'*12} {'-'*10}")
+        for model in MODEL_RECOMMENDATIONS[:5]:
+            model_vram = model["vram_min"]
+            if model_vram <= total_vram:
+                weight_gb = model_vram
+                max_ctx = min(
+                    int((total_vram - weight_gb - 1) * (1024**3) / (2 * 80 * 8 * 128 * 2 / 1)),
+                    131072
+                )
+                ctx_display = f"{max(max_ctx, 4096):,}" if max_ctx > 0 else "4,096"
+                print(f"  {model['name']:<25} {model['quant']:<8} {ctx_display:<12} {model_vram:<10}")
 
     if issues:
         print("  OASA Compliance Issues:")

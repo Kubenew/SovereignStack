@@ -1,7 +1,13 @@
-fastapi
-uvicorn
-pydantic
-python-multipart
-requests
-pyyaml
-cryptography
+fastapi>=0.115.0
+uvicorn>=0.32.0
+pydantic>=2.0.0
+python-multipart>=0.0.9
+requests>=2.31.0
+pyyaml>=6.0
+cryptography>=42.0.0
+# vLLM OpenAI-compatible client (for applications consuming the API)
+openai>=1.0.0
+# JSON schema validation
+jsonschema>=4.20.0
+# Runtime shield monitoring
+psutil>=6.0.0

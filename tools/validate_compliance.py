@@ -296,7 +296,7 @@ def main() -> int:
         if args.schema:
             selected_schema_path = args.schema
         else:
-            if isinstance(document, dict) and "node" in document and "oasa_version" in document:
+            if isinstance(document, dict) and (("node" in document and "oasa_version" in document) or ("version" in document and "metadata" in document and "node_infrastructure" in document)):
                 selected_schema_path = DEFAULT_SCHEMA.parent / "sovereign-stack.schema.json"
             elif isinstance(document, dict) and ("node_id" in document or "deployed_models" in document):
                 selected_schema_path = DEFAULT_SCHEMA.parent / "oasa-node-manifest.schema.json"

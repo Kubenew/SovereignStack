@@ -1,0 +1,96 @@
+{{- if .Values.gateway.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sovereignstack.fullname" . }}-gateway
+  namespace: {{ include "sovereignstack.namespace" . }}
+  labels:
+    {{- include "sovereignstack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api-backend
+spec:
+  replicas: {{ .Values.gateway.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: api-backend
+      {{- include "sovereignstack.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: api-backend
+        {{- include "sovereignstack.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: gateway-proxy
+          image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
+          imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
+          ports:
+            - name: http-api
+              containerPort: 8080
+              protocol: TCP
+          env:
+            {{- range $key, $value := .Values.gateway.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http-api
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http-api
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.gateway.resources | nindent 12 }}
+          volumeMounts:
+            - name: audit-logs
+              mountPath: /app/data
+            - name: config-volume
+              mountPath: /etc/oasa
+              readOnly: true
+        {{- if .Values.gateway.opaSidecar.enabled }}
+        - name: opa-sidecar
+          image: "{{ .Values.gateway.opaSidecar.image }}"
+          ports:
+            - name: opa-http
+              containerPort: 8181
+              protocol: TCP
+          args:
+            - "run"
+            - "--server"
+            - "--addr=localhost:8181"
+            - "/policies/inference.rego"
+          livenessProbe:
+            httpGet:
+              path: /health?plugins
+              port: opa-http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health?plugins
+              port: opa-http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          volumeMounts:
+            - name: policy-volume
+              mountPath: /policies
+              readOnly: true
+        {{- end }}
+      volumes:
+        - name: audit-logs
+          persistentVolumeClaim:
+            claimName: {{ include "sovereignstack.fullname" . }}-data-pvc
+        - name: config-volume
+          configMap:
+            name: {{ include "sovereignstack.fullname" . }}-config
+        {{- if .Values.gateway.opaSidecar.enabled }}
+        - name: policy-volume
+          configMap:
+            name: {{ include "sovereignstack.fullname" . }}-opa-policy
+        {{- end }}
+{{- end }}

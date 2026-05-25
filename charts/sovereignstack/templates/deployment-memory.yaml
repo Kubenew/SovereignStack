@@ -1,0 +1,56 @@
+{{- if .Values.memory.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sovereignstack.fullname" . }}-memory
+  namespace: {{ include "sovereignstack.namespace" . }}
+  labels:
+    {{- include "sovereignstack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: memory-store
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: memory-store
+      {{- include "sovereignstack.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: memory-store
+        {{- include "sovereignstack.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: memory-service
+          image: "{{ .Values.memory.image.repository }}:{{ .Values.memory.image.tag }}"
+          imagePullPolicy: {{ .Values.memory.image.pullPolicy }}
+          ports:
+            - name: http-api
+              containerPort: {{ .Values.memory.port }}
+              protocol: TCP
+          env:
+            - name: DATA_DIR
+              value: /app/data
+            - name: VECTOR_BACKEND
+              value: {{ .Values.memory.vectorBackend | quote }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http-api
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http-api
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.memory.resources | nindent 12 }}
+          volumeMounts:
+            - name: memory-data
+              mountPath: /app/data
+      volumes:
+        - name: memory-data
+          persistentVolumeClaim:
+            claimName: {{ include "sovereignstack.fullname" . }}-data-pvc
+{{- end }}

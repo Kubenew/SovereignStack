@@ -1,0 +1,20 @@
+apiVersion: v2
+name: sovereignstack
+description: SovereignStack — OASA-compliant, air-gapped, enterprise AI infrastructure
+type: application
+version: "2026.1"
+appVersion: "2026.1"
+home: https://github.com/Kubenew/SovereignStack
+sources:
+  - https://github.com/Kubenew/SovereignStack
+icon: https://raw.githubusercontent.com/Kubenew/SovereignStack/main/docs/logo.svg
+keywords:
+  - oasa
+  - sovereign-ai
+  - air-gapped
+  - llm
+  - private-cloud
+  - enterprise-ai
+maintainers:
+  - name: Kubenew
+    url: https://github.com/Kubenew

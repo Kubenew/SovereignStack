@@ -1,0 +1,54 @@
+{{- if .Values.ingest.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sovereignstack.fullname" . }}-ingest
+  namespace: {{ include "sovereignstack.namespace" . }}
+  labels:
+    {{- include "sovereignstack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ingestion-pipeline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: ingestion-pipeline
+      {{- include "sovereignstack.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: ingestion-pipeline
+        {{- include "sovereignstack.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: ingest-service
+          image: "{{ .Values.ingest.image.repository }}:{{ .Values.ingest.image.tag }}"
+          imagePullPolicy: {{ .Values.ingest.image.pullPolicy }}
+          ports:
+            - name: http-api
+              containerPort: {{ .Values.ingest.port }}
+              protocol: TCP
+          env:
+            - name: DATA_DIR
+              value: /app/data
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http-api
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http-api
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.ingest.resources | nindent 12 }}
+          volumeMounts:
+            - name: ingest-data
+              mountPath: /app/data
+      volumes:
+        - name: ingest-data
+          persistentVolumeClaim:
+            claimName: {{ include "sovereignstack.fullname" . }}-data-pvc
+{{- end }}

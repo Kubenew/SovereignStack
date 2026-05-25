@@ -1,0 +1,20 @@
+{{- if .Values.vllm.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sovereignstack.fullname" . }}-vllm
+  namespace: {{ include "sovereignstack.namespace" . }}
+  labels:
+    {{- include "sovereignstack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: inference-engine
+spec:
+  type: {{ .Values.vllm.service.type }}
+  ports:
+    - name: http-api
+      port: {{ .Values.vllm.service.port }}
+      targetPort: {{ .Values.vllm.port }}
+      protocol: TCP
+  selector:
+    app.kubernetes.io/component: inference-engine
+    {{- include "sovereignstack.selectorLabels" . | nindent 4 }}
+{{- end }}

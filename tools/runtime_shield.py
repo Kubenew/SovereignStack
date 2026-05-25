@@ -13,10 +13,13 @@ import argparse
 import time
 import subprocess
 import sys
-import psutil
+try:
+    import psutil
+except ImportError:
+    psutil = None  # Graceful fallback if psutil not installed
 import socket
 from pathlib import Path
-import yaml # Requires PyYAML (pip install pyyaml)
+import yaml
 
 class RuntimeShield:
     def __init__(self, config_path: str, command: str):
@@ -65,6 +68,11 @@ class RuntimeShield:
             stderr=subprocess.STDOUT,
             text=True
         )
+
+        if psutil is None:
+            print("[SHIELD] WARNING: psutil not installed. Memory monitoring disabled.")
+            self.process.wait()
+            return
 
         psutil_proc = psutil.Process(self.process.pid)
         

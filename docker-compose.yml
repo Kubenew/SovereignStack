@@ -1,37 +1,101 @@
-version: "3.9"
-
 services:
+  # ===========================================================================
+  # Gateway — OpenAI-compatible proxy with auth, policy, and compliance lock
+  # ===========================================================================
   gateway:
     build: .
     command: uvicorn services.gateway_service:app --host 0.0.0.0 --port 8080
     ports: ["8080:8080"]
     env_file: [.env]
+    environment:
+      - COMPUTE_URL=http://vllm:8000
+      - MEMORY_URL=http://memory:8082
+      - OASA_ENFORCE_COMPLIANCE=${OASA_ENFORCE_COMPLIANCE:-STRICT}
+      - OASA_ENFORCE_AUTH=${OASA_ENFORCE_AUTH:-STRICT}
+      - OASA_ENFORCE_POLICY=${OASA_ENFORCE_POLICY:-STRICT}
+    depends_on:
+      vllm:
+        condition: service_healthy
+      memory:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     networks:
       - sovereign-isolated
 
+  # ===========================================================================
+  # vLLM — High-performance inference engine (OpenAI-compatible API)
+  # ===========================================================================
+  vllm:
+    image: vllm/vllm-openai:v0.7.2
+    command:
+      - vllm
+      - serve
+      - /data/${VLLM_MODEL_NAME:-Qwen/Qwen2.5-7B-Instruct}
+      - --port
+      - "8000"
+      - --max-model-len
+      - "${VLLM_MAX_MODEL_LEN:-4096}"
+      - --gpu-memory-utilization
+      - "${VLLM_GPU_MEMORY_UTIL:-0.90}"
+      - --enable-flash-attention
+    environment:
+      - HF_HUB_OFFLINE=1
+      - VLLM_ATTENTION_BACKEND=FLASH_ATTN
+    ports: ["8000:8000"]
+    volumes:
+      - "./models:/data:ro"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: ${VLLM_GPU_COUNT:-1}
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    networks:
+      - sovereign-isolated
+
+  # ===========================================================================
+  # Ingest — Document ingestion service (pdf2struct pipeline)
+  # ===========================================================================
   ingest:
     build: .
     command: uvicorn services.ingest_service:app --host 0.0.0.0 --port 8081
     ports: ["8081:8081"]
     volumes: ["./data:/app/data"]
     env_file: [.env]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8081/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
     networks:
       - sovereign-isolated
 
+  # ===========================================================================
+  # Memory — Vector store and KV cache (TurboMemory)
+  # ===========================================================================
   memory:
     build: .
     command: uvicorn services.memory_service:app --host 0.0.0.0 --port 8082
     ports: ["8082:8082"]
     volumes: ["./data:/app/data"]
     env_file: [.env]
-    networks:
-      - sovereign-isolated
-
-  compute:
-    build: .
-    command: uvicorn services.compute_service:app --host 0.0.0.0 --port 8083
-    ports: ["8083:8083"]
-    env_file: [.env]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8082/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
     networks:
       - sovereign-isolated
 
