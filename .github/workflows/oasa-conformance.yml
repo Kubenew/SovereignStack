@@ -1,0 +1,81 @@
+name: OASA Conformance Test Suite
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  conformance:
+    name: OASA Conformance ${{ matrix.level }}
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        level: [L1, L2]  # Add L3 later with more resources
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml jsonschema requests pytest pytest-cov
+
+      - name: Validate sovereign-stack.yaml Schema
+        run: |
+          python -m pytest tests/conformance/test_schema_validation.py -q --tb=no
+
+      - name: Test Compliance Lock Enforcement
+        run: |
+          python -m pytest tests/conformance/test_compliance_lock.py -q --tb=no
+
+      - name: Test Runtime Shield (Exfiltration Prevention)
+        run: |
+          python -m pytest tests/conformance/test_runtime_shield.py -q --tb=no
+
+      - name: Test Volatile Ingestion
+        run: |
+          python -m pytest tests/conformance/test_ingestion.py -q --tb=no
+
+      - name: Hardware & Security Binding Check (Simulated)
+        if: matrix.level == 'L2'
+        run: |
+          python -m pytest tests/conformance/test_hardware_binding.py -q --tb=no
+
+      - name: Generate Compliance Report
+        run: |
+          python tools/generate_compliance_report.py --level ${{ matrix.level }} --output report-${{ matrix.level }}.md
+
+      - name: Upload Conformance Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: oasa-conformance-report-${{ matrix.level }}
+          path: report-${{ matrix.level }}.md
+          retention-days: 30
+
+      - name: Badge Generation (if all tests pass)
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const level = '${{ matrix.level }}';
+            console.log(`✅ OASA ${level} Conformance Passed!`);
+
+      - name: Comment on PR (if applicable)
+        if: github.event_name == 'pull_request' && success()
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            🎉 **OASA Conformance Test Suite Passed** for Level ${{ matrix.level }}
+            
+            All critical sovereignty and compliance checks passed.
+            Full report attached as artifact.
