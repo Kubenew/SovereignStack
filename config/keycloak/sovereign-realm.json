@@ -1,0 +1,45 @@
+[
+  {
+    "realm": "sovereign",
+    "enabled": true,
+    "displayName": "SovereignStack",
+    "sslRequired": "none",
+    "accessTokenLifespan": 300,
+    "clients": [
+      {
+        "clientId": "sovereign-gateway",
+        "enabled": true,
+        "publicClient": true,
+        "redirectUris": ["*"],
+        "directAccessGrantsEnabled": true
+      }
+    ],
+    "roles": {
+      "realm": [
+        { "name": "inference:write", "composite": false },
+        { "name": "inference:read", "composite": false },
+        { "name": "audit:read", "composite": false }
+      ]
+    },
+    "users": [
+      {
+        "username": "sovereign-admin",
+        "enabled": true,
+        "firstName": "Admin",
+        "lastName": "User",
+        "email": "admin@sovereign.local",
+        "credentials": [{"type": "password", "value": "admin123", "temporary": false}],
+        "realmRoles": ["inference:write", "inference:read", "audit:read"]
+      },
+      {
+        "username": "sovereign-analyst",
+        "enabled": true,
+        "firstName": "Analyst",
+        "lastName": "User",
+        "email": "analyst@sovereign.local",
+        "credentials": [{"type": "password", "value": "analyst123", "temporary": false}],
+        "realmRoles": ["inference:read"]
+      }
+    ]
+  }
+]

@@ -1,6 +1,50 @@
 services:
   # ===========================================================================
-  # Gateway — OpenAI-compatible proxy with auth, policy, and compliance lock
+  # Keycloak — Identity Provider (OIDC/OAuth2)
+  # ===========================================================================
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1
+    command:
+      - start-dev
+      - --http-port=8083
+      - --https-port=8443
+      - --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: localhost
+      KC_HTTP_ENABLED: "true"
+    ports:
+      - "8083:8083"
+      - "8443:8443"
+    volumes:
+      - "./config/keycloak:/opt/keycloak/data/import:ro"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/realms/master"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - sovereign-isolated
+
+  # ===========================================================================
+  # OpenTelemetry Collector — Observability pipeline
+  # ===========================================================================
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.122.0
+    command:
+      - --config=/etc/otel-collector.yaml
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+      - "./config/otel-collector.yaml:/etc/otel-collector.yaml:ro"
+    networks:
+      - sovereign-isolated
+
+  # ===========================================================================
+  # Gateway — OpenAI-compatible proxy with auth, DLP, compliance lock
   # ===========================================================================
   gateway:
     build: .
@@ -10,6 +54,8 @@ services:
     environment:
       - COMPUTE_URL=http://vllm:8000
       - MEMORY_URL=http://memory:8082
+      - OIDC_ISSUER_URL=http://keycloak:8083/realms/sovereign
+      - OIDC_CLIENT_ID=sovereign-gateway
       - OASA_ENFORCE_COMPLIANCE=${OASA_ENFORCE_COMPLIANCE:-STRICT}
       - OASA_ENFORCE_AUTH=${OASA_ENFORCE_AUTH:-STRICT}
       - OASA_ENFORCE_POLICY=${OASA_ENFORCE_POLICY:-STRICT}
@@ -18,6 +64,8 @@ services:
         condition: service_healthy
       memory:
         condition: service_started
+      keycloak:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
       interval: 15s
@@ -66,7 +114,7 @@ services:
       - sovereign-isolated
 
   # ===========================================================================
-  # Ingest — Document ingestion service (pdf2struct pipeline)
+  # Ingest — Document ingestion service
   # ===========================================================================
   ingest:
     build: .
@@ -96,6 +144,22 @@ services:
       interval: 15s
       timeout: 5s
       retries: 3
+    networks:
+      - sovereign-isolated
+
+  # ===========================================================================
+  # Prometheus — Metrics scraping
+  # ===========================================================================
+  prometheus:
+    image: prom/prometheus:v3.3.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+    ports: ["9090:9090"]
+    volumes:
+      - "./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
     networks:
       - sovereign-isolated
 

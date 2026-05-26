@@ -6,19 +6,30 @@ on:
   pull_request:
     branches: [main, master]
   schedule:
-    - cron: "0 6 * * 1"  # Weekly Monday run
+    - cron: "0 6 * * 1"
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   PYTHON_VERSION: "3.11"
 
+permissions:
+  contents: write
+  checks: write
+  pull-requests: write
+
 jobs:
   # ===========================================================================
-  # L1: OASA Compatible — basic validation, schema check, API compatibility
+  # L1: OASA Compatible
   # ===========================================================================
   l1-conformance:
     name: "OASA L1 — Compatible"
     runs-on: ubuntu-24.04
+    outputs:
+      status: ${{ steps.status.outputs.result }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38,7 +49,7 @@ jobs:
           python tools/validate_compliance.py sovereign-stack.yaml
       - name: Run L1 conformance tests
         run: |
-          python -m pytest tests/conformance/ -v --level L1 --tb=short -k "not level_L2 and not level_L3"
+          python -m pytest tests/conformance/ -v --level L1 --tb=short -k "not level_L2 and not level_L3" --junit-xml=reports/l1-junit.xml
       - name: Test VRAM calculator
         run: |
           python tools/vram_calculator.py --params 8B --quant INT4 --budget 24
@@ -48,19 +59,28 @@ jobs:
       - name: Generate L1 compliance report
         run: |
           python tools/generate_compliance_report.py --level L1 --output reports/l1-report.md
-      - uses: actions/upload-artifact@v4
+      - name: Capture L1 status
+        id: status
+        run: echo "result=${{ job.status }}" >> "$GITHUB_OUTPUT"
+      - name: Upload L1 artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: oasa-l1-report
-          path: reports/
+          path: |
+            reports/l1-report.md
+            reports/l1-report.json
+            reports/l1-junit.xml
           retention-days: 30
 
   # ===========================================================================
-  # L2: OASA Verified — compliance lock, TPM binding, audit logs
+  # L2: OASA Verified
   # ===========================================================================
   l2-conformance:
     name: "OASA L2 — Verified"
     runs-on: ubuntu-24.04
     needs: [l1-conformance]
+    outputs:
+      status: ${{ steps.status.outputs.result }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -73,24 +93,33 @@ jobs:
           pip install pytest pytest-cov
       - name: Run L2 conformance tests (all tests including marked L2)
         run: |
-          python -m pytest tests/conformance/ -v --level L2 --tb=short
+          python -m pytest tests/conformance/ -v --level L2 --tb=short --junit-xml=reports/l2-junit.xml
       - name: Generate L2 compliance report
         run: |
           python tools/generate_compliance_report.py --level L2 --output reports/l2-report.md
-      - uses: actions/upload-artifact@v4
+      - name: Capture L2 status
+        id: status
+        run: echo "result=${{ job.status }}" >> "$GITHUB_OUTPUT"
+      - name: Upload L2 artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: oasa-l2-report
-          path: reports/
+          path: |
+            reports/l2-report.md
+            reports/l2-report.json
+            reports/l2-junit.xml
           retention-days: 30
 
   # ===========================================================================
-  # L3: OASA Certified — full suite with hardware attestation (simulated)
+  # L3: OASA Certified
   # ===========================================================================
   l3-conformance:
     name: "OASA L3 — Certified"
     runs-on: ubuntu-24.04
     needs: [l2-conformance]
-    if: github.ref == 'refs/heads/main'  # Only run on main
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      status: ${{ steps.status.outputs.result }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -103,7 +132,7 @@ jobs:
           pip install pytest pytest-cov
       - name: Run all conformance tests at L3
         run: |
-          python -m pytest tests/conformance/ -v --level L3 --tb=short
+          python -m pytest tests/conformance/ -v --level L3 --tb=short --junit-xml=reports/l3-junit.xml
       - name: Generate comprehensive compliance report
         run: |
           python tools/generate_compliance_report.py --level L3 --output reports/l3-report.md
@@ -115,14 +144,21 @@ jobs:
           else
             echo "Helm not installed — skipping helm lint"
           fi
-      - uses: actions/upload-artifact@v4
+      - name: Capture L3 status
+        id: status
+        run: echo "result=${{ job.status }}" >> "$GITHUB_OUTPUT"
+      - name: Upload L3 artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: oasa-l3-report
-          path: reports/
+          path: |
+            reports/l3-report.md
+            reports/l3-report.json
+            reports/l3-junit.xml
           retention-days: 30
 
   # ===========================================================================
-  # Combined badge generation
+  # Dynamic badge generation — commits status badges to gh-pages branch
   # ===========================================================================
   badges:
     name: Generate OASA Badges
@@ -131,19 +167,41 @@ jobs:
     if: always() && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-      - name: Generate dynamic status badges
+      - name: Generate status badge JSON
         uses: actions/github-script@v7
         with:
           script: |
-            const badges = {
-              l1: ${{ needs.l1-conformance.result == 'success' }},
-              l2: ${{ needs.l2-conformance.result == 'success' }}
-            };
-            console.log(`OASA L1: ${badges.l1 ? 'PASS' : 'FAIL'}`);
-            console.log(`OASA L2: ${badges.l2 ? 'PASS' : 'FAIL'}`);
+            const fs = require('fs');
+            const l1Ok = '${{ needs.l1-conformance.result }}' === 'success';
+            const l2Ok = '${{ needs.l2-conformance.result }}' === 'success';
+            const l3Ok = '${{ needs.l3-conformance.outputs.status }}' === 'success';
+
+            const badge = (label, status, color) => ({
+              schemaVersion: 1,
+              label, message: status, color,
+              isError: status === 'failing',
+              namedLogo: 'check',
+              logoColor: 'white'
+            });
+
+            const dir = './badges/status';
+            fs.mkdirSync(dir, { recursive: true });
+            fs.writeFileSync(`${dir}/l1.json`, JSON.stringify(badge('OASA L1', l1Ok ? 'passing' : 'failing', l1Ok ? 'success' : 'critical')));
+            fs.writeFileSync(`${dir}/l2.json`, JSON.stringify(badge('OASA L2', l2Ok ? 'passing' : 'failing', l2Ok ? 'success' : 'critical')));
+            fs.writeFileSync(`${dir}/l3.json`, JSON.stringify(badge('OASA L3', l3Ok ? 'passing' : 'failing', l3Ok ? 'success' : 'critical')));
+            fs.writeFileSync(`${dir}/overall.json`, JSON.stringify(
+              badge('OASA Certified', l1Ok && l2Ok ? 'passing' : 'failing', l1Ok && l2Ok ? 'success' : 'critical')
+            ));
+            console.log('Badge JSON files generated');
+      - name: Upload badge status data
+        uses: actions/upload-artifact@v4
+        with:
+          name: oasa-badge-status
+          path: badges/status/
+          retention-days: 90
 
   # ===========================================================================
-  # Multi-Python version compatibility matrix
+  # Compatibility matrix (Python versions)
   # ===========================================================================
   compatibility:
     name: Python ${{ matrix.python }} Compatibility
@@ -162,7 +220,13 @@ jobs:
           pip install pyyaml jsonschema requests pytest fastapi uvicorn pydantic python-multipart httpx
       - name: Run unit tests
         run: |
-          python -m pytest tests/ -v --tb=short --ignore=tests/conformance
+          python -m pytest tests/ -v --tb=short --ignore=tests/conformance --junit-xml=reports/unit-junit-${{ matrix.python }}.xml
       - name: Validate schemas
         run: |
           python tools/validate_compliance.py sovereign-stack.yaml
+      - name: Upload compatibility artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: oasa-compat-python-${{ matrix.python }}
+          path: reports/unit-junit-${{ matrix.python }}.xml
+          retention-days: 14
