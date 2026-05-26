@@ -1,89 +1,145 @@
 # Keycloak SSO Integration Guide (OASA-Auth)
 
-This guide walks through configuring **Keycloak** as the Identity Provider (IdP) for **SovereignStack**, enabling cryptographically validated OIDC authentication and Role-Based Access Control (RBAC).
+SovereignStack includes an **auto-imported Keycloak realm** via Docker Compose, so you can start with zero manual configuration.
 
 ---
 
-## 1. Create the Sovereign Realm
+## Quick Start (Automated)
 
-1. Open the Keycloak Admin Console.
-2. In the top-left dropdown menu, click **Create Realm**.
-3. Set the **Realm Name** to `sovereign`.
-4. Click **Create**.
+The realm, clients, roles, and users are imported automatically from `config/keycloak/sovereign-realm.json` when you run:
+
+```bash
+docker compose up -d
+```
+
+Keycloak will be available at `http://localhost:8083`.
+
+### Pre-Configured Test Users
+
+| Username | Password | Roles |
+|---|---|---|
+| `sovereign-admin` | `admin123` | `inference:write`, `inference:read`, `audit:read` |
+| `sovereign-analyst` | `analyst123` | `inference:read` |
+
+### Get a Token
+
+```bash
+curl -X POST http://localhost:8083/realms/sovereign/protocol/openid-connect/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "client_id=sovereign-gateway" \
+  -d "username=sovereign-admin" \
+  -d "password=admin123" \
+  -d "grant_type=password"
+```
+
+### Use the Token with the Gateway
+
+```bash
+TOKEN="<access_token from above>"
+
+curl -X POST http://localhost:8080/v1/chat/completions \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "messages": [{"role":"user","content":"Hello"}],
+    "oasa_compliance_lock": true
+  }'
+```
+
+### Token Claims Structure
+
+The access token contains roles in the `realm_access.roles` field:
+
+```json
+{
+  "sub": "...",
+  "realm_access": {
+    "roles": ["inference:write", "inference:read", "audit:read"]
+  },
+  "preferred_username": "sovereign-admin"
+}
+```
 
 ---
 
-## 2. Create the Gateway Client
+## Manual Configuration (Custom Realm)
 
-1. In the left navigation bar, go to **Clients**.
-2. Click **Create client**.
-3. Configure the client parameters:
+If you need a custom realm configuration beyond the auto-imported defaults:
+
+### 1. Create the Sovereign Realm
+
+1. Open the Keycloak Admin Console at `http://localhost:8083`.
+2. Log in with `admin` / `admin`.
+3. In the top-left dropdown, click **Create Realm**.
+4. Set the **Realm Name** to `sovereign`.
+5. Click **Create**.
+
+### 2. Create the Gateway Client
+
+1. Go to **Clients** → **Create client**.
+2. Configure:
    - **Client type**: `OpenID Connect`
    - **Client ID**: `sovereign-gateway`
    - **Name**: `OASA API Gateway`
-4. Click **Next**.
-5. Enable **Capability Config**:
-   - **Client authentication**: `On` (Confidential Client)
-   - **Authorization**: `Off`
-   - **Authentication flow**: Check `Standard flow` and `Service accounts roles` (enabling client credentials authorization).
-6. Click **Next**.
-7. Configure **Login settings**:
-   - **Root URL**: `http://localhost:8080` (or your Gateway host)
-   - **Valid redirect URIs**: `http://localhost:8080/*`
-   - **Web origins**: `*`
-8. Click **Save**.
+3. Enable **Standard flow** and **Service accounts roles**.
+4. Set **Valid redirect URIs**: `http://localhost:8080/*`
+5. Click **Save**.
 
----
+### 3. Define Roles
 
-## 3. Define Roles & RBAC Scopes
+Under the `sovereign-gateway` client → **Roles** tab, create:
 
-SovereignStack maps permissions using roles inside the JWT claims payload.
+| Role | Permission |
+|---|---|
+| `inference:write` | Run chat completions and query models |
+| `inference:read` | Read-only model access |
+| `audit:read` | Retrieve audit logs |
 
-1. Under the `sovereign-gateway` client dashboard, go to the **Roles** tab.
-2. Click **Create role**.
-3. Create the following three standard OASA roles:
-   - `inference:write` — Permitted to run chat completions and query models.
-   - `memory:write` — Permitted to insert documents into the vector store.
-   - `compliance:read` — Permitted to retrieve audit logs.
+### 4. Map Roles to Token Claims
 
----
+1. Go to **Client scopes** → `sovereign-gateway-dedicated` → **Mappers**.
+2. Click **Configure new mapper** → **User Client Role**.
+3. Set **Token Claim Name** to `roles`.
+4. Enable for ID token, access token, and userinfo.
+5. Click **Save**.
 
-## 4. Map Client Roles to Token Claims
-
-To ensure the OASA Gateway can parse user permissions, map the roles into the Access Token claims payload.
-
-1. Go to **Client scopes** in the left sidebar.
-2. Click on the `sovereign-gateway-dedicated` scope (auto-created with the client).
-3. Click the **Mappers** tab.
-4. Click **Configure new mapper** and select **User Client Role**.
-5. Configure the mapper parameters:
-   - **Name**: `client roles`
-   - **Client ID**: `sovereign-gateway`
-   - **Token Claim Name**: `roles` (JSON Array format)
-   - **Add to ID token**: `On`
-   - **Add to access token**: `On`
-   - **Add to userinfo**: `On`
-6. Click **Save**.
-
----
-
-## 5. Configure Gateway Environment
-
-Once configured in Keycloak, retrieve the Client Secret and configure the Gateway environment variables or edit your `sovereign-stack.yaml` manifest:
+### 5. Update Sovereign Config
 
 ```yaml
 services:
   gateway:
-    enabled: true
-    listen: "0.0.0.0:8080"
     identity:
       enabled: true
       provider: "keycloak"
-      issuer_url: "http://<keycloak-host>/auth/realms/sovereign"
+      issuer_url: "http://keycloak:8083/realms/sovereign"
       client_id: "sovereign-gateway"
 ```
 
-Verify that authorization headers sent by clients look like:
-```http
-Authorization: Bearer <keycloak-generated-jwt>
+---
+
+## RBAC Enforcement
+
+The gateway enforces these role checks:
+
+| Required Role | Endpoint | Effect if Missing |
+|---|---|---|
+| `inference:write` | `POST /v1/chat/completions` | 403 Forbidden |
+| `audit:read` | `GET /audit/log` (future) | 403 Forbidden |
+
+---
+
+## Troubleshooting
+
+**Invalid token errors:**
+```bash
+# Verify the token is valid
+curl -s http://localhost:8083/realms/sovereign/protocol/openid-connect/userinfo \
+  -H "Authorization: Bearer $TOKEN" | jq .
+```
+
+**Realm not found:**
+```bash
+# Check Keycloak logs
+docker compose logs keycloak
 ```

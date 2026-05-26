@@ -11,3 +11,6 @@ openai>=1.0.0
 jsonschema>=4.20.0
 # Runtime shield monitoring
 psutil>=6.0.0
+# JWT / OIDC validation
+pyjwt>=2.10.0
+python-dotenv>=1.1.0
