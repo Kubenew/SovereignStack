@@ -1,0 +1,178 @@
+groups:
+  - name: sovereignstack-gateway
+    interval: 30s
+    rules:
+      - alert: GatewayDown
+        expr: up{job="gateway"} == 0
+        for: 1m
+        labels: { severity: critical, team: platform }
+        annotations:
+          summary: "Gateway service is down"
+          description: "Gateway {{ $labels.instance }} has been unreachable for >1m"
+
+      - alert: GatewayHighLatency
+        expr: histogram_quantile(0.95, rate(gateway_request_duration_seconds_bucket[5m])) > 5
+        for: 5m
+        labels: { severity: warning, team: platform }
+        annotations:
+          summary: "Gateway p95 latency >5s"
+          description: "Gateway p95 request latency is {{ $value }}s over 5m"
+
+      - alert: GatewayAuthFailureRate
+        expr: rate(gateway_auth_failures_total[5m]) > 0.1
+        for: 5m
+        labels: { severity: warning, team: security }
+        annotations:
+          summary: "High authentication failure rate"
+          description: "Gateway auth failures: {{ $value }}/s over 5m"
+
+      - alert: GatewayComplianceViolation
+        expr: rate(gateway_compliance_violations_total[5m]) > 0
+        for: 1m
+        labels: { severity: warning, team: security }
+        annotations:
+          summary: "Compliance violation detected"
+          description: "Gateway compliance lock violations detected"
+
+      - alert: GatewayOPAPolicyBlock
+        expr: rate(gateway_policy_blocks_total[5m]) > 0.05
+        for: 5m
+        labels: { severity: warning, team: security }
+        annotations:
+          summary: "OPA policy blocks elevated"
+          description: "OPA DLP policy violations: {{ $value }}/s over 5m"
+
+  - name: sovereignstack-vllm
+    interval: 30s
+    rules:
+      - alert: vLLMDown
+        expr: up{job="vllm"} == 0
+        for: 1m
+        labels: { severity: critical, team: platform }
+        annotations:
+          summary: "vLLM inference engine is down"
+          description: "vLLM {{ $labels.instance }} has been unreachable for >1m"
+
+      - alert: vLLMHighVRAMUsage
+        expr: vllm:gpu_memory_used_percent > 95
+        for: 5m
+        labels: { severity: warning, team: platform }
+        annotations:
+          summary: "vLLM GPU VRAM >95%"
+          description: "vLLM GPU VRAM usage is {{ $value }}% — model may OOM"
+
+      - alert: vLLMHighRequestLatency
+        expr: histogram_quantile(0.95, rate(vllm:request_duration_seconds_bucket[5m])) > 30
+        for: 5m
+        labels: { severity: warning, team: platform }
+        annotations:
+          summary: "vLLM p95 latency >30s"
+          description: "vLLM p95 inference latency is {{ $value }}s over 5m"
+
+      - alert: vLLMQueueBacklog
+        expr: vllm:request_queue_size > 10
+        for: 5m
+        labels: { severity: warning, team: platform }
+        annotations:
+          summary: "vLLM request queue growing"
+          description: "vLLM queue backlog is {{ $value }} requests"
+
+      - alert: vLLMModelUnloaded
+        expr: vllm:models_loaded == 0
+        for: 1m
+        labels: { severity: critical, team: platform }
+        annotations:
+          summary: "No models loaded in vLLM"
+          description: "vLLM has 0 models loaded — inference unavailable"
+
+  - name: sovereignstack-memory
+    interval: 30s
+    rules:
+      - alert: MemoryServiceDown
+        expr: up{job="memory"} == 0
+        for: 1m
+        labels: { severity: critical, team: platform }
+        annotations:
+          summary: "Memory service is down"
+          description: "Memory {{ $labels.instance }} has been unreachable for >1m"
+
+      - alert: MemoryHighQueryLatency
+        expr: histogram_quantile(0.95, rate(memory_query_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels: { severity: warning, team: platform }
+        annotations:
+          summary: "Memory p95 query latency >2s"
+          description: "Memory p95 query latency is {{ $value }}s over 5m"
+
+      - alert: MemoryVectorCountDrop
+        expr: memory:vector_count < memory:vector_count offset 1h * 0.5
+        for: 5m
+        labels: { severity: warning, team: platform }
+        annotations:
+          summary: "Vector count dropped >50%"
+          description: "Memory vector count dropped from {{ $value | humanize }} in 1h — possible data loss"
+
+  - name: sovereignstack-ingest
+    interval: 30s
+    rules:
+      - alert: IngestServiceDown
+        expr: up{job="ingest"} == 0
+        for: 1m
+        labels: { severity: critical, team: platform }
+        annotations:
+          summary: "Ingest service is down"
+          description: "Ingest {{ $labels.instance }} has been unreachable for >1m"
+
+      - alert: IngestHighFailureRate
+        expr: rate(ingest_failures_total[5m]) > 0.1
+        for: 5m
+        labels: { severity: warning, team: platform }
+        annotations:
+          summary: "High ingest failure rate"
+          description: "Ingest failure rate: {{ $value }}/s over 5m"
+
+  - name: sovereignstack-node
+    interval: 60s
+    rules:
+      - alert: NodeDiskSpaceLow
+        expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.1
+        for: 10m
+        labels: { severity: critical, team: platform }
+        annotations:
+          summary: "Node disk space <10%"
+          description: "Disk available: {{ $value | humanizePercentage }}"
+
+      - alert: NodeHighCPUUsage
+        expr: 100 - avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m]) * 100) > 90
+        for: 10m
+        labels: { severity: warning, team: platform }
+        annotations:
+          summary: "Node CPU >90%"
+          description: "Node CPU usage is {{ $value }}% over 10m"
+
+  - name: sovereignstack-spire
+    interval: 30s
+    rules:
+      - alert: SPIREServerDown
+        expr: up{job="spire-server"} == 0
+        for: 1m
+        labels: { severity: critical, team: security }
+        annotations:
+          summary: "SPIRE Server is down"
+          description: "SPIRE Server unreachable for >1m — new SVIDs cannot be issued"
+
+      - alert: SPIREAgentDown
+        expr: up{job="spire-agent"} == 0
+        for: 1m
+        labels: { severity: critical, team: security }
+        annotations:
+          summary: "SPIRE Agent is down"
+          description: "SPIRE Agent unreachable for >1m — workload identities unavailable"
+
+      - alert: SPIREHighExpiringSVIDs
+        expr: spire:svids_expiring_in_1h > 10
+        for: 5m
+        labels: { severity: warning, team: security }
+        annotations:
+          summary: "Many SVIDs expiring soon"
+          description: "{{ $value }} SVIDs expire within 1h"

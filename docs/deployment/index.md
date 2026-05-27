@@ -20,6 +20,7 @@ This section covers all supported deployment models, from a single laptop to air
 | Method | Profile | Guide |
 |---|---|---|
 | Docker Compose | Personal, Edge | [Docker Compose Guide](docker-compose.md) |
+| K3s (ARM cluster) | Edge | [Edge Cluster Guide](edge.md) |
 | Kubernetes / Helm | Air-Gapped, Datacenter | [Helm Guide](helm.md) |
 
 ---
