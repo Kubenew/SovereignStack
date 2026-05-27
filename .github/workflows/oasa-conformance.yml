@@ -230,3 +230,39 @@ jobs:
           name: oasa-compat-python-${{ matrix.python }}
           path: reports/unit-junit-${{ matrix.python }}.xml
           retention-days: 14
+
+  # ===========================================================================
+  # SBOM generation — supply chain transparency
+  # ===========================================================================
+  sbom:
+    name: Generate SBOM
+    runs-on: ubuntu-24.04
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate SBOM (Syft)
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./
+          format: spdx-json
+          output-file: reports/sovereignstack-sbom.spdx.json
+          artifact-name: sovereignstack-sbom.spdx.json
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./
+          format: cyclonedx-json
+          output-file: reports/sovereignstack-sbom.cyclonedx.json
+          artifact-name: sovereignstack-sbom.cyclonedx.json
+      - name: Install syft and generate dependency list
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          syft dir:. -o table > reports/sbom-summary.txt
+          echo "SBOM summary:"
+          cat reports/sbom-summary.txt
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: oasa-sbom
+          path: reports/sovereignstack-sbom.*
+          retention-days: 90

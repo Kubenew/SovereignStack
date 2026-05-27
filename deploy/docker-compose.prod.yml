@@ -1,0 +1,94 @@
+services:
+  gateway:
+    image: sovereignstack/gateway:latest
+    command: uvicorn services.gateway_service:app --host 0.0.0.0 --port 8080 --workers 4
+    ports: ["8080:8080"]
+    env_file: [.env.prod]
+    environment:
+      - COMPUTE_URL=http://vllm:8000
+      - MEMORY_URL=http://memory:8082
+    depends_on:
+      vllm: { condition: service_healthy }
+      memory: { condition: service_started }
+      keycloak: { condition: service_healthy }
+    deploy:
+      resources:
+        limits: { cpus: "2", memory: "2G" }
+        reservations: { cpus: "1", memory: "1G" }
+    restart: unless-stopped
+    networks: [sovereign-isolated]
+
+  vllm:
+    image: vllm/vllm-openai:v0.7.2
+    command: ["vllm", "serve", "/data/${VLLM_MODEL_NAME}", "--port", "8000", "--max-model-len", "${VLLM_MAX_MODEL_LEN:-4096}", "--gpu-memory-utilization", "${VLLM_GPU_MEMORY_UTIL:-0.90}", "--enable-flash-attention"]
+    environment:
+      - HF_HUB_OFFLINE=1
+      - VLLM_ATTENTION_BACKEND=FLASH_ATTN
+    ports: ["8000:8000"]
+    volumes: ["./models:/data:ro"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: ${VLLM_GPU_COUNT:-1}
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s; timeout: 10s; retries: 5; start_period: 120s
+    restart: unless-stopped
+    networks: [sovereign-isolated]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1
+    command: ["start-dev", "--http-port=8083", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_HOSTNAME: localhost
+      KC_HTTP_ENABLED: "true"
+    ports: ["8083:8083"]
+    volumes: ["./config/keycloak:/opt/keycloak/data/import:ro"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/realms/master"]
+      interval: 15s; timeout: 5s; retries: 10; start_period: 30s
+    restart: unless-stopped
+    networks: [sovereign-isolated]
+
+  memory:
+    image: sovereignstack/memory:latest
+    command: uvicorn services.memory_service:app --host 0.0.0.0 --port 8082
+    ports: ["8082:8082"]
+    volumes: ["./data:/app/data"]
+    env_file: [.env.prod]
+    deploy:
+      resources:
+        limits: { cpus: "1", memory: "1G" }
+    restart: unless-stopped
+    networks: [sovereign-isolated]
+
+  ingest:
+    image: sovereignstack/ingest:latest
+    command: uvicorn services.ingest_service:app --host 0.0.0.0 --port 8081
+    ports: ["8081:8081"]
+    volumes: ["./data:/app/data"]
+    env_file: [.env.prod]
+    deploy:
+      resources:
+        limits: { cpus: "1", memory: "1G" }
+    restart: unless-stopped
+    networks: [sovereign-isolated]
+
+  prometheus:
+    image: prom/prometheus:v3.3.0
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus"]
+    ports: ["9090:9090"]
+    volumes: ["./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    restart: unless-stopped
+    networks: [sovereign-isolated]
+
+networks:
+  sovereign-isolated:
+    driver: bridge
+    internal: true
+    name: sovereign-isolated-net
