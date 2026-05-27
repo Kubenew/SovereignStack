@@ -12,5 +12,6 @@ cryptography==48.0.0
 openai==2.38.0
 jsonschema==4.26.0
 psutil==7.2.2
-pyjwt==2.13.0
+pyjwt==2.12.1   # pinned by spiffe dependency constraint
 python-dotenv==1.2.2
+spiffe==0.2.9

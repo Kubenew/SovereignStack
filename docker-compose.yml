@@ -1,5 +1,43 @@
 services:
   # ===========================================================================
+  # SPIRE Server — SPIFFE identity issuer and trust anchor
+  # ===========================================================================
+  spire-server:
+    image: ghcr.io/spiffe/spire-server:1.11.2
+    command: ["server", "--config", "/etc/spire/server.conf"]
+    ports: ["8084:8084"]
+    volumes:
+      - "./config/spire/server.conf:/etc/spire/server.conf:ro"
+      - "spire-data:/data/spire"
+    healthcheck:
+      test: ["CMD", "./bin/spire-server", "healthcheck", "-serverAddress", "0.0.0.0:8084"]
+      interval: 15s; timeout: 5s; retries: 5; start_period: 30s
+    networks:
+      - sovereign-isolated
+
+  # ===========================================================================
+  # SPIRE Agent — Workload attestation and SVID delivery
+  # ===========================================================================
+  spire-agent:
+    image: ghcr.io/spiffe/spire-agent:1.11.2
+    command: ["agent", "--config", "/etc/spire/agent.conf"]
+    volumes:
+      - "./config/spire/agent.conf:/etc/spire/agent.conf:ro"
+      - "spire-data:/data/spire"
+      - "/var/run/spire:/var/run/spire"   # Workload API UDS shared with services
+      - "/etc/passwd:/etc/passwd:ro"       # UID-based workload attestation
+    environment:
+      SPIRE_JOIN_TOKEN: "${SPIRE_JOIN_TOKEN:-sovereign-default-token}"
+    depends_on:
+      spire-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "./bin/spire-agent", "healthcheck", "-socketPath", "/var/run/spire/agent.sock"]
+      interval: 15s; timeout: 5s; retries: 5; start_period: 10s
+    networks:
+      - sovereign-isolated
+
+  # ===========================================================================
   # Keycloak — Identity Provider (OIDC/OAuth2)
   # ===========================================================================
   keycloak:
@@ -65,6 +103,8 @@ services:
       memory:
         condition: service_started
       keycloak:
+        condition: service_healthy
+      spire-agent:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
@@ -162,6 +202,9 @@ services:
       - "./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
     networks:
       - sovereign-isolated
+
+volumes:
+  spire-data:
 
 networks:
   sovereign-isolated:

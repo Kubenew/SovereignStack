@@ -29,7 +29,10 @@ def clean_test_data():
 def test_gateway_health():
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "service": "gateway"}
+    data = response.json()
+    assert data["status"] == "ok"
+    assert data["service"] == "gateway"
+    assert "spiffe_enabled" in data
 
 def test_gateway_strict_missing_lock():
     # In STRICT mode, missing compliance lock should return 400 Bad Request

@@ -7,9 +7,19 @@ from dotenv import load_dotenv
 import jwt
 from jwt import PyJWKClient, InvalidTokenError
 
+from services.spiffe_helper import spiffe_ctx, SPIFFE_TRUST_DOMAIN
+
 load_dotenv()
 
 app = FastAPI(title="OASA Gateway Service", version="2026.1")
+
+@app.on_event("startup")
+def init_spiffe():
+    spiffe_ctx.init()
+
+@app.on_event("shutdown")
+def close_spiffe():
+    spiffe_ctx.close()
 
 BACKEND = os.getenv("INFERENCE_BACKEND", "vllm").lower()
 COMPUTE_URL = os.getenv("COMPUTE_URL", "http://vllm:8000")
@@ -106,6 +116,8 @@ def chat(payload: ChatCompletionRequest, request: Request, authorization: str | 
             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"error": {"message": policy_error, "type": "policy_governance_block", "code": "403"}})
 
     audit_payload = {"type": "request", "id": request_id, "model": payload.model, "prompt": user_prompt, "oasa_compliance_lock": payload.oasa_compliance_lock, "oasa_audit_tag": payload.oasa_audit_tag, "oasa_jurisdiction": payload.oasa_jurisdiction}
+    if spiffe_ctx.ready:
+        audit_payload["spiffe_id"] = spiffe_ctx.identity
     if otel_enabled == "true":
         audit_payload["trace_id"] = trace_id; audit_payload["span_id"] = span_id
     audit(audit_payload)
@@ -165,7 +177,7 @@ def chat(payload: ChatCompletionRequest, request: Request, authorization: str | 
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "service": "gateway"}
+    return {"status": "ok", "service": "gateway", "spiffe_enabled": spiffe_ctx.ready}
 
 @app.get("/.well-known/openid-configuration")
 def oidc_config():
@@ -174,3 +186,10 @@ def oidc_config():
         return JSONResponse(content=r.json())
     except Exception:
         return JSONResponse(content={"issuer": OIDC_ISSUER_URL})
+
+@app.get("/spiffe")
+def spiffe_identity():
+    if not spiffe_ctx.ready:
+        return JSONResponse(content={"spiffe_status": "unavailable", "message": "SPIRE Agent not connected — SPIFFE workload identity unavailable. Ensure SPIFFE_ENABLED=true and SPIRE is running."})
+    svid = spiffe_ctx.identity
+    return {"spiffe_status": "available", "workload_identity": svid, "trust_domain": SPIFFE_TRUST_DOMAIN}
