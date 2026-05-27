@@ -1,0 +1,5 @@
+# Don't commit .env (contains secrets)
+.env
+*.log
+models/
+data/

@@ -1,16 +1,16 @@
-fastapi>=0.115.0
-uvicorn>=0.32.0
-pydantic>=2.0.0
-python-multipart>=0.0.9
-requests>=2.31.0
-pyyaml>=6.0
-cryptography>=42.0.0
-# vLLM OpenAI-compatible client (for applications consuming the API)
-openai>=1.0.0
-# JSON schema validation
-jsonschema>=4.20.0
-# Runtime shield monitoring
-psutil>=6.0.0
-# JWT / OIDC validation
-pyjwt>=2.10.0
-python-dotenv>=1.1.0
+# =============================================================================
+# SovereignStack — Exact-pinned dependencies
+# Update pinned versions via: pip-compile --generate-hashes --output-file=requirements-locked.txt requirements.txt
+# =============================================================================
+fastapi==0.136.3
+uvicorn==0.48.0
+pydantic==2.13.4
+python-multipart==0.0.29
+requests==2.34.2
+pyyaml==6.0.3
+cryptography==48.0.0
+openai==2.38.0
+jsonschema==4.26.0
+psutil==7.2.2
+pyjwt==2.13.0
+python-dotenv==1.2.2

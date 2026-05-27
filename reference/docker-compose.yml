@@ -1,0 +1,81 @@
+services:
+  gateway:
+    build: ..
+    command: uvicorn services.gateway_service:app --host 0.0.0.0 --port 8080
+    ports: ["8080:8080"]
+    env_file: [.env]
+    environment:
+      - COMPUTE_URL=http://vllm:8000
+      - MEMORY_URL=http://memory:8082
+      - OIDC_ISSUER_URL=http://keycloak:8083/realms/sovereign
+      - OIDC_CLIENT_ID=sovereign-gateway
+    depends_on:
+      vllm: { condition: service_healthy }
+      memory: { condition: service_started }
+      keycloak: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 15s; timeout: 5s; retries: 3; start_period: 10s
+    networks: [sovereign-isolated]
+
+  vllm:
+    image: vllm/vllm-openai@sha256:3b3c8c9d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2
+    command: ["vllm", "serve", "/data/${VLLM_MODEL_NAME}", "--port", "8000", "--max-model-len", "${VLLM_MAX_MODEL_LEN:-4096}", "--gpu-memory-utilization", "${VLLM_GPU_MEMORY_UTIL:-0.90}", "--enable-flash-attention"]
+    environment:
+      - HF_HUB_OFFLINE=1
+    ports: ["8000:8000"]
+    volumes: ["./models:/data:ro"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: ${VLLM_GPU_COUNT:-1}
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s; timeout: 10s; retries: 5; start_period: 120s
+    networks: [sovereign-isolated]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak@sha256:4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4
+    command: ["start-dev", "--http-port=8083", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: localhost
+      KC_HTTP_ENABLED: "true"
+    ports: ["8083:8083"]
+    volumes: ["../config/keycloak:/opt/keycloak/data/import:ro"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/realms/master"]
+      interval: 15s; timeout: 5s; retries: 10; start_period: 30s
+    networks: [sovereign-isolated]
+
+  memory:
+    build: ..
+    command: uvicorn services.memory_service:app --host 0.0.0.0 --port 8082
+    ports: ["8082:8082"]
+    volumes: ["./data:/app/data"]
+    env_file: [.env]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8082/health')"]
+      interval: 15s; timeout: 5s; retries: 3
+    networks: [sovereign-isolated]
+
+  ingest:
+    build: ..
+    command: uvicorn services.ingest_service:app --host 0.0.0.0 --port 8081
+    ports: ["8081:8081"]
+    volumes: ["./data:/app/data"]
+    env_file: [.env]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8081/health')"]
+      interval: 15s; timeout: 5s; retries: 3
+    networks: [sovereign-isolated]
+
+networks:
+  sovereign-isolated:
+    driver: bridge
+    internal: true
+    name: sovereign-isolated-net

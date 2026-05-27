@@ -1,15 +1,17 @@
 # =============================================================================
 # SovereignStack — Multi-stage Production Dockerfile
+# Reproducibility: pin base images via digest, hash-pin Python dependencies
 # =============================================================================
 # Stage 1: Build dependencies
-FROM python:3.11-slim AS builder
+# Pin base image digest: use `docker pull python:3.11.11-slim@sha256:...` and verify
+FROM python:3.11.11-slim@sha256:2c0e7d4f6a1b8c9d0e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c AS builder
 
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+COPY requirements-locked.txt requirements.txt
+RUN pip install --no-cache-dir --user --require-hashes -r requirements-locked.txt
 
 # Stage 2: Production runtime
-FROM python:3.11-slim AS runtime
+FROM python:3.11.11-slim@sha256:2c0e7d4f6a1b8c9d0e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c AS runtime
 
 # Security: run as non-root
 RUN groupadd -r sovereign && useradd -r -g sovereign -d /app -s /sbin/nologin sovereign

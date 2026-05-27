@@ -1,0 +1,88 @@
+version: "2026.1"
+metadata:
+  name: "sovereign-node-reference"
+  tier: "reference-implementation"
+  compliance_profile: "OASA-STRICT-GDPR-HIPAA"
+
+node_infrastructure:
+  engine: "docker-compose"
+  air_gapped_enforcement: true
+  storage:
+    ephemeral_encrypted: true
+    encryption_algorithm: "AES-256-GCM"
+    hardware_tpm_binding: true
+  network_isolation:
+    allow_wan: false
+    dns_mode: "LOCAL_ONLY"
+    allowed_internal_cidrs:
+      - "10.0.0.0/8"
+      - "192.168.0.0/16"
+  sandboxing:
+    runtime: "gvisor"
+    confidential_compute: false
+
+data_ingestion:
+  service_name: "pdf2struct-pipeline"
+  max_parallel_workers: 4
+  memory_processing_mode: "VOLATILE_RAM_ONLY"
+  enforce_strict_json_schema: true
+  input_formats:
+    - "PDF"
+    - "TIFF"
+    - "DOCX"
+
+cognitive_memory:
+  backend: "TurboMemory-Isolated"
+  vector_dimensions: 4096
+  encryption_at_rest: true
+  context_ttl_seconds: 3600
+  kv_cache_isolation: true
+
+compute_execution:
+  gateway: "vllm-openai"
+  optimization_engine: "vLLM"
+  precision: "INT4_AWQ"
+  openai_api_compatibility: true
+  hardware:
+    accelerator: "NVIDIA_CUDA"
+    vram_budget_gb: 24
+    allow_cpu_fallback: false
+  runtime_protection:
+    enforce_compliance_lock: true
+    memory_leak_threshold_mb: 512
+    max_token_context: 8192
+
+services:
+  gateway:
+    enabled: true
+    listen: "0.0.0.0:8080"
+    identity:
+      enabled: true
+      provider: "keycloak"
+      issuer_url: "http://keycloak:8083/realms/sovereign"
+      client_id: "sovereign-gateway"
+    policy:
+      enabled: true
+      engine: "opa"
+      policy_path: "./policies/inference.rego"
+    observability:
+      enabled: true
+      opentelemetry_endpoint: "http://otel-collector:4317"
+      prometheus_enabled: true
+  ingest:
+    enabled: true
+    listen: "0.0.0.0:8081"
+  memory:
+    enabled: true
+    listen: "0.0.0.0:8082"
+    vector_backend: "local-json"
+  compute:
+    enabled: true
+    listen: "0.0.0.0:8083"
+    backend: "local"
+    vram_budget_gb: 24
+
+models:
+  allowed:
+    - "sovereign-llama3"
+    - "sovereign-mistral"
