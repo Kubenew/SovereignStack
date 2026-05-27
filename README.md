@@ -193,11 +193,22 @@ helm install sovereign-stack ./charts/sovereignstack \
 
 | Document | Description |
 |---|---|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | System topology, layers, subsystems, trust boundaries |
 | [CONFORMANCE.md](CONFORMANCE.md) | OASA certification specification (L1/L2/L3) |
 | [OASA.md](OASA.md) | Full OASA protocol specification |
-| [Architecture Guide](docs/architecture_guide.md) | Trust boundaries, data flow, identity flow |
-| [Threat Model](docs/security/threat-model.md) | STRIDE threat catalogue, attack surface, compliance mapping |
+| [Architecture Guide](docs/architecture/index.md) | Trust boundaries, data flow, identity flow |
+| [Deployment Guide](docs/deployment/index.md) | Deployment profiles, Docker Compose, Helm |
+| [Deployment Profiles](docs/deployment/profiles.md) | Personal, Edge, Air-Gapped, Datacenter |
+| [Docker Compose](docs/deployment/docker-compose.md) | Local stack with Keycloak, vLLM, OTel, Prometheus |
 | [Helm Chart](charts/sovereignstack/) | Kubernetes deployment with NetworkPolicies & gVisor |
+| [Threat Model](docs/security/threat-model.md) | STRIDE threat catalogue, attack surface, compliance mapping |
+| [RFCs](rfcs/) | Standards evolution (Runtime Spec, RFC Process) |
+| [Specifications](specs/) | Formal subsystem and protocol specifications |
+| [Governance](GOVERNANCE.md) | Project roles, decision-making, release model |
+| [Roadmap](ROADMAP.md) | Development phases and milestones |
+| [Contributing](CONTRIBUTING.md) | How to contribute |
+| [Security](SECURITY.md) | Vulnerability disclosure, threat model, compliance |
+| [Code of Conduct](CODE_OF_CONDUCT.md) | Community standards |
 
 ---
 
@@ -248,13 +259,16 @@ SovereignStack is structured for enterprise adoption:
 
 ## Roadmap
 
-| Status | Phase | Feature |
-|---|---|---|
-| ✅ | 2026.1 | Helm chart, vLLM integration, OPA policy engine, CI/CD matrix |
-| 🚧 | Q3 2026 | OASA Merkle-Tree Auditing, Keycloak OIDC identity layer |
-| 🚧 | Q4 2026 | Secure weight federation (cross-node without sharing weights) |
-| 🚧 | Q1 2027 | SGX/SEV-SNP confidential computing for ingestion |
-| 🚧 | Q2 2027 | OASA telemetry standard, cosign-signed model distribution |
+See [ROADMAP.md](ROADMAP.md) for the full phased roadmap through 2027+.
+
+| Phase | Highlights |
+|---|---|
+| **2026.1** ✅ | Helm chart, vLLM, OPA, CI/CD, Keycloak OIDC, Threat Model |
+| **2026.2** 🚧 | RFC Process, Architecture Docs, Deployment Profiles, Governance |
+| **2026.3** 📅 | Merkle-Tree Auditing, Federated Memory, Mesh Networking |
+| **2027.1** 📅 | Hardware Enclaves, SBOM/Cosign, SPIFFE/SPIRE, Sovereign Node OS |
+| **2027.2** 📅 | Agent Orchestration, Multi-Model Routing, Federated Agents |
+| **2027.3+** 🔮 | Autonomous Infrastructure, Certification Program, Enterprise Platform |
 
 ---
 
