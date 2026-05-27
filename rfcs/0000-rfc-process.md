@@ -68,6 +68,9 @@ RFCs are numbered sequentially: `0000`, `0001`, `0002`, etc.
 |---|---|---|
 | 0000 | RFC Process (this document) | Draft |
 | 0001 | Runtime Specification | Draft |
+| 0003 | Node Identity | Draft |
+| 0004 | Federation Protocol | Draft |
+| 0005 | Agent API | Draft |
 
 ---
 
