@@ -1,0 +1,55 @@
+{
+  "report_version": "1.0",
+  "level": "L2",
+  "timestamp": "2026-05-25T13:09:48.019079+00:00",
+  "oasa_version": "2026.1",
+  "summary": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "pass_rate": 100.0
+  },
+  "results": [
+    {
+      "name": "Schema Validation",
+      "status": "pass",
+      "category": "schema"
+    },
+    {
+      "name": "Compliance Lock",
+      "status": "pass",
+      "category": "compliance-lock"
+    },
+    {
+      "name": "Exfiltration Shield",
+      "status": "pass",
+      "category": "exfiltration"
+    },
+    {
+      "name": "Volatile Ingestion",
+      "status": "pass",
+      "category": "ingestion"
+    },
+    {
+      "name": "TPM Binding",
+      "status": "pass",
+      "category": "hardware"
+    },
+    {
+      "name": "Audit Logging",
+      "status": "pass",
+      "category": "audit"
+    },
+    {
+      "name": "Network Isolation",
+      "status": "pass",
+      "category": "network"
+    }
+  ],
+  "environment": {
+    "os": "win32",
+    "python": "3.12.10"
+  },
+  "recommendations": []
+}
