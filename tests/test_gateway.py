@@ -167,9 +167,9 @@ def test_gateway_auth_strict_invalid_token():
         response = client.post("/v1/chat/completions", json=payload, headers=headers)
         assert response.status_code == 401
 
-def test_gateway_auth_strict_unauthorized_role():
+def test_gateway_auth_dev_unauthorized_role():
     # If token has valid format but missing required role, fail with 403
-    with patch.dict(os.environ, {"OASA_ENFORCE_AUTH": "STRICT"}):
+    with patch.dict(os.environ, {"OASA_ENFORCE_AUTH": "STRICT", "OASA_ALLOW_MOCK_TOKENS": "true"}):
         payload = {
             "model": "sovereign-llama3",
             "messages": [{"role": "user", "content": "Hello"}],
@@ -182,14 +182,14 @@ def test_gateway_auth_strict_unauthorized_role():
         assert "inference write permissions" in res_json["error"]["message"]
 
 @patch("requests.post")
-def test_gateway_auth_strict_success_token(mock_post):
+def test_gateway_auth_dev_success_token(mock_post):
     # Valid auth token and role should pass authentication checks
     mock_compute_response = MagicMock()
     mock_compute_response.status_code = 200
     mock_compute_response.json.return_value = {"response": "Success"}
     mock_post.return_value = mock_compute_response
 
-    with patch.dict(os.environ, {"OASA_ENFORCE_AUTH": "STRICT"}):
+    with patch.dict(os.environ, {"OASA_ENFORCE_AUTH": "STRICT", "OASA_ALLOW_MOCK_TOKENS": "true"}):
         payload = {
             "model": "sovereign-llama3",
             "messages": [{"role": "user", "content": "Hello"}],
