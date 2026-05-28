@@ -1,0 +1,41 @@
+# SovereignStack Autonomous Remediation Rules
+# Maps Prometheus alerts to automated remediation actions
+
+remediation_rules:
+  - alert_name: VLLMOutOfMemory
+    action: RESTART_POD
+    target: deployment/sovereignstack-vllm
+    cooldown_seconds: 300
+    description: "Restart vLLM when it encounters a CUDA OutOfMemory error."
+
+  - alert_name: HighMemoryPressure
+    action: EVICT_CACHE
+    target: service/memory
+    cooldown_seconds: 60
+    description: "Trigger KV cache eviction when memory pressure is high."
+
+  - alert_name: GatewayErrorRateHigh
+    action: SCALE_UP
+    target: deployment/sovereignstack-gateway
+    cooldown_seconds: 120
+    max_replicas: 5
+    description: "Scale up gateway replicas if error rate is high due to overload."
+
+  - alert_name: DiskSpaceRunningLow
+    action: ROTATE_LOGS
+    target: persistentvolumeclaim/sovereignstack-data
+    cooldown_seconds: 3600
+    description: "Rotate and compress audit logs when disk space is low."
+
+  - alert_name: InferenceLatencyHigh
+    action: SCALE_UP
+    target: deployment/sovereignstack-vllm
+    cooldown_seconds: 300
+    max_replicas: 3
+    description: "Scale up vLLM inference instances when latency degrades."
+
+  - alert_name: NodeNotReady
+    action: CORDON_NODE
+    target: node/{{ $labels.node }}
+    cooldown_seconds: 600
+    description: "Cordon failing nodes to prevent scheduling new workloads."

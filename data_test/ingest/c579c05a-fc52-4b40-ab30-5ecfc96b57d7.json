@@ -1,0 +1,11 @@
+{
+  "doc_id": "c579c05a-fc52-4b40-ab30-5ecfc96b57d7",
+  "source_filename": "test.txt",
+  "sha256": "642798931f0898c9ec6a80aae37c8bebd11ca869c74c68792bba1a66a4957c57",
+  "pages": [
+    {
+      "page": 1,
+      "text": "Hello, this is a test document content"
+    }
+  ]
+}
