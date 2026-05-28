@@ -13,6 +13,7 @@ This directory contains formal specifications for SovereignStack subsystems and 
 | [Agent API](/rfcs/0005-agent-api.md) | Draft | Agent lifecycle, scheduling, memory attachment, tool execution |
 | [Memory](/rfcs/0006-memory-spec.md) | Draft | Vector store, KV cache, event log, CRDT sync, encryption |
 | [GraphQL API](/docs/api/graphql.md) | Implemented | Dual REST + GraphQL gateway with introspection |
+| [Enterprise Platform](/docs/enterprise/index.md) | Implemented | Support contracts, SLA, managed updates, deployment audits |
 
 ## Planned Specs
 

@@ -212,6 +212,24 @@ services:
       - sovereign-isolated
 
   # ===========================================================================
+  # Enterprise — Support contracts, SLA, managed updates, licensing
+  # ===========================================================================
+  enterprise:
+    build: .
+    command: uvicorn services.enterprise_service:app --host 0.0.0.0 --port 8085
+    ports: ["8085:8085"]
+    volumes: ["./data:/app/data"]
+    env_file: [.env]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8085/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - sovereign-isolated
+
+  # ===========================================================================
   # Prometheus — Metrics scraping
   # ===========================================================================
   prometheus:

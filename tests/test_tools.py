@@ -186,3 +186,23 @@ def test_windows_tpm_probing_failure(mock_run, mock_system):
     errors = audit_host_infrastructure(config)
     # TPM is required but reported False, so error should be appended
     assert any("Windows TPM verification failed" in err for err in errors)
+
+
+class TestDeploymentAudit:
+    def test_audit_validate_runs(self):
+        from tools.audit_deployment import cmd_validate, cmd_report
+        args = type("Args", (), {"command": "validate", "output": ""})()
+        result = cmd_validate(args)
+        assert result in (0, 1)
+
+    def test_audit_report_generates_json(self, tmp_path):
+        from tools.audit_deployment import cmd_report
+        out = tmp_path / "audit.json"
+        args = type("Args", (), {"command": "report", "output": str(out)})()
+        result = cmd_report(args)
+        assert result in (0, 1)
+        assert out.exists()
+        data = json.loads(out.read_text())
+        assert "summary" in data
+        assert "checks" in data
+        assert "deployment_audit" in data
