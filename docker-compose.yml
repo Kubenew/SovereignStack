@@ -11,7 +11,10 @@ services:
       - "spire-data:/data/spire"
     healthcheck:
       test: ["CMD", "./bin/spire-server", "healthcheck", "-serverAddress", "0.0.0.0:8084"]
-      interval: 15s; timeout: 5s; retries: 5; start_period: 30s
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - sovereign-isolated
 
@@ -33,7 +36,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "./bin/spire-agent", "healthcheck", "-socketPath", "/var/run/spire/agent.sock"]
-      interval: 15s; timeout: 5s; retries: 5; start_period: 10s
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - sovereign-isolated
 
@@ -97,6 +103,7 @@ services:
       - OASA_ENFORCE_COMPLIANCE=${OASA_ENFORCE_COMPLIANCE:-STRICT}
       - OASA_ENFORCE_AUTH=${OASA_ENFORCE_AUTH:-STRICT}
       - OASA_ENFORCE_POLICY=${OASA_ENFORCE_POLICY:-STRICT}
+      - SPIFFE_ENABLED=${SPIFFE_ENABLED:-true}
     depends_on:
       vllm:
         condition: service_healthy
@@ -150,8 +157,25 @@ services:
       timeout: 10s
       retries: 5
       start_period: 120s
+    restart: unless-stopped
     networks:
       - sovereign-isolated
+
+  federation:
+    image: python:3.12-slim
+    container_name: sovereignstack-federation
+    networks:
+      - sovereign-isolated
+    ports:
+      - "8084:8084"
+    volumes:
+      - ./services:/app/services
+    working_dir: /app
+    command: ["pip", "install", "fastapi", "uvicorn", "pydantic", "requests", "&&", "python", "-m", "uvicorn", "services.federation_service:app", "--host", "0.0.0.0", "--port", "8084"]
+    environment:
+      - NODE_ID=sovereign-node-1
+      - FEDERATION_TOKEN=default-federation-token
+    restart: unless-stopped
 
   # ===========================================================================
   # Ingest — Document ingestion service

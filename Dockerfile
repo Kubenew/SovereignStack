@@ -3,15 +3,14 @@
 # Reproducibility: pin base images via digest, hash-pin Python dependencies
 # =============================================================================
 # Stage 1: Build dependencies
-# Pin base image digest: use `docker pull python:3.11.11-slim@sha256:...` and verify
-FROM python:3.11.11-slim@sha256:2c0e7d4f6a1b8c9d0e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c AS builder
+FROM python:3.11.11-slim AS builder
 
 WORKDIR /app
 COPY requirements-locked.txt requirements.txt
 RUN pip install --no-cache-dir --user --require-hashes -r requirements-locked.txt
 
 # Stage 2: Production runtime
-FROM python:3.11.11-slim@sha256:2c0e7d4f6a1b8c9d0e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c AS runtime
+FROM python:3.11.11-slim AS runtime
 
 # Security: run as non-root
 RUN groupadd -r sovereign && useradd -r -g sovereign -d /app -s /sbin/nologin sovereign
@@ -19,11 +18,11 @@ RUN groupadd -r sovereign && useradd -r -g sovereign -d /app -s /sbin/nologin so
 WORKDIR /app
 
 # Copy only installed packages
-COPY --from=builder /root/.local /root/.local
-ENV PATH=/root/.local/bin:$PATH
+COPY --from=builder --chown=sovereign:sovereign /root/.local /app/.local
+ENV PATH=/app/.local/bin:$PATH
 
 # Copy application code
-COPY . .
+COPY --chown=sovereign:sovereign . .
 
 # Create data directories with correct permissions
 RUN mkdir -p /app/data /app/data/ingest /app/data/memory /app/data/audit && \
