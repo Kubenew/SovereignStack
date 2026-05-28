@@ -230,6 +230,24 @@ services:
       - sovereign-isolated
 
   # ===========================================================================
+  # Certification — Registry, verification, certified entity management
+  # ===========================================================================
+  certification:
+    build: .
+    command: uvicorn services.certification_service:app --host 0.0.0.0 --port 8086
+    ports: ["8086:8086"]
+    volumes: ["./data:/app/data"]
+    env_file: [.env]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8086/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - sovereign-isolated
+
+  # ===========================================================================
   # Prometheus — Metrics scraping
   # ===========================================================================
   prometheus:

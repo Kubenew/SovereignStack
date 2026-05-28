@@ -71,7 +71,7 @@ def main():
     parser.add_argument("--level", required=True, choices=["L1", "L2", "L3"], help="Certification level to issue")
     parser.add_argument("--subject-name", required=True, help="Name of the certified subject")
     parser.add_argument("--subject-version", default="1.0.0", help="Version of the certified subject")
-    parser.add_argument("--subject-type", required=True, choices=["inference-engine", "gateway", "memory-store", "ingestion-pipeline", "platform", "node", "hardware-appliance"], help="Type of implementation")
+    parser.add_argument("--subject-type", required=True, choices=["inference-engine", "gateway", "memory-store", "ingestion-pipeline", "platform", "node", "hardware-appliance", "runtime", "federation"], help="Type of implementation")
     parser.add_argument("--output", type=Path, default=Path("certification-attestation.json"), help="Output path")
     parser.add_argument("--key", help="Path to issuer PEM private key")
     parser.add_argument("--hmac-secret", default="sovereign-dev-secret", help="Fallback HMAC secret for testing")
@@ -93,6 +93,11 @@ def main():
     if failed > 0:
         print(f"Error: Cannot issue certification for a report with {failed} failing tests.")
         return 1
+
+    # Add registry_url if available
+    registry_url = os.getenv("CERTIFICATION_REGISTRY_URL", "")
+    if registry_url:
+        attestation["certification"]["registry_entry"] = f"{registry_url}/certification/registry"
 
     if report.get("level") != args.level:
         print(f"Warning: Report level ({report.get('level')}) does not match requested level ({args.level}).")

@@ -61,7 +61,7 @@
         },
         "type": {
           "type": "string",
-          "enum": ["inference-engine", "gateway", "memory-store", "ingestion-pipeline", "platform", "node", "hardware-appliance"],
+          "enum": ["inference-engine", "gateway", "memory-store", "ingestion-pipeline", "platform", "node", "hardware-appliance", "runtime", "federation"],
           "description": "Type of implementation"
         },
         "homepage": {

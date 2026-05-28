@@ -70,9 +70,35 @@ def verify_signature(payload_bytes: bytes, sig_block: dict, hmac_secret: str) ->
 
 def main():
     parser = argparse.ArgumentParser(description="Verify OASA Certification")
-    parser.add_argument("--attestation", required=True, type=Path, help="Path to certification attestation JSON")
+    parser.add_argument("--attestation", type=Path, help="Path to certification attestation JSON")
+    parser.add_argument("--registry-id", help="Verify against certification registry entry ID")
+    parser.add_argument("--registry-url", default=os.getenv("CERTIFICATION_REGISTRY_URL", "http://localhost:8086"), help="Certification registry URL")
     parser.add_argument("--hmac-secret", default="sovereign-dev-secret", help="Fallback HMAC secret for testing")
     args = parser.parse_args()
+
+    if not args.attestation and not args.registry_id:
+        print("Error: Either --attestation or --registry-id is required.")
+        return 1
+
+    if args.registry_id:
+        import urllib.request
+        try:
+            resp = urllib.request.urlopen(f"{args.registry_url}/certification/verify/{args.registry_id}")
+            reg_entry = json.loads(resp.read())
+            print(f"Registry verification for {reg_entry['subject_name']} ({reg_entry['program']}/{reg_entry['level']}):")
+            print(f"  Status: {reg_entry['status']}")
+            print(f"  Expired: {reg_entry['expired']}")
+            if reg_entry['valid']:
+                print(f"  Registry: VALID (active, not expired)")
+            else:
+                print(f"  Registry: INVALID")
+                return 1
+            if not args.attestation:
+                return 0
+        except Exception as exc:
+            print(f"Warning: Registry check failed: {exc}")
+            if not args.attestation:
+                return 1
 
     if not args.attestation.exists():
         print(f"Error: Attestation file {args.attestation} does not exist.")

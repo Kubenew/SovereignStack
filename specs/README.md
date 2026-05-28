@@ -14,6 +14,7 @@ This directory contains formal specifications for SovereignStack subsystems and 
 | [Memory](/rfcs/0006-memory-spec.md) | Draft | Vector store, KV cache, event log, CRDT sync, encryption |
 | [GraphQL API](/docs/api/graphql.md) | Implemented | Dual REST + GraphQL gateway with introspection |
 | [Enterprise Platform](/docs/enterprise/index.md) | Implemented | Support contracts, SLA, managed updates, deployment audits |
+| [Certification Program](/docs/certification/index.md) | Implemented | Certified Node, Runtime, Federation with registry API |
 
 ## Planned Specs
 
