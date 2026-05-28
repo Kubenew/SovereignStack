@@ -1,0 +1,34 @@
+{{- if .Values.enclaves.sgx.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: intel-sgx-plugin
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: intel-sgx-plugin
+  template:
+    metadata:
+      labels:
+        app: intel-sgx-plugin
+    spec:
+      nodeSelector:
+        feature.node.kubernetes.io/cpu-cpuid.SGX: "true"
+      containers:
+      - name: intel-sgx-plugin
+        image: intel/intel-sgx-plugin:latest
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: devfs
+          mountPath: /dev
+        - name: kubeletsockets
+          mountPath: /var/lib/kubelet/device-plugins
+      volumes:
+      - name: devfs
+        hostPath:
+          path: /dev
+      - name: kubeletsockets
+        hostPath:
+          path: /var/lib/kubelet/device-plugins
+{{- end }}

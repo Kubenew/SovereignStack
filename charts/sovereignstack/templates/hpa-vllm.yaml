@@ -1,0 +1,28 @@
+{{- if and .Values.vllm.enabled .Values.autoscaling.vllm.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: sovereignstack-vllm
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: sovereignstack
+    component: vllm
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: sovereignstack-vllm
+  minReplicas: {{ .Values.autoscaling.vllm.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.vllm.maxReplicas }}
+  metrics:
+    {{- if .Values.autoscaling.vllm.targetGPUUtilizationPercentage }}
+    # Requires Prometheus Adapter and custom metrics API for DCGM exporter
+    - type: Pods
+      pods:
+        metric:
+          name: DCGM_FI_DEV_GPU_UTIL
+        target:
+          type: AverageValue
+          averageValue: {{ .Values.autoscaling.vllm.targetGPUUtilizationPercentage }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,26 @@
+{{- if .Values.pdb.enabled }}
+{{- $components := list "vllm" "gateway" "memory" "ingest" }}
+{{- $global := . }}
+{{- range $component := $components }}
+{{- if (index $global.Values $component).enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "sovereignstack.fullname" $global }}-{{ $component }}
+  labels:
+    app.kubernetes.io/name: {{ include "sovereignstack.name" $global }}-{{ $component }}
+    app.kubernetes.io/instance: {{ $global.Release.Name }}
+spec:
+  {{- if $global.Values.pdb.minAvailable }}
+  minAvailable: {{ $global.Values.pdb.minAvailable }}
+  {{- else if $global.Values.pdb.maxUnavailable }}
+  maxUnavailable: {{ $global.Values.pdb.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "sovereignstack.name" $global }}-{{ $component }}
+      app.kubernetes.io/instance: {{ $global.Release.Name }}
+{{- end }}
+{{- end }}
+{{- end }}

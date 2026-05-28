@@ -8,9 +8,16 @@ metadata:
     {{- include "sovereignstack.labels" . | nindent 4 }}
     app.kubernetes.io/component: inference-engine
 spec:
-  replicas: 1
+  replicas: {{ .Values.vllm.replicaCount | default 1 }}
   strategy:
+    {{- if .Values.canary.enabled }}
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ .Values.canary.maxSurge }}
+      maxUnavailable: {{ .Values.canary.maxUnavailable }}
+    {{- else }}
     type: Recreate
+    {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: inference-engine

@@ -1,0 +1,132 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: sovereignstackconfigs.sovereign.stack.ai
+spec:
+  group: sovereign.stack.ai
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                version:
+                  type: string
+                metadata:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    tier:
+                      type: string
+                    compliance_profile:
+                      type: string
+                node_infrastructure:
+                  type: object
+                  properties:
+                    engine:
+                      type: string
+                    air_gapped_enforcement:
+                      type: boolean
+                    storage:
+                      type: object
+                      properties:
+                        ephemeral_encrypted:
+                          type: boolean
+                        encryption_algorithm:
+                          type: string
+                        hardware_tpm_binding:
+                          type: boolean
+                    network_isolation:
+                      type: object
+                      properties:
+                        allow_wan:
+                          type: boolean
+                        dns_mode:
+                          type: string
+                        allowed_internal_cidrs:
+                          type: array
+                          items:
+                            type: string
+                    sandboxing:
+                      type: object
+                      properties:
+                        runtime:
+                          type: string
+                        confidential_compute:
+                          type: boolean
+                data_ingestion:
+                  type: object
+                  properties:
+                    service_name:
+                      type: string
+                    max_parallel_workers:
+                      type: integer
+                    memory_processing_mode:
+                      type: string
+                    enforce_strict_json_schema:
+                      type: boolean
+                    input_formats:
+                      type: array
+                      items:
+                        type: string
+                cognitive_memory:
+                  type: object
+                  properties:
+                    backend:
+                      type: string
+                    vector_dimensions:
+                      type: integer
+                    encryption_at_rest:
+                      type: boolean
+                    context_ttl_seconds:
+                      type: integer
+                    kv_cache_isolation:
+                      type: boolean
+                compute_execution:
+                  type: object
+                  properties:
+                    gateway:
+                      type: string
+                    optimization_engine:
+                      type: string
+                    precision:
+                      type: string
+                    openai_api_compatibility:
+                      type: boolean
+                    hardware:
+                      type: object
+                      properties:
+                        accelerator:
+                          type: string
+                        vram_budget_gb:
+                          type: integer
+                        allow_cpu_fallback:
+                          type: boolean
+                    runtime_protection:
+                      type: object
+                      properties:
+                        enforce_compliance_lock:
+                          type: boolean
+                        memory_leak_threshold_mb:
+                          type: integer
+                        max_token_context:
+                          type: integer
+                services:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+                models:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+  scope: Namespaced
+  names:
+    plural: sovereignstackconfigs
+    singular: sovereignstackconfig
+    kind: SovereignStackConfig
+    shortNames:
+      - ssc
