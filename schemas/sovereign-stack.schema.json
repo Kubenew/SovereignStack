@@ -14,8 +14,20 @@
       "required": ["name", "tier", "compliance_profile"],
       "properties": {
         "name": { "type": "string" },
-        "tier": { "type": "string" },
-        "compliance_profile": { "type": "string" }
+        "tier": {
+          "type": "string",
+          "enum": ["development", "production", "production-airgapped"]
+        },
+        "compliance_profile": { "type": "string" },
+        "certification": {
+          "type": "object",
+          "properties": {
+            "target_level": {
+              "type": "string",
+              "enum": ["L1", "L2", "L3"]
+            }
+          }
+        }
       }
     },
     "node_infrastructure": {

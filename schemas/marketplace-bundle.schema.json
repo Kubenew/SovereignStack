@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/Kubenew/SovereignStack/main/schemas/marketplace-bundle.schema.json",
+  "title": "SovereignStack Agent Marketplace Bundle",
+  "description": "Schema for publishing agent modules and plugins to the SovereignStack Marketplace.",
+  "type": "object",
+  "required": ["bundle_id", "name", "version", "author", "type", "manifest"],
+  "properties": {
+    "bundle_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "author": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["agent", "tool-plugin", "memory-adapter"]
+    },
+    "description": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "object",
+      "properties": {
+        "sovereign_stack_version": {
+          "type": "string"
+        },
+        "python_packages": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "manifest": {
+      "type": "object",
+      "description": "The base agent manifest (RFC 0005) if this bundle is an agent type."
+    },
+    "signature": {
+      "type": "string",
+      "description": "Ed25519 signature by the author."
+    }
+  }
+}
