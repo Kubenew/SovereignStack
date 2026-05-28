@@ -1,0 +1,41 @@
+# Gramine manifest for running the SovereignStack Ingest Service in Intel SGX
+# Requires Gramine v1.5+
+
+loader.entrypoint = "file:{{ gramine.libos }}"
+libos.entrypoint = "{{ entrypoint }}"
+
+loader.log_level = "{{ log_level }}"
+loader.env.LD_LIBRARY_PATH = "/lib:/usr/lib:/usr/local/lib"
+
+loader.env.PYTHONPATH = "/app"
+loader.env.DATA_DIR = "/app/data"
+
+fs.mounts = [
+    { path = "/lib", uri = "file:{{ gramine.runtimedir }}" },
+    { path = "/usr/lib", uri = "file:/usr/lib" },
+    { path = "/app", uri = "file:/app" },
+    { path = "/etc/ssl/certs", uri = "file:/etc/ssl/certs" },
+    # Use encrypted filesystem for data
+    { path = "/app/data", uri = "file:/app/data", type = "encrypted", key_name = "default" }
+]
+
+sgx.enclave_size = "4G"
+sgx.max_threads = 32
+
+sgx.trusted_files = [
+    "file:{{ gramine.libos }}",
+    "file:{{ entrypoint }}",
+    "file:{{ gramine.runtimedir }}/",
+    "file:/usr/lib/python3.12/",
+    "file:/usr/local/lib/python3.12/dist-packages/",
+    "file:/app/services/ingest_service.py",
+    "file:/app/services/spiffe_auth.py",
+]
+
+sgx.allowed_files = [
+    "file:/etc/hosts",
+    "file:/etc/resolv.conf",
+    "file:/app/data/",
+]
+
+sys.enable_extra_runtime_domain_names_conf = true

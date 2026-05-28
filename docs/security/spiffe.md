@@ -82,14 +82,49 @@ Every audit event now includes the SPIFFE ID of the calling service:
 
 ### 2. Inter-service Authentication
 
-Services fetch JWT SVIDs from the local SPIRE Agent to authenticate outbound calls:
+Services authenticate each other using **SPIFFE JWT SVIDs** carried as Bearer tokens in HTTP headers.
+
+**Caller side** — the gateway fetches a JWT SVID and includes it in requests to memory and ingest:
 
 ```python
 from services.spiffe_helper import spiffe_ctx
 
-headers = spiffe_ctx.get_auth_header("memory.sovereign.stack")
+headers = spiffe_ctx.get_auth_header("memory")
 # Use headers in requests to the memory service
+# Headers: {"Authorization": "Bearer <JWT_SVID>"}
 ```
+
+**Callee side** — memory and ingest services validate incoming JWT SVIDs via a FastAPI dependency:
+
+```python
+from services.spiffe_auth import authorized_spiffe_ids
+
+# Only allow callers with specific SPIFFE ID prefixes
+_memory_auth = authorized_spiffe_ids(
+    allowed=[
+        "spiffe://sovereign.stack/service/gateway",
+        "spiffe://sovereign.stack/service/ingest",
+    ]
+)
+
+@app.post("/embed")
+def embed(req: EmbedRequest, identity: dict = Depends(_memory_auth)):
+    ...
+```
+
+**Authorized caller matrix:**
+
+| Service | Allowed Caller SPIFFE IDs |
+|---|---|
+| memory | `service/gateway`, `service/ingest`, `service/admin` |
+| ingest | `service/gateway`, `service/admin` |
+
+When `SPIFFE_ENABLED=false` (default), all inter-service calls proceed without authentication. When enabled, requests without a valid JWT SVID receive a `401` (missing token) or `403` (invalid/unauthorized SPIFFE ID) response.
+
+The auth module is defined in [`services/spiffe_auth.py`](/services/spiffe_auth.py) and provides:
+
+- `require_spiffe_or_skip()` — FastAPI dependency that validates JWT SVIDs when SPIFFE is enabled, skips when disabled
+- `authorized_spiffe_ids(allowed)` — Factory for dependency that additionally checks the SPIFFE ID prefix
 
 ### 3. Health & Identity Endpoint
 

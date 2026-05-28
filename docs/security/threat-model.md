@@ -66,7 +66,41 @@ This threat model follows the [STRIDE](https://en.wikipedia.org/wiki/STRIDE_(sec
 
 ---
 
-## 3. Threat Catalogue
+---
+
+## 3. Attack Tree (Formal Threat Model)
+
+The following attack tree models potential paths to a full node compromise.
+
+```mermaid
+graph TD
+    A[Node Compromise / Exfiltration] --> B{Data Exfiltration}
+    A --> C{Resource Exhaustion}
+    A --> D{Supply Chain}
+
+    B --> B1[API Fallback]
+    B1 -.-> |Mitigated by OASA Lock| B1M[503 Service Unavailable]
+    
+    B --> B2[DNS Tunneling]
+    B2 -.-> |Mitigated by LOCAL_ONLY| B2M[CoreDNS Stub]
+    
+    B --> B3[Log Shipping Exfil]
+    B3 -.-> |Mitigated by Air-gap| B3M[Append-Only Local Logs]
+
+    C --> C1[Context Window Exhaustion]
+    C1 -.-> |Mitigated by Max Tokens| C1M[8192 Token Limit]
+    
+    C --> C2[GPU OOM]
+    C2 -.-> |Mitigated by PagedAttention| C2M[vLLM Queuing]
+
+    D --> D1[Poisoned Weights]
+    D1 -.-> |Mitigated by Cosign/Checksum| D1M[SHA-256 Validated]
+
+    D --> D2[Malicious Dependency]
+    D2 -.-> |Mitigated by SBOM| D2M[Hash-Pinned CI]
+```
+
+## 4. Threat Catalogue
 
 ### 3.1 Data Exfiltration
 

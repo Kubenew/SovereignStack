@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sovereignstack-vllm-cc
+  namespace: sovereign-stack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sovereignstack
+      component: vllm-cc
+  template:
+    metadata:
+      labels:
+        app: sovereignstack
+        component: vllm-cc
+      annotations:
+        # Kata Containers SEV-SNP integration
+        io.katacontainers.config.hypervisor.machine_type: "q35"
+        io.katacontainers.config.hypervisor.confidential_guest: "true"
+        io.katacontainers.config.hypervisor.sev_snp: "true"
+        io.katacontainers.config.hypervisor.memory_encryption: "true"
+    spec:
+      runtimeClassName: kata-cc
+      initContainers:
+        - name: attestation-agent
+          image: sovereignstack/attestation-agent:latest
+          env:
+            - name: ATTESTATION_URL
+              value: "http://sovereignstack-attestation:8443/attest"
+            - name: ENCLAVE_TYPE
+              value: "sev-snp"
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.7.2
+          command: ["vllm", "serve", "/data/Qwen2.5-7B-Instruct", "--port", "8000"]
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+              memory: 32Gi
+            requests:
+              nvidia.com/gpu: 1
+              memory: 16Gi
+          volumeMounts:
+            - name: model-data
+              mountPath: /data
+      volumes:
+        - name: model-data
+          hostPath:
+            path: /opt/sovereignstack/models
