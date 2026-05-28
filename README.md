@@ -34,7 +34,8 @@
 curl -sSL https://install.sovereignstack.ai | bash
 
 # 2. Download a local model
-curl -Lo playground/models/model.gguf \
+mkdir -p models
+curl -Lo models/model.gguf \
   https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf
 
 # 3. Launch the stack
@@ -264,8 +265,8 @@ See [ROADMAP.md](ROADMAP.md) for the full phased roadmap through 2027+.
 | Phase | Highlights |
 |---|---|
 | **2026.1** ✅ | Helm chart, vLLM, OPA, CI/CD, Keycloak OIDC, Threat Model |
-| **2026.2** 🚧 | RFC Process, Architecture Docs, Deployment Profiles, Governance |
-| **2026.3** 📅 | Merkle-Tree Auditing, Federated Memory, Mesh Networking |
+| **2026.2** ✅ | RFC Process, Architecture Docs, Deployment Profiles, Governance |
+| **2026.3** 🚧 | Merkle-Tree Auditing, Federated Memory, Mesh Networking |
 | **2027.1** 📅 | Hardware Enclaves, SBOM/Cosign, SPIFFE/SPIRE, Sovereign Node OS |
 | **2027.2** 📅 | Agent Orchestration, Multi-Model Routing, Federated Agents |
 | **2027.3+** 🔮 | Autonomous Infrastructure, Certification Program, Enterprise Platform |

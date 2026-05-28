@@ -3,6 +3,8 @@ metadata:
   name: "sovereign-enterprise-appliance"
   tier: "production-airgapped"
   compliance_profile: "OASA-STRICT-GDPR-HIPAA"
+  certification:
+    target_level: "L3"
 
 node_infrastructure:
   engine: "privatecloud-k8s"
@@ -19,7 +21,11 @@ node_infrastructure:
       - "192.168.0.0/16"
   sandboxing:
     runtime: "gvisor"
-    confidential_compute: false
+    confidential_compute:
+      enabled: true
+      mode: "sev-snp"        # sgx | sev-snp | auto
+      attestation_endpoint: "http://attestation.local:8443"
+      enforce_on: ["ingest", "vllm"]
 
 data_ingestion:
   service_name: "pdf2struct-pipeline"
@@ -81,8 +87,19 @@ services:
     listen: "0.0.0.0:8083"
     backend: "local"
     vram_budget_gb: 24
+  agent:
+    enabled: true
+    listen: "0.0.0.0:8084"
+    max_concurrent_agents: 10
+  marketplace:
+    enabled: true
+    listen: "0.0.0.0:8085"
+    registry_mode: "local-first"
 
 models:
   allowed:
     - "sovereign-llama3"
     - "sovereign-mistral"
+  routing:
+    "sovereign-llama3": "http://sovereignstack-vllm-llama:8000"
+    "sovereign-mistral": "http://sovereignstack-vllm-mistral:8000"

@@ -3,6 +3,7 @@
 # Update pinned versions via: pip-compile --generate-hashes --output-file=requirements-locked.txt requirements.txt
 # =============================================================================
 fastapi==0.136.3
+strawberry-graphql==0.316.0
 uvicorn==0.48.0
 pydantic==2.13.4
 python-multipart==0.0.29

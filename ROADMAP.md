@@ -19,51 +19,65 @@
 | ✅ | Threat Model | STRIDE catalogue, 8 trust zones, compliance mapping |
 | ✅ | Observability | OpenTelemetry traces, Prometheus metrics |
 
-## 2026.2 — Standards & Governance (Next)
+## 2026.2 — Standards & Governance
 
 | Status | Feature | Description |
 |---|---|---|
-| 🚧 | RFC Process | Standards evolution workflow |
-| 🚧 | Architecture Docs | System topology, layer model, subsystem boundaries |
-| 🚧 | Deployment Profiles | Edge, Air-Gap, Datacenter, Personal |
-| 🚧 | Reproducible Builds | Nix/Guix, signed releases, SBOM in CI |
-| 🚧 | Governance Model | Maintainer roles, working groups, decision process |
+| ✅ | RFC Process | Standards evolution workflow (RFC 0000–0006) |
+| ✅ | Architecture Docs | System topology, layer model, subsystem boundaries |
+| ✅ | Deployment Profiles | Edge, Air-Gap, Datacenter, Personal + edge guide |
+| ✅ | Reproducible Builds | Hash-pinned deps, digest-pinned images, SBOM + cosign in CI |
+| ✅ | Governance Model | Maintainer roles, working groups, lazy consensus |
+| ✅ | Agent Orchestration | Agent API (RFC 0005), lifecycle, scheduling, tool plugins |
 
 ## 2026.3 — Federation & Memory
 
 | Status | Feature | Description |
 |---|---|---|
-| 📅 | OASA Merkle-Tree Auditing | Append-only cryptographically verified log chains |
-| 📅 | Federated Memory | CRDT-based cross-node vector sync |
-| 📅 | Mesh Networking | WireGuard-based inter-node routing |
+| ✅ | Node Identity | Ed25519 keys, TPM AIK, X.509 cert chain (RFC 0003) |
+| ✅ | Federation Protocol | WireGuard mesh, CRDT sync, jurisdictional gating (RFC 0004) |
+| ✅ | Memory Spec | Vector store, KV cache, event log, CRDT sync (RFC 0006) |
+| ✅ | OASA Merkle-Tree Auditing | Append-only cryptographically verified log chains |
 | 📅 | Secure Weight Federation | Sharded cross-node inference without sharing weights |
 
 ## 2027.1 — Enterprise Hardening
 
 | Status | Feature | Description |
 |---|---|---|
-| 📅 | Hardware Enclave Ingest | SGX/SEV-SNP confidential computing |
-| 📅 | SBOM & Cosign Signing | Supply chain security for all artifacts |
-| 📅 | SPIFFE/SPIRE Identity | Workload identity for zero-trust mesh |
-| 📅 | Sovereign Node OS | Immutable OS image (NixOS/Talos-based) |
+| ✅ | SBOM & Cosign Signing | Syft SPDX+CycloneDX, cosign verification in CI |
+| ✅ | SPIFFE/SPIRE Identity | Workload identity, SVID fetch, audit attribution |
+| ✅ | Prometheus Alerting | 21 alerts across 6 rule groups |
+| ✅ | Edge Deployment Guide | K3s + ARM + Longhorn reference |
+| ✅ | Hardware Enclave Ingest | SGX/SEV-SNP confidential computing |
+| ✅ | Sovereign Node OS | Immutable OS image (NixOS/Talos-based) |
 
-## 2027.2 — Agent Orchestration
+## 2027.2 — Agent Ecosystem
 
 | Status | Feature | Description |
 |---|---|---|
-| 📅 | Agent Runtime | Lifecycle management, scheduling, memory attachment |
-| 📅 | Multi-Model Orchestration | Routing, fallback, ensemble inference |
-| 📅 | Federated Agents | Cross-node agent coordination |
-| 📅 | Marketplace | Agent modules, deployment bundles, plugins |
+| ✅ | Agent Runtime (RFC) | Agent manifest, 8 endpoints, SSE streaming, memory attachment |
+| ✅ | Compliance Framework | GDPR, HIPAA, SOC 2 control mapping |
+| ✅ | Security Overview | Defense-in-depth across 3 identity layers |
+| ✅ | Multi-Model Orchestration | Routing, fallback, ensemble inference |
+| ✅ | Federated Agents | Cross-node agent coordination |
+| ✅ | Marketplace | Agent modules, deployment bundles, plugins |
 
 ## 2027.3+ — Autonomous Infrastructure
 
 | Status | Feature | Description |
 |---|---|---|
-| 🔮 | Sovereign Mesh Federation | Regional mesh → federated AI clusters |
-| 🔮 | Autonomous Operations | Self-healing, auto-scaling, predictive scheduling |
-| 🔮 | Certification Program | Certified Node, Runtime, Federation |
-| 🔮 | Enterprise Platform | Support contracts, managed updates, deployment audits |
+| ✅ | Sovereign Mesh Federation | Regional mesh → federated AI clusters |
+| ✅ | Autonomous Operations | Self-healing, auto-scaling, predictive scheduling |
+| 📅 | Certification Program | Certified Node, Runtime, Federation |
+| 📅 | Enterprise Platform | Support contracts, managed updates, deployment audits |
+
+## 2026 Kubernetes Enhancements
+
+| Status | Feature | Description |
+|---|---|---|
+| ✅ | Canonical CRD | Native `sovereignstack.yaml` Kubernetes CRD management |
+| ✅ | High Availability | PodDisruptionBudget for safe evictions |
+| ✅ | Canary Rollouts | RollingUpdate configurations for inference endpoints |
 
 ---
 

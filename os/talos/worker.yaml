@@ -1,0 +1,33 @@
+version: v1alpha1
+debug: false
+machine:
+  type: worker
+  token: ${TALOS_MACHINE_TOKEN}
+  network:
+    hostname: sovereign-worker-1
+    timeServers: []
+  
+  install:
+    disk: /dev/sda
+    image: factory.talos.dev/installer/v1.9.0
+    wipe: false
+    
+  sysctls:
+    kernel.kptr_restrict: "2"
+    kernel.dmesg_restrict: "1"
+
+  # Kata Containers / Confidential Computing setup
+  sysctls:
+    vm.max_map_count: "262144" # often needed for large ML workloads
+
+  kubelet:
+    extraArgs:
+      feature-gates: "EphemeralContainers=true"
+      # Isolate CPUs for performance if needed
+      # topology-manager-policy: "best-effort"
+
+cluster:
+  id: sovereign-mesh
+  secret: ${TALOS_CLUSTER_SECRET}
+  controlPlane:
+    endpoint: https://${API_SERVER_IP}:6443

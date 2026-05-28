@@ -1,0 +1,46 @@
+# Machine config patch to enforce strict network lockdown
+- op: replace
+  path: /machine/network/interfaces
+  value:
+    - interface: eth0
+      # Use static IP assignment rather than DHCP to prevent spoofing
+      addresses:
+        - ${STATIC_IP}/24
+      routes:
+        - network: 0.0.0.0/0
+          gateway: ${GATEWAY_IP}
+      # Configure MTU for WireGuard encapsulation
+      mtu: 1420
+
+# Disable SSH (Talos API only)
+- op: replace
+  path: /machine/features/hostDNS
+  value:
+    enabled: true
+    
+# Apply rigid firewall rules at the host OS level
+- op: add
+  path: /machine/network/firewall
+  value:
+    # Deny all ingress by default
+    defaultAction: block
+    rules:
+      # Allow Talos API
+      - name: talos-api
+        port: 50000
+        protocol: tcp
+        action: accept
+      # Allow Kubernetes API
+      - name: k8s-api
+        port: 6443
+        protocol: tcp
+        action: accept
+      # Allow WireGuard Mesh
+      - name: wireguard-mesh
+        port: 51901
+        protocol: udp
+        action: accept
+      # Allow internal pod traffic
+      - name: pod-network
+        network: 10.244.0.0/16
+        action: accept

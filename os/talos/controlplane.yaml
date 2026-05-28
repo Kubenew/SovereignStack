@@ -1,0 +1,53 @@
+version: v1alpha1
+debug: false
+machine:
+  type: controlplane
+  token: ${TALOS_MACHINE_TOKEN}
+  certSANs:
+    - "${API_SERVER_IP}"
+  network:
+    hostname: sovereign-cp-1
+    # Disable default NTP for air-gapped setups, rely on hardware clock
+    timeServers: []
+  
+  install:
+    disk: /dev/sda
+    image: factory.talos.dev/installer/v1.9.0
+    wipe: false
+    
+  sysctls:
+    # Kernel hardening
+    kernel.kptr_restrict: "2"
+    kernel.dmesg_restrict: "1"
+    net.ipv4.conf.all.rp_filter: "1"
+
+  features:
+    kubernetesTalosAPIAccess:
+      enabled: true
+      allowedRoles:
+        - os:reader
+    hostDNS:
+      enabled: true
+      resolveMemberNames: true
+
+cluster:
+  id: sovereign-mesh
+  secret: ${TALOS_CLUSTER_SECRET}
+  controlPlane:
+    endpoint: https://${API_SERVER_IP}:6443
+  network:
+    cni:
+      name: custom
+      urls:
+        # Use Cilium for strict NetworkPolicies
+        - https://raw.githubusercontent.com/cilium/cilium/v1.15.5/install/kubernetes/quick-install.yaml
+    podSubnets:
+      - 10.244.0.0/16
+    serviceSubnets:
+      - 10.96.0.0/12
+  
+  apiServer:
+    extraArgs:
+      # OIDC integration for API server
+      oidc-issuer-url: "https://keycloak.local/realms/sovereign"
+      oidc-client-id: "kubernetes"
