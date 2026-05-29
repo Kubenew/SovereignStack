@@ -230,6 +230,26 @@ services:
       - sovereign-isolated
 
   # ===========================================================================
+  # Weight Federation — Sharded secure cross-node inference
+  # ===========================================================================
+  weight-federation:
+    build: .
+    command: uvicorn services.weight_federation_service:app --host 0.0.0.0 --port 8087
+    ports: ["8087:8087"]
+    volumes: ["./data:/app/data"]
+    env_file: [.env]
+    environment:
+      - NODE_ID=weight-federation-node-1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8087/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - sovereign-isolated
+
+  # ===========================================================================
   # Certification — Registry, verification, certified entity management
   # ===========================================================================
   certification:

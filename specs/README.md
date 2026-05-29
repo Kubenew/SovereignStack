@@ -15,6 +15,7 @@ This directory contains formal specifications for SovereignStack subsystems and 
 | [GraphQL API](/docs/api/graphql.md) | Implemented | Dual REST + GraphQL gateway with introspection |
 | [Enterprise Platform](/docs/enterprise/index.md) | Implemented | Support contracts, SLA, managed updates, deployment audits |
 | [Certification Program](/docs/certification/index.md) | Implemented | Certified Node, Runtime, Federation with registry API |
+| [Secure Weight Federation](/docs/federation/weight-federation.md) | Implemented | Sharded cross-node inference without weight sharing |
 
 ## Planned Specs
 

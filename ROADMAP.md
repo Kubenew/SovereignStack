@@ -38,7 +38,7 @@
 | ✅ | Federation Protocol | WireGuard mesh, CRDT sync, jurisdictional gating (RFC 0004) |
 | ✅ | Memory Spec | Vector store, KV cache, event log, CRDT sync (RFC 0006) |
 | ✅ | OASA Merkle-Tree Auditing | Append-only cryptographically verified log chains |
-| 📅 | Secure Weight Federation | Sharded cross-node inference without sharing weights |
+| ✅ | Secure Weight Federation | Sharded cross-node inference without sharing weights |
 
 ## 2027.1 — Enterprise Hardening
 
