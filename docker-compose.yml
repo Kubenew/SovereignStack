@@ -167,11 +167,11 @@ services:
     networks:
       - sovereign-isolated
     ports:
-      - "8084:8084"
+      - "8088:8088"
     volumes:
       - ./services:/app/services
     working_dir: /app
-    command: ["pip", "install", "fastapi", "uvicorn", "pydantic", "requests", "&&", "python", "-m", "uvicorn", "services.federation_service:app", "--host", "0.0.0.0", "--port", "8084"]
+    command: ["/bin/sh", "-c", "pip install fastapi uvicorn pydantic requests httpx && python -m uvicorn services.federation_service:app --host 0.0.0.0 --port 8088"]
     environment:
       - NODE_ID=sovereign-node-1
       - FEDERATION_TOKEN=default-federation-token

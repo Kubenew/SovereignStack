@@ -172,6 +172,7 @@ class TestAppendOnlyLog:
     def test_append_is_immutable(self):
         log = AppendOnlyLog()
         log.append(data={"v": 1}, node_id="n-a")
+        time.sleep(0.02)
         log.append(data={"v": 2}, node_id="n-a")
         assert log.size == 2
         # Cannot modify past entries

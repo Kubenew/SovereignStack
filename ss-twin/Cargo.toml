@@ -1,0 +1,17 @@
+[package]
+name = "ss-twin"
+description = "SovereignStack Digital Twin Framework — bridges physical devices and robotics to the Sovereign Event Bus"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ss-core = { workspace = true }
+ss-identity = { path = "../ss-identity" }
+ss-eventbus = { path = "../ss-eventbus" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+async-trait = { workspace = true }
+tracing = { workspace = true }

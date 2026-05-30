@@ -88,7 +88,7 @@ class TestPredictiveScheduler:
         def mock_fetch(query):
             if "gateway" in query:
                 return 150.0 # Above threshold of 100
-            return 50.0 # Below threshold
+            return 0.50 # Below threshold of 0.85
             
         monkeypatch.setattr(scheduler, "fetch_metric", mock_fetch)
         

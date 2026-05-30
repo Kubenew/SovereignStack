@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request, Header
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import os
 import requests
 import uuid
@@ -12,7 +12,18 @@ from services.sync_engine import SyncEngine, SyncMessage, MessageType
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="SovereignStack Federation Relay", version="2026.3")
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage background sync loop lifecycle."""
+    sync_engine.start()
+    logger.info("Federation service started: node=%s jurisdiction=%s", NODE_ID, JURISDICTION)
+    yield
+    sync_engine.stop()
+    logger.info("Federation service shutting down")
+
+app = FastAPI(title="SovereignStack Federation Relay", version="2026.3", lifespan=lifespan)
 
 NODE_ID = os.getenv("NODE_ID", str(uuid.uuid4()))
 KNOWN_PEERS = os.getenv("KNOWN_PEERS", "").split(",")
@@ -248,7 +259,7 @@ class AgentMessage(BaseModel):
     target_agent_id: str
     target_node_id: str
     payload: dict
-    timestamp: float = time.time()
+    timestamp: float = Field(default_factory=time.time)
 
 @app.post("/mesh/agent/message")
 def route_agent_message(msg: AgentMessage, authorization: str | None = Header(None)):
@@ -300,18 +311,7 @@ def health():
     }
 
 
-@app.on_event("startup")
-def startup():
-    """Start the background sync loop on application startup."""
-    sync_engine.start()
-    logger.info("Federation service started: node=%s jurisdiction=%s", NODE_ID, JURISDICTION)
-
-
-@app.on_event("shutdown")
-def shutdown():
-    """Stop the sync engine gracefully."""
-    sync_engine.stop()
-    logger.info("Federation service shutting down")
+# Startup/shutdown are now handled by lifespan
 
 
 if __name__ == "__main__":

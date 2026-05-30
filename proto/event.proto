@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package sovereignstack.event.v1;
+
+// The base wrapper for all state changes in SovereignStack.
+// Event Sourcing replaces traditional CRUD operations.
+message Event {
+  // Unique UUID for this event
+  string id = 1;
+  // Creation timestamp
+  int64 timestamp = 2;
+  // The URI of the agent/node that generated this event
+  string source_uri = 3;
+  // Type of event (determines how to decode payload)
+  string event_type = 4;
+  // JSON or binary encoded payload
+  bytes payload = 5;
+  
+  // Signature of the above fields, signed by the source_uri's private key
+  bytes signature = 6;
+}
+
+// Payload: A new agent session was created
+message SessionCreated {
+  string session_uri = 1;
+  string node_uri = 2;
+}
+
+// Payload: A new artifact was published to the network
+message ArtifactPublished {
+  // The artifact URI (usually artifact://<hash>)
+  string artifact_uri = 1;
+  // MIME type or capability context
+  string content_type = 2;
+  // Size in bytes
+  uint64 size = 3;
+}
+
+// Payload: Trust score adjustment based on an interaction
+message TrustUpdated {
+  string target_uri = 1;
+  double score_delta = 2;
+  string reason = 3;
+}

@@ -1,282 +1,122 @@
-<p align="center">
-  <strong>⬡ SOVEREIGN AI INFRASTRUCTURE STANDARD ⬡</strong>
-</p>
+# SovereignStack
 
-<h1 align="center">SovereignStack</h1>
+> **The Sovereign Intelligence Network** — A distributed operating system for intelligence.
 
-<p align="center">
-  <em>Drop-in sovereign replacement for public AI platforms — air-gapped, OASA-compliant, OpenAI-compatible.</em>
-</p>
+SovereignStack is a protocol stack and runtime that treats intelligence itself as a networked resource. It is to autonomous intelligence what TCP/IP is to data networking.
 
-<p align="center">
-  <a href="CONFORMANCE.md"><img src="badges/oasa-compatible.svg" alt="OASA L1 Compatible" height="28"></a>
-  <a href="CONFORMANCE.md"><img src="badges/oasa-l2.svg" alt="OASA L2 Verified" height="28"></a>
-  <a href="CONFORMANCE.md"><img src="badges/oasa-certified.svg" alt="OASA L3 Certified" height="28"></a>
-  <a href="https://github.com/Kubenew/SovereignStack/actions/workflows/oasa-conformance.yml"><img src="https://github.com/Kubenew/SovereignStack/actions/workflows/oasa-conformance.yml/badge.svg" alt="CI Status"></a>
-</p>
-
-<p align="center">
-  <a href="CONFORMANCE.md"><img src="https://img.shields.io/badge/OASA_L1-Compatible-brightgreen?style=flat-square" alt="L1 Compatible"></a>
-  <a href="CONFORMANCE.md"><img src="https://img.shields.io/badge/OASA_L2-Verified-blue?style=flat-square" alt="L2 Verified"></a>
-  <a href="CONFORMANCE.md"><img src="https://img.shields.io/badge/OASA_L3-Certified-purple?style=flat-square" alt="L3 Certified"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=flat-square" alt="License"></a>
-  <a href="https://github.com/Kubenew/SovereignStack/releases"><img src="https://img.shields.io/github/v/release/Kubenew/SovereignStack?style=flat-square" alt="Release"></a>
-  <a href="https://github.com/Kubenew/SovereignStack/stargazers"><img src="https://img.shields.io/github/stars/Kubenew/SovereignStack?style=flat-square" alt="Stars"></a>
-  <a href="https://github.com/Kubenew/SovereignStack/graphs/contributors"><img src="https://img.shields.io/github/contributors/Kubenew/SovereignStack?style=flat-square" alt="Contributors"></a>
-</p>
-
----
-
-## Try It in 2 Minutes
-
-```bash
-# 1. One-command install (auto-detects GPU, RAM, TPM)
-curl -sSL https://install.sovereignstack.ai | bash
-
-# 2. Download a local model
-mkdir -p models
-curl -Lo models/model.gguf \
-  https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf
-
-# 3. Launch the stack
-docker compose up --build -d
-
-# 4. Chat (OpenAI-compatible API — just change the base URL)
-curl -X POST http://localhost:8080/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer mock-valid-token" \
-  -d '{
-    "model":"Qwen/Qwen2.5-7B-Instruct",
-    "messages":[{"role":"user","content":"What is digital sovereignty?"}],
-    "oasa_compliance_lock":true
-  }'
+```
+1970s → ARPANET          (packet switching)
+1990s → Internet         (global connectivity)
+2000s → Cloud            (elastic compute)
+2020s → AI Platforms     (model serving)
+2030s → Sovereign Intelligence Networks (SovereignStack)
 ```
 
-```python
-# Or from any OpenAI client — just change three lines:
-import openai
-openai.api_key = "mock-valid-token"                          # was: sk-...
-openai.base_url = "http://localhost:8080/v1"                  # was: https://api.openai.com/v1
-openai.default_headers = {"oasa_compliance_lock": "true"}     # was: nothing
+## Design Principles
+
+Every SovereignStack object is:
+
+1. **Identifiable** — has a unique URI
+2. **Addressable** — resolvable across the network
+3. **Discoverable** — findable via capability/semantic search
+4. **Verifiable** — cryptographically signed, with provenance
+5. **Portable** — movable across nodes and jurisdictions
+6. **Federatable** — shareable across sovereign boundaries
+7. **Auditable** — full history and reasoning trail
+
+## Universal Addressing
+
 ```
-
-**That's it.** Zero data leaves your network. No API tokens. No cloud dependency.
-
----
-
-## Benchmarks
-
-### Inference Performance (vLLM, INT4 AWQ, Batch=1)
-
-| Model | Quantization | VRAM | Tokens/sec | TTFT | Hardware |
-|---|---|---|---|---|---|
-| **Llama 3.1 8B** | INT4 AWQ | 8 GB | 142 tok/s | 45ms | RTX 4090 |
-| **Llama 3.1 70B** | INT4 AWQ | 28 GB | 39 tok/s | 120ms | 2x RTX 6000 |
-| **Mistral 7B** | INT4 GGUF | 6 GB | 68 tok/s | 55ms | RTX 3090 |
-| **Qwen 2.5 7B** | INT4 AWQ | 8 GB | 134 tok/s | 48ms | RTX 4090 |
-| **Phi-3 Mini** | INT4 GGUF | 4 GB | 22 tok/s | 95ms | CPU-only (M3) |
-| **DeepSeek-Coder 33B** | INT4 AWQ | 18 GB | 56 tok/s | 88ms | A100 40GB |
-
-Benchmarks run with `tools/benchmark.py` on isolated hardware. See [Benchmarking Guide](docs/benchmarking.md).
-
-### Cost Comparison: Cloud vs. Sovereign (3-Year TCO)
-
-| Scenario | Public Cloud | SovereignStack | Savings |
-|---|---|---|---|
-| 10 users, GPT-4 class | $360K | $12K (RTX 4090) | **97%** |
-| 50 users, GPT-4 class | $1.8M | $45K (2x A100) | **97.5%** |
-| 200 users, mixed models | $7.2M | $150K (4-node cluster) | **98%** |
-
----
+agent://researcher-1            # Agent identity
+session://abc123                # Session
+artifact://def456               # Produced artifact
+memory://xyz789                 # Memory object
+reason://decision-42            # Reasoning chain
+knowledge://physics/newton      # Knowledge object
+capability://legal-review       # Skill/capability
+workflow://contract-analysis    # Workflow definition
+contract://task-88              # Agent contract
+org://acme                      # Organization
+robot://drone-12                # Physical device
+policy://gdpr-eu                # Governance policy
+```
 
 ## Architecture
 
 ```
-                          ┌──────────────────────────────────┐
-                          │        CLIENT APPLICATION        │
-                          │  OpenAI SDK / LangChain / Custom  │
-                          └──────────────┬───────────────────┘
-                                         │
-                              ┌──────────▼──────────┐
-                              │   SOVEREIGN GATEWAY  │
-                              │  :8080 — OIDC + OPA  │
-                              │  Auth → Policy → Audit│
-                              └──────────┬──────────┘
-                                         │
-              ┌──────────────────────────┼──────────────────────────┐
-              │                          │                          │
-     ┌────────▼────────┐       ┌─────────▼────────┐      ┌─────────▼────────┐
-     │   vLLM ENGINE    │       │  MEMORY SERVICE   │      │  INGEST SERVICE   │
-     │  PagedAttention  │       │  TurboMemory       │      │  pdf2struct       │
-     │  INT4/AWQ/FP8   │       │  AES-256 Vector DB │      │  PDF/DOCX → JSON  │
-     │  FlashAttention  │       │  KV Cache Isolation│      │  VOLATILE RAM Only │
-     └────────┬────────┘       └─────────┬────────┘      └─────────┬────────┘
-              │                          │                          │
-              └──────────────────────────┼──────────────────────────┘
-                                         │
-                              ┌──────────▼──────────┐
-                              │ IDENTITY & ACCESS    │
-                              │  Keycloak (OIDC)     │
-                              │  Open Policy Agent   │
-                              │  OpenTelemetry       │
-                              │  Prometheus          │
-                              └─────────────────────┘
+ss-kernel
+ ├── Identity        (UAI, SIG, trust, reputation)
+ ├── Capabilities    (registry, discovery, routing)
+ ├── Messaging       (event bus, streams)
+ ├── Memory          (tiered: session → civilizational)
+ ├── Scheduling      (compute placement, model selection)
+ ├── Federation      (sovereign routing, replication)
+ ├── Governance      (policies, jurisdiction, compliance)
+ └── Provenance      (lineage, evidence, audit)
 ```
 
-### Key Design Principle
+## Core Features & Services
 
-When local compute fails, the `oasa_compliance_lock` ensures a **503 Service Unavailable** is returned rather than silently forwarding data to external APIs. A 503 is inconvenient; a GDPR fine of 4% annual revenue is catastrophic.
+Alongside the core Rust primitives, SovereignStack implements a suite of Python-based microservices providing production-ready infrastructure:
 
----
+- **OASA API Gateway**: Secure, OpenAI-compatible entry point enforcing Data Loss Prevention (DLP), Strict Compliance Locking, and SPIFFE workload identity validation.
+- **Federation Relay & Sync Engine**: Decentralized node synchronization utilizing advanced Conflict-Free Replicated Data Types (CRDTs) to ensure eventual consistency across sovereign boundaries.
+- **Merkle Audit Log**: Cryptographically verifiable, append-only event stream providing a tamper-proof provenance trail for all system operations.
+- **Predictive Scheduler**: Autonomous operational controller employing exponential smoothing models to predict compute load and proactively scale resources.
+- **Weight Federation**: Secure registration and sharding of model weights across distributed nodes for collaborative inference.
 
-## OASA Compliance Program
+## Repository Structure
 
-SovereignStack implements the **Open Architecture for Sovereign AI (OASA)** — a three-tier conformance certification program:
+```
+SovereignStack/
+├── ss-core/          # Shared types, URI parsing, errors
+├── ss-crypto/        # Ed25519 signing, hashing
+├── ss-identity/      # Universal Agent Identity
+├── ss-capability/    # Capability declaration & matching
+├── ss-eventbus/      # Event sourcing infrastructure
+├── ss-cas/           # Content-addressed storage
+├── ss-federation/    # Sovereign routing & discovery
+├── ss-runtime/       # Multi-model execution runtime
+├── ss-memory/        # Tiered memory subsystem (Planned)
+├── ss-sessiond/      # Session lifecycle daemon
+├── ss-scheduler/     # Compute placement (Planned)
+├── ss-swarm/         # Multi-agent coordination (Planned)
+├── ss-reason/        # Reasoning object store (Planned)
+├── ss-kas/           # Knowledge addressing system (Planned)
+├── ss-sig/           # Sovereign identity graph (Planned)
+├── ss-trust/         # Trust framework (Planned)
+├── ss-reputation/    # Reputation scoring (Planned)
+├── ss-policy/        # Governance & jurisdiction (Planned)
+├── ss-provenance/    # Computational lineage (Planned)
+├── ss-twin/          # Digital twin framework
+├── ss-device/        # Reality interface layer (Planned)
+├── ss-economy/       # Resource markets (Planned)
+├── ss-sip/           # Sovereign Intelligence Protocol (Planned)
+├── rfcs/             # Protocol specifications
+├── docs/             # Architecture documentation
+├── tests/            # Conformance test suite
+└── examples/         # Reference implementations
+```
 
-| Level | Badge | Requirements | Use Case |
-|---|---|---|---|
-| **L1 Compatible** | ![L1](badges/oasa-compatible.svg) | Schema validation, YAML manifest, JSON schemas, basic tooling | Evaluation & dev |
-| **L2 Verified** | ![L2](badges/oasa-l2.svg) | L1 + compliance lock enforcement, TPM binding, encrypted memory, audit logs, blocked exfiltration domains | Production single-node |
-| **L3 Certified** | ![L3](badges/oasa-certified.svg) | L2 + runtime memory protection, Helm lint, comprehensive report, hardware attestation | Regulated enterprise |
+## Getting Started
 
-[Full certification specification →](CONFORMANCE.md)
+### Prerequisites
 
----
+- [Rust](https://rustup.rs/) 1.75+
+- Git
 
-## Features
-
-### Identity & Access (OIDC + RBAC)
+### Build
 
 ```bash
-# Get a token from Keycloak
-curl -X POST http://localhost:8083/realms/sovereign/protocol/openid-connect/token \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "client_id=sovereign-gateway" \
-  -d "username=sovereign-admin" \
-  -d "password=admin123" \
-  -d "grant_type=password"
-
-# Use the token
-curl http://localhost:8080/v1/chat/completions \
-  -H "Authorization: Bearer <access_token>" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"Qwen/Qwen2.5-7B-Instruct","messages":[{"role":"user","content":"Hello"}],"oasa_compliance_lock":true}'
+cargo build --workspace
 ```
 
-Role-based access: `inference:write`, `inference:read`, `audit:read` — enforced at the gateway.
-
-### Policy Engine (OPA)
-
-Data Loss Prevention, prompt injection blocking, and role-based model budgets — all governed by Open Policy Agent Rego policies at `policies/inference.rego`.
-
-### Observability
-
-- **OpenTelemetry** — Trace propagation across all services (`x-trace-id`, `x-span-id`)
-- **Prometheus** — Metrics scraping at `/metrics` on all services
-- **Audit Log** — Immutable append-only JSON log with jurisdiction tags
-
-### Air-Gapped Deployment
+### Test
 
 ```bash
-# Docker Compose (all traffic on internal: true bridge)
-docker compose up --build -d
-
-# Kubernetes with Helm (strict NetworkPolicies, gVisor sandboxing)
-helm install sovereign-stack ./charts/sovereignstack \
-  --namespace sovereign-stack --create-namespace \
-  --set vllm.model.name="Qwen/Qwen2.5-7B-Instruct" \
-  --set global.air_gapped=true
+cargo test --workspace
 ```
-
----
-
-## Documentation
-
-| Document | Description |
-|---|---|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | System topology, layers, subsystems, trust boundaries |
-| [CONFORMANCE.md](CONFORMANCE.md) | OASA certification specification (L1/L2/L3) |
-| [OASA.md](OASA.md) | Full OASA protocol specification |
-| [Architecture Guide](docs/architecture/index.md) | Trust boundaries, data flow, identity flow |
-| [Deployment Guide](docs/deployment/index.md) | Deployment profiles, Docker Compose, Helm |
-| [Deployment Profiles](docs/deployment/profiles.md) | Personal, Edge, Air-Gapped, Datacenter |
-| [Docker Compose](docs/deployment/docker-compose.md) | Local stack with Keycloak, vLLM, OTel, Prometheus |
-| [Helm Chart](charts/sovereignstack/) | Kubernetes deployment with NetworkPolicies & gVisor |
-| [Threat Model](docs/security/threat-model.md) | STRIDE threat catalogue, attack surface, compliance mapping |
-| [RFCs](rfcs/) | Standards evolution (Runtime Spec, RFC Process) |
-| [Specifications](specs/) | Formal subsystem and protocol specifications |
-| [Governance](GOVERNANCE.md) | Project roles, decision-making, release model |
-| [Roadmap](ROADMAP.md) | Development phases and milestones |
-| [Contributing](CONTRIBUTING.md) | How to contribute |
-| [Security](SECURITY.md) | Vulnerability disclosure, threat model, compliance |
-| [Code of Conduct](CODE_OF_CONDUCT.md) | Community standards |
-
----
-
-## Tooling
-
-```bash
-# VRAM estimation
-python tools/vram_calculator.py --params 70B --quant INT4 --context 8192
-
-# Compliance validation
-python tools/sovereign_stack.py validate sovereign-stack.yaml --audit-host
-
-# Performance benchmarking
-python tools/benchmark.py --url http://localhost:8080/v1 --model sovereign-llama3
-
-# Runtime exfiltration watchdog
-python tools/runtime_shield.py --interval 10
-
-# Compliance report generator
-python tools/generate_compliance_report.py --level L2 --output report.md
-```
-
----
-
-## Regulatory Compliance Matrix
-
-| Regulation | Jurisdiction | Coverage |
-|---|---|---|
-| **GDPR** | EU | Zero exfiltration, jurisdictional routing, immutable audit logs |
-| **HIPAA** | US | AES-256-GCM encryption, air-gapped compute, access logging |
-| **NIS2** | EU | Hardware security (TPM), immutable audit trail, incident response isolation |
-| **EU AI Act** | EU | Local model control, transparency logging, human oversight |
-| **DORA** | EU | Operational resilience via air-gapped orchestration |
-| **SOX** | US | Deterministic ingestion, tamper-evident logs, financial data isolation |
-
----
-
-## Commercialization
-
-SovereignStack is structured for enterprise adoption:
-
-- **Enterprise Support (SLA)** — 24/7 incident response, deployment audits, custom integration
-- **SovereignNode Appliances** — Turnkey air-gapped hardware with K3s, vLLM, encrypted Qdrant
-- **OASA Certification** — Compliance badges and third-party audit reports
-- **Dedicated Training** — On-site workshops for regulated deployments
-
----
-
-## Roadmap
-
-See [ROADMAP.md](ROADMAP.md) for the full phased roadmap through 2027+.
-
-| Phase | Highlights |
-|---|---|
-| **2026.1** ✅ | Helm chart, vLLM, OPA, CI/CD, Keycloak OIDC, Threat Model |
-| **2026.2** ✅ | RFC Process, Architecture Docs, Deployment Profiles, Governance |
-| **2026.3** 🚧 | Merkle-Tree Auditing, Federated Memory, Mesh Networking |
-| **2027.1** 📅 | Hardware Enclaves, SBOM/Cosign, SPIFFE/SPIRE, Sovereign Node OS |
-| **2027.2** 📅 | Agent Orchestration, Multi-Model Routing, Federated Agents |
-| **2027.3+** 🔮 | Autonomous Infrastructure, Certification Program, Enterprise Platform |
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) and our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
-Apache 2.0 — see [LICENSE](LICENSE).
+Apache-2.0 OR MIT (dual-licensed)

@@ -57,7 +57,7 @@ class TestSpiffeAuth:
 
     def test_spiffe_jwt_validation_rejects_malformed(self):
         """When SPIFFE enabled, malformed JWT should return 403."""
-        with patch.dict(os.environ, {"SPIFFE_ENABLED": "true"}, clear=False):
+        with patch.dict(os.environ, {"SPIFFE_ENABLED": "true", "SPIFFE_DEV_SKIP_VERIFICATION": "true", "OASA_ENFORCE_AUTH": "LAX"}, clear=False):
             import importlib
             from services import spiffe_auth
 

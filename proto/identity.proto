@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package sovereignstack.identity.v1;
+
+// Defines a cryptographic public key in the SovereignStack network.
+message PublicKey {
+  // The cryptographic algorithm used (e.g., "ed25519")
+  string type = 1;
+  // The raw bytes of the public key
+  bytes key_bytes = 2;
+}
+
+// Represents the jurisdiction rules an agent operates under.
+message Jurisdiction {
+  // Geographic/political region (e.g., "EU", "US")
+  string region = 1;
+  // Applicable regulation (e.g., "GDPR")
+  string regulation = 2;
+  // Whether data export is permitted outside this region
+  bool allow_export = 3;
+  // Replication policy (e.g., "trusted_only", "open")
+  string replication_policy = 4;
+}
+
+// A shareable identity document for an agent/node/org.
+message IdentityDocument {
+  // The Universal Agent Identity URI (e.g., "agent://researcher-1")
+  string uri = 1;
+  // Human readable name
+  string name = 2;
+  // Type of identity (e.g., "agent", "organization", "robot")
+  string identity_type = 3;
+  // The public key verifying this identity
+  PublicKey public_key = 4;
+  // List of capabilities this identity can perform
+  repeated string capabilities = 5;
+  // Creation timestamp (Unix epoch seconds)
+  int64 created_at = 6;
+  // Optional jurisdiction information
+  Jurisdiction jurisdiction = 7;
+  // Whether this identity is actively accepting tasks
+  bool active = 8;
+  
+  // The signature of the serialized document above (signed by the private key)
+  bytes signature = 9;
+}
+
+// Represents the multi-dimensional trust score of an identity.
+message TrustProfile {
+  string identity_uri = 1;
+  // Overall trust score (0.0 to 1.0)
+  double trust_score = 2;
+  // Historical accuracy
+  double accuracy = 3;
+  // Reliability (uptime/completion rate)
+  double reliability = 4;
+  // Average latency in ms
+  uint64 latency_ms = 5;
+  // Number of interactions forming this profile
+  uint64 interactions = 6;
+  // Last updated timestamp
+  int64 updated_at = 7;
+}

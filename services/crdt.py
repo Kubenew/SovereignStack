@@ -57,20 +57,23 @@ class LWWRegister:
 
     def merge(self, other: LWWRegister) -> LWWRegister:
         """Merge two LWW registers, returning a new register with the winning value."""
-        if other._is_newer(self.timestamp, self.node_id):
+        # _is_newer asks: "Is the provided (timestamp, node_id) newer than me?"
+        # So self._is_newer(other.timestamp, other.node_id) asks: "Is other newer than self?"
+        if self._is_newer(other.timestamp, other.node_id):
+            # other wins
+            return LWWRegister(
+                key=self.key,
+                value=other.value,
+                timestamp=other.timestamp,
+                node_id=other.node_id,
+            )
+        else:
             # self wins (or equal)
             return LWWRegister(
                 key=self.key,
                 value=self.value,
                 timestamp=self.timestamp,
                 node_id=self.node_id,
-            )
-        else:
-            return LWWRegister(
-                key=self.key,
-                value=other.value,
-                timestamp=other.timestamp,
-                node_id=other.node_id,
             )
 
     def to_dict(self) -> dict:

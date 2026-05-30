@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package sovereignstack.capability.v1;
+
+// Advertises an agent's capability to the network (Semantic DNS).
+message CapabilityDescriptor {
+  // The URI of the agent providing the capability
+  string provider_uri = 1;
+  // The name of the capability (e.g., "contract_review")
+  string capability = 2;
+  // Description of what the capability does
+  string description = 3;
+  
+  // Metrics for routing decisions
+  double accuracy = 4;
+  double cost = 5;
+  uint64 latency_ms = 6;
+  uint32 max_concurrency = 7;
+  
+  // Constraints
+  repeated string languages = 8;
+  repeated string jurisdictions = 9;
+  repeated string tags = 10;
+  
+  // Status and versioning
+  int64 published_at = 11;
+  int64 expires_at = 12;
+  bool available = 13;
+  string version = 14;
+}
+
+// A request broadcast to the network to find an agent for a task.
+message CapabilityQuery {
+  // The capability being requested
+  string capability = 1;
+  // Optional language requirement
+  string language = 2;
+  // Optional jurisdiction requirement
+  string jurisdiction = 3;
+  
+  // Minimum thresholds
+  double min_accuracy = 4;
+  double max_cost = 5;
+  uint64 max_latency_ms = 6;
+  
+  // Required tags
+  repeated string required_tags = 7;
+  // Maximum results to return
+  uint32 max_results = 8;
+}
+
+// A match returned by the network in response to a CapabilityQuery.
+message CapabilityMatch {
+  // The matching descriptor
+  CapabilityDescriptor descriptor = 1;
+  // Computed relevance score (0.0 to 1.0)
+  double relevance_score = 2;
+}

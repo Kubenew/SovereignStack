@@ -23,6 +23,12 @@ async def require_spiffe_or_skip(
 
         # In production, validate offline with SPIRE bundle; here we do basic decode
         # trusting that SPIRE-issued JWT SVIDs are signed by the SPIRE server key
+        if os.getenv("SPIFFE_DEV_SKIP_VERIFICATION", "false").lower() != "true":
+            raise HTTPException(status_code=500, detail="SPIFFE JWT signature verification is required in production. Set SPIFFE_DEV_SKIP_VERIFICATION=true for dev.")
+        
+        if os.getenv("OASA_ENFORCE_AUTH", "STRICT").upper() == "STRICT":
+            raise HTTPException(status_code=500, detail="Cannot skip SPIFFE JWT signature verification when OASA_ENFORCE_AUTH=STRICT.")
+
         logger.warning("SECURITY WARNING: SPIFFE JWT signature verification is disabled. Do not use this in production without SPIRE bundle validation.")
         payload = jwt.decode(token, options={"verify_signature": False})
         spiffe_id = payload.get("sub", "")

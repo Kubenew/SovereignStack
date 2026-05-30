@@ -1,0 +1,18 @@
+[package]
+name = "ss-cli"
+description = "SovereignStack Command Line Interface"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ss-core = { workspace = true }
+ss-identity = { path = "../ss-identity" }
+ss-capability = { path = "../ss-capability" }
+clap = { version = "4.4", features = ["derive"] }
+tokio = { workspace = true, features = ["full"] }
+reqwest = { version = "0.11", features = ["json"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }

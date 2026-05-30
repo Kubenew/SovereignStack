@@ -1,0 +1,19 @@
+[package]
+name = "ss-sessiond"
+description = "SovereignStack Session Daemon — orchestrates agent lifecycles and provides the runtime environment"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ss-core = { workspace = true }
+ss-identity = { path = "../ss-identity" }
+ss-capability = { path = "../ss-capability" }
+ss-eventbus = { path = "../ss-eventbus" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+async-trait = { workspace = true }
+uuid = { workspace = true }
+tracing = { workspace = true }

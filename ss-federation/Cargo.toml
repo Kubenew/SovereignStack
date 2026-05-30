@@ -1,0 +1,17 @@
+[package]
+name = "ss-federation"
+description = "SovereignStack Federation — sovereign routing, peer discovery, and jurisdiction compliance"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ss-core = { workspace = true }
+ss-identity = { path = "../ss-identity" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+async-trait = { workspace = true }
+libp2p = { version = "0.53", features = ["tcp", "quic", "noise", "yamux", "kad", "gossipsub", "request-response", "macros", "tokio"] }
+prost = "0.12"

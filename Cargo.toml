@@ -1,0 +1,42 @@
+[workspace]
+resolver = "2"
+members = [
+    "ss-core",
+    "ss-crypto",
+    "ss-identity",
+    "ss-capability",
+    "ss-eventbus",
+    "ss-federation",
+    "ss-sessiond",
+    "ss-cli",
+    "ss-runtime",
+    "ss-twin",
+    "ss-cas",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0 OR MIT"
+repository = "https://github.com/sovereignstack/sovereignstack"
+
+[workspace.dependencies]
+# Shared workspace dependencies
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+ed25519-dalek = { version = "2", features = ["serde"] }
+sha2 = "0.10"
+hex = "0.4"
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+rand = "0.8"
+async-trait = "0.1"
+bytes = "1"
+
+# Internal crates
+ss-core = { path = "ss-core" }
+ss-crypto = { path = "ss-crypto" }

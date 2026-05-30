@@ -1,0 +1,17 @@
+[package]
+name = "ss-capability"
+description = "SovereignStack Capability Registry — DNS for intelligence, capability-based discovery and matching"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ss-core = { workspace = true }
+ss-crypto = { path = "../ss-crypto" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+tokio = { workspace = true }
+async-trait = { workspace = true }

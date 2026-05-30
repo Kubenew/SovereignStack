@@ -20,10 +20,22 @@ from services.merkle_audit import append_event, get_current_root, get_proof_for_
 
 load_dotenv()
 
+import asyncio
+
+async def rate_limit_cleaner():
+    while True:
+        await asyncio.sleep(600)  # Clean every 10 minutes
+        now = time.time()
+        expired_ips = [ip for ip, ts_list in request_counts.items() if not ts_list or now - ts_list[-1] >= RATE_LIMIT_WINDOW]
+        for ip in expired_ips:
+            request_counts.pop(ip, None)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     spiffe_ctx.init()
+    cleaner_task = asyncio.create_task(rate_limit_cleaner())
     yield
+    cleaner_task.cancel()
     spiffe_ctx.close()
 
 app = FastAPI(title="OASA Gateway Service", version="2026.1", lifespan=lifespan)
@@ -228,7 +240,7 @@ def chat(payload: ChatCompletionRequest, request: Request, authorization: str | 
         
     audit(res_audit)
 
-    return {"id": request_id, "object": "chat.completion", "model": payload.model, "choices": [{"index": 0, "message": {"role": "assistant", "content": answer}}]}
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"id": request_id, "object": "chat.completion", "model": payload.model, "choices": [{"index": 0, "message": {"role": "assistant", "content": answer}}]})
 
 @app.get("/health")
 def health():
