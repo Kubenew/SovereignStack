@@ -174,3 +174,27 @@ AGP (Autonomous Governance)─┘
 ```
 
 SIP is to intelligence networks what TCP/IP is to data networks.
+
+---
+
+## Standards Ecosystem
+
+SovereignStack is governed by a formal standards framework:
+
+| Document | Purpose |
+|---|---|
+| [STANDARDS.md](../STANDARDS.md) | Root standards framework |
+| [OBJECT_MODEL.md](../OBJECT_MODEL.md) | Universal object model |
+| [URI_STANDARD.md](../URI_STANDARD.md) | URI scheme registry & resolution |
+| [TRUST_MODEL.md](../TRUST_MODEL.md) | Capability-based security |
+| [SECURITY.md](../SECURITY.md) | Threat model & incident response |
+| [CONFORMANCE.md](../CONFORMANCE.md) | Certification program & badges |
+| [CERTIFICATION.md](../CERTIFICATION.md) | Badge levels & requirements |
+| [PROTOCOL_REGISTRY.md](../PROTOCOL_REGISTRY.md) | Protocol lifecycle registry |
+| [REFERENCE_IMPLEMENTATIONS.md](../REFERENCE_IMPLEMENTATIONS.md) | Official subsystem implementations |
+| [RFC-0001](../rfcs/RFC-0001-core-object-model.md) | Core Object Model |
+| [RFC-0002](../rfcs/RFC-0002-uri-resolution.md) | URI Resolution Mechanism |
+| [RFC-0003](../rfcs/RFC-0003-session-runtime.md) | Session Runtime Specification |
+| [RFC-0004](../rfcs/RFC-0004-capability-system.md) | Capability System |
+| [RFC-0005](../rfcs/RFC-0005-federation-protocol.md) | Federation Protocol |
+| [RFC-0006](../rfcs/RFC-0006-knowledge-objects.md) | Knowledge Objects |

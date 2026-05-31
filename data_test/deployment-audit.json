@@ -1,0 +1,59 @@
+{
+  "deployment_audit": {
+    "timestamp": "2026-05-28T10:33:33.301601",
+    "node": "Viva",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "summary": {
+    "total_checks": 9,
+    "passed": 6,
+    "failed": 3
+  },
+  "checks": [
+    {
+      "check": "Python version",
+      "status": "pass",
+      "detail": "3.12.10"
+    },
+    {
+      "check": "Docker",
+      "status": "fail",
+      "detail": "Docker not found"
+    },
+    {
+      "check": "Environment config",
+      "status": "pass",
+      "detail": ".env.example"
+    },
+    {
+      "check": "Data directories",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "Audit log",
+      "status": "pass",
+      "detail": "8 entries"
+    },
+    {
+      "check": "Merkle tree",
+      "status": "pass",
+      "detail": "29 events, root=b95db406f43b41e5..."
+    },
+    {
+      "check": "Network isolation",
+      "status": "pass",
+      "detail": "Network isolation configured (sovereign-isolated-net)"
+    },
+    {
+      "check": "Helm chart",
+      "status": "fail",
+      "detail": "Helm not found"
+    },
+    {
+      "check": "Compliance report",
+      "status": "fail",
+      "detail": "No conformance report found"
+    }
+  ]
+}

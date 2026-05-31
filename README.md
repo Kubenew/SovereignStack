@@ -98,6 +98,34 @@ SovereignStack/
 └── examples/         # Reference implementations
 ```
 
+## Standards Ecosystem
+
+SovereignStack is governed by a formal standards framework:
+
+| Document | Description |
+|---|---|
+| [STANDARDS.md](STANDARDS.md) | Root standards framework — 6 layers |
+| [OBJECT_MODEL.md](OBJECT_MODEL.md) | Universal object model with cryptographic signatures |
+| [URI_STANDARD.md](URI_STANDARD.md) | URI scheme registry & resolution rules |
+| [TRUST_MODEL.md](TRUST_MODEL.md) | Capability-based zero-trust security |
+| [SECURITY.md](SECURITY.md) | Threat model & incident response |
+| [CONFORMANCE.md](CONFORMANCE.md) | 3-tier certification program & badges |
+| [CERTIFICATION.md](CERTIFICATION.md) | Badge levels, colors, shapes, materials |
+| [PROTOCOL_REGISTRY.md](PROTOCOL_REGISTRY.md) | 7 protocols with lifecycle management |
+| [REFERENCE_IMPLEMENTATIONS.md](REFERENCE_IMPLEMENTATIONS.md) | 13 core subsystems + 3 language bindings |
+| [ROADMAP-2035.md](ROADMAP-2035.md) | 10-year vision through Sovereign Intelligence Internet |
+
+### RFCs
+
+| RFC | Status |
+|---|---|
+| [RFC-0001](rfcs/RFC-0001-core-object-model.md) | Core Object Model — Draft |
+| [RFC-0002](rfcs/RFC-0002-uri-resolution.md) | URI Resolution Mechanism — Draft |
+| [RFC-0003](rfcs/RFC-0003-session-runtime.md) | Session Runtime Specification — Draft |
+| [RFC-0004](rfcs/RFC-0004-capability-system.md) | Capability System — Draft |
+| [RFC-0005](rfcs/RFC-0005-federation-protocol.md) | Federation Protocol — Draft |
+| [RFC-0006](rfcs/RFC-0006-knowledge-objects.md) | Knowledge Objects — Draft |
+
 ## Getting Started
 
 ### Prerequisites

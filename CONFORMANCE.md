@@ -22,6 +22,32 @@ Inspired by the **Certified Kubernetes** program, **CII Best Practices Badge**, 
 | **L2** | OASA Verified | Mid-size Enterprises | L1 + Compliance lock, TPM 2.0 binding, volatile ingestion, audit logs | ![OASA L2](../badges/oasa-l2.svg) |
 | **L3** | OASA Certified | Regulated Enterprises, Government | L2 + Merkle-tree audit, third-party review, supply chain signing, reference architecture | ![OASA L3](../badges/oasa-l3.svg) |
 
+## Badge Specification
+
+### Badge Types
+
+| Badge | Level | Shape | Primary Color | Material/Finish | Size (px) |
+|-------|-------|-------|---------------|-----------------|-----------|
+| OASA Compatible | L1 | Shield | Silver (#C0C0C0) | Matte brushed | 120×120 |
+| OASA Verified | L2 | Rounded Hexagon | Gold (#FFD700) | Satin polished | 120×120 |
+| OASA Certified | L3 | Star/Hexagram | Diamond (#00BFFF) | Iridescent/gradient | 120×120 |
+
+### Badge Components
+
+Each badge contains:
+1. **Outer border** — level-specific shape and color
+2. **OASA logo** — centered, white/silver
+3. **Level indicator** — "L1", "L2", or "L3" below logo
+4. **Certification mark** — "COMPATIBLE", "VERIFIED", or "CERTIFIED"
+5. **Registry URL** — machine-readable QR code (optional)
+
+### Badge Usage Rules
+
+- Badges must link to the official OASA registry entry
+- Badges must not be modified (color, shape, proportions)
+- Badges expire annually and must be renewed
+- Misuse results in revocation and public notice
+
 ---
 
 ## Level 1: OASA Compatible
@@ -285,6 +311,20 @@ OASA-certified implementations are listed in a public registry. To add your impl
 | **DORA** (EU) | Resilience docs | Testing + Monitoring | Third-party audit |
 | **NIS2** (EU) | Incident response | Supply chain security | Hardened + Certified |
 | **SOX** (US) | Financial data isolation | Tamper-evident logs | External audit |
+
+---
+
+## Protocol Registry
+
+| Protocol | ID | Status | Version |
+|---|---|---|---|
+| **SIP** — Sovereign Intelligence Protocol | `sip` | Stable | 1.0 |
+| **SEP** — Sovereign Extension Protocol | `sep` | Draft | 0.1 |
+| **SDP** — Sovereign Data Protocol | `sdp` | Draft | 0.1 |
+| **SAP** — Sovereign Agent Protocol | `sap` | Draft | 0.1 |
+| **SMP** — Sovereign Memory Protocol | `smp` | Draft | 0.1 |
+| **KAP** — Sovereign Knowledge Access Protocol | `kap` | Draft | 0.1 |
+| **REP** — Sovereign Reasoning Exchange Protocol | `rep` | Draft | 0.1 |
 
 ---
 

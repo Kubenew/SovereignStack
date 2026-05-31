@@ -283,6 +283,17 @@ services:
     networks:
       - sovereign-isolated
 
+  # ===========================================================================
+  # Dashboard — Web UI for SovereignStack
+  # ===========================================================================
+  dashboard:
+    build: ./dashboard
+    container_name: sovereignstack-dashboard
+    ports:
+      - "3000:3000"
+    networks:
+      - sovereign-isolated
+
 volumes:
   spire-data:
 
