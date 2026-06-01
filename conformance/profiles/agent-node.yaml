@@ -1,0 +1,27 @@
+# SovereignStack Conformance Profile: Agent Node
+# RFC-0010: Conformance Framework
+# Level: L2
+
+profile:
+  id: agent-node
+  name: Agent Node
+  version: "1.0"
+  extends: core-node
+  description: "Core node optimized for agent execution"
+
+requires:
+  - sap:
+      agent_message: required
+      agent_session_create: required
+      agent_session_terminate: required
+  - smp:
+      memory_search: required
+      memory_ttl: required
+  - rfc-0009:
+      session_suspend_resume: required
+      resource_enforcement: required
+      capability_scoping: required
+
+protocol_level: L2
+certification_label: "OASA Verified"
+tests_required: 30

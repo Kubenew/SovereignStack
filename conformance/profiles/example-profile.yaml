@@ -46,7 +46,16 @@ protocols:
 | L2 (Verified) | Planned | — |
 | L3 (Certified) | Future | — |
 
-## Test Results Summary
+## Conformance Profiles
+
+| Profile | File |
+|---------|------|
+| Core Node | `core-node.yaml` |
+| Federation Node | `federation-node.yaml` |
+| Knowledge Node | `knowledge-node.yaml` |
+| Agent Node | `agent-node.yaml` |
+
+Test Results Summary
 
 | Suite | Total | Passed | Failed | Skipped |
 |-------|-------|--------|--------|---------|

@@ -1,0 +1,25 @@
+# SovereignStack Conformance Profile: Federation Node
+# RFC-0010: Conformance Framework
+# Level: L2
+
+profile:
+  id: federation-node
+  name: Federation Node
+  version: "1.0"
+  extends: core-node
+  description: "Core node with federation capabilities"
+
+requires:
+  - sip:
+      subscribe: required
+  - sep:
+      extension_registration: required
+      extension_discovery: required
+  - rfc-0008:
+      peer_discovery: required
+      trust_negotiation: required
+      data_replication: required
+
+protocol_level: L2
+certification_label: "OASA Verified"
+tests_required: 30

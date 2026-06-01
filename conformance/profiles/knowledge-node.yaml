@@ -1,0 +1,28 @@
+# SovereignStack Conformance Profile: Knowledge Node
+# RFC-0010: Conformance Framework
+# Level: L2
+
+profile:
+  id: knowledge-node
+  name: Knowledge Node
+  version: "1.0"
+  extends: core-node
+  description: "Core node with knowledge and reasoning services"
+
+requires:
+  - kap:
+      knowledge_create: required
+      knowledge_query: required
+      knowledge_version: required
+  - rep:
+      reason_record: required
+      reason_replay: required
+  - rfc-0005:
+      evidence_linking: required
+      trust_scoring: required
+  - rfc-0006:
+      step_verification: required
+
+protocol_level: L2
+certification_label: "OASA Verified"
+tests_required: 30

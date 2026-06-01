@@ -1,0 +1,32 @@
+# SovereignStack Conformance Profile: Core Node
+# RFC-0010: Conformance Framework
+# Level: L1
+
+profile:
+  id: core-node
+  name: Core Node
+  version: "1.0"
+  description: "Minimal SovereignStack node with kernel services"
+
+requires:
+  - sip:
+      handshake: required
+      ping: required
+      capability_exchange: required
+      message_roundtrip: required
+  - sap:
+      agent_registration: required
+      agent_query: required
+  - smp:
+      memory_store: required
+      memory_retrieve: required
+  - rfc-0001:
+      object_create: required
+      object_sign: required
+      object_query: required
+      object_exchange: required
+      object_audit: required
+
+protocol_level: L1
+certification_label: "OASA Compatible"
+tests_required: 15
