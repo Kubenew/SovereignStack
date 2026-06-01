@@ -1,0 +1,56 @@
+# Implementation Capability Profile
+
+**Profile Version:** 1.0
+**Implementation Name:** Example Implementation
+**Implementation Version:** 0.1.0
+
+## Protocol Support
+
+```yaml
+protocols:
+  sip:
+    version: "1.0"
+    status: stable
+    capabilities:
+      - handshake
+      - ping
+      - capability_exchange
+      - message_roundtrip
+  sep:
+    version: "0.1"
+    status: draft
+    capabilities:
+      - extension_registration
+      - extension_discovery
+  sap:
+    version: "0.1"
+    status: draft
+    capabilities:
+      - agent_registration
+      - agent_query
+      - agent_message
+  smp:
+    version: "0.1"
+    status: draft
+    capabilities:
+      - memory_store
+      - memory_retrieve
+      - memory_search
+```
+
+## Certification Targets
+
+| Level | Targeted | Achieved |
+|-------|----------|----------|
+| L1 (Compatible) | Yes | — |
+| L2 (Verified) | Planned | — |
+| L3 (Certified) | Future | — |
+
+## Test Results Summary
+
+| Suite | Total | Passed | Failed | Skipped |
+|-------|-------|--------|--------|---------|
+| SIP | 5 | 0 | 0 | 0 |
+| SEP | 4 | 0 | 0 | 0 |
+| SAP | 6 | 0 | 0 | 0 |
+| SMP | 5 | 0 | 0 | 0 |

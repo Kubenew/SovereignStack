@@ -12,6 +12,8 @@ members = [
     "ss-runtime",
     "ss-twin",
     "ss-cas",
+    "ss-kernel",
+    "reference-node",
 ]
 
 [workspace.package]

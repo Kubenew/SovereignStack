@@ -1,0 +1,203 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" font-family="'SF Mono', 'Consolas', monospace">
+  <defs>
+    <linearGradient id="header" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="kernel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f3460"/>
+      <stop offset="100%" stop-color="#1a1a6e"/>
+    </linearGradient>
+    <linearGradient id="infra" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1b5e20"/>
+      <stop offset="100%" stop-color="#2e7d32"/>
+    </linearGradient>
+    <linearGradient id="intel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e65100"/>
+      <stop offset="100%" stop-color="#f57c00"/>
+    </linearGradient>
+    <linearGradient id="orch" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a148c"/>
+      <stop offset="100%" stop-color="#6a1b9a"/>
+    </linearGradient>
+    <linearGradient id="app" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b71c1c"/>
+      <stop offset="100%" stop-color="#c62828"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="1200" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="450" y="45" text-anchor="middle" fill="#58a6ff" font-size="24" font-weight="bold">SovereignStack Architecture</text>
+  <line x1="150" y1="55" x2="750" y2="55" stroke="#30363d" stroke-width="1"/>
+
+  <!-- APPLICATIONS LAYER -->
+  <rect x="40" y="75" width="820" height="110" rx="8" fill="url(#app)" filter="url(#shadow)" opacity="0.9"/>
+  <text x="60" y="100" fill="#fff" font-size="14" font-weight="bold">APPLICATIONS &amp; TOOLS</text>
+  <rect x="60" y="110" width="180" height="55" rx="6" fill="#fff" opacity="0.15"/>
+  <text x="150" y="135" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">Dashboard</text>
+  <text x="150" y="152" text-anchor="middle" fill="#ccc" font-size="10">React + Vite</text>
+  <rect x="260" y="110" width="160" height="55" rx="6" fill="#fff" opacity="0.15"/>
+  <text x="340" y="135" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">CLI</text>
+  <text x="340" y="152" text-anchor="middle" fill="#ccc" font-size="10">Rust + Python</text>
+  <rect x="440" y="110" width="160" height="55" rx="6" fill="#fff" opacity="0.15"/>
+  <text x="520" y="135" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">SDKs</text>
+  <text x="520" y="152" text-anchor="middle" fill="#ccc" font-size="10">Py / TS / Go</text>
+  <rect x="620" y="110" width="220" height="55" rx="6" fill="#fff" opacity="0.15"/>
+  <text x="730" y="135" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">Workflow Engine</text>
+  <text x="730" y="152" text-anchor="middle" fill="#ccc" font-size="10">Intelligence DAGs</text>
+
+  <!-- KERNEL LAYER -->
+  <rect x="40" y="205" width="820" height="220" rx="8" fill="url(#kernel)" filter="url(#shadow)" opacity="0.95"/>
+  <text x="60" y="230" fill="#58a6ff" font-size="14" font-weight="bold">SS-KERNEL (Core System Services)</text>
+
+  <rect x="60" y="245" width="240" height="70" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="100" y="270" fill="#fff" font-size="13" font-weight="bold">Identity Service</text>
+  <text x="100" y="290" fill="#ccc" font-size="10">Ed25519 keys · Certificates</text>
+  <text x="100" y="305" fill="#ccc" font-size="10">Signature verification</text>
+
+  <rect x="320" y="245" width="240" height="70" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="360" y="270" fill="#fff" font-size="13" font-weight="bold">URI Resolver</text>
+  <text x="360" y="290" fill="#ccc" font-size="10">Local-first resolution</text>
+  <text x="360" y="305" fill="#ccc" font-size="10">Federated fallback</text>
+
+  <rect x="580" y="245" width="260" height="70" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="620" y="270" fill="#fff" font-size="13" font-weight="bold">Event Bus</text>
+  <text x="620" y="290" fill="#ccc" font-size="10">Pub/sub · Immutable events</text>
+  <text x="620" y="305" fill="#ccc" font-size="10">Event sourcing</text>
+
+  <rect x="60" y="330" width="240" height="70" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="100" y="355" fill="#fff" font-size="13" font-weight="bold">Object Registry</text>
+  <text x="100" y="375" fill="#ccc" font-size="10">CRUD + capability check</text>
+  <text x="100" y="390" fill="#ccc" font-size="10">Indexed by URI/type/owner</text>
+
+  <rect x="320" y="330" width="240" height="70" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="360" y="355" fill="#fff" font-size="13" font-weight="bold">Capability Enforcer</text>
+  <text x="360" y="375" fill="#ccc" font-size="10">Operation interception</text>
+  <text x="360" y="390" fill="#ccc" font-size="10">Grant/deny · Audit log</text>
+
+  <rect x="580" y="330" width="260" height="70" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="620" y="355" fill="#fff" font-size="13" font-weight="bold">Policy Engine</text>
+  <text x="620" y="375" fill="#ccc" font-size="10">Jurisdiction filtering</text>
+  <text x="620" y="390" fill="#ccc" font-size="10">Data residency enforcement</text>
+
+  <!-- INFRASTRUCTURE LAYER -->
+  <rect x="40" y="445" width="820" height="180" rx="8" fill="url(#infra)" filter="url(#shadow)" opacity="0.9"/>
+  <text x="60" y="470" fill="#fff" font-size="14" font-weight="bold">INFRASTRUCTURE LAYER</text>
+
+  <rect x="60" y="485" width="180" height="70" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="100" y="510" fill="#fff" font-size="13" font-weight="bold">ss-cas</text>
+  <text x="100" y="530" fill="#ccc" font-size="10">Content-addressed</text>
+  <text x="100" y="545" fill="#ccc" font-size="10">Merkle tree storage</text>
+
+  <rect x="260" y="485" width="180" height="120" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="300" y="510" fill="#fff" font-size="13" font-weight="bold">ss-federation</text>
+  <text x="300" y="530" fill="#ccc" font-size="10">DHT discovery</text>
+  <text x="300" y="545" fill="#ccc" font-size="10">Sovereign routing</text>
+  <text x="300" y="560" fill="#ccc" font-size="10">CRDT sync</text>
+  <text x="300" y="575" fill="#ccc" font-size="10">Trust negotiation</text>
+
+  <rect x="460" y="485" width="180" height="120" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="500" y="510" fill="#fff" font-size="13" font-weight="bold">ss-trust</text>
+  <text x="500" y="530" fill="#ccc" font-size="10">Trust graph</text>
+  <text x="500" y="545" fill="#ccc" font-size="10">Reputation scoring</text>
+  <text x="500" y="560" fill="#ccc" font-size="10">Verification chain</text>
+  <text x="500" y="575" fill="#ccc" font-size="10">Certification registry</text>
+
+  <rect x="660" y="485" width="180" height="120" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="700" y="510" fill="#fff" font-size="13" font-weight="bold">ss-policy</text>
+  <text x="700" y="530" fill="#ccc" font-size="10">Policy evaluation</text>
+  <text x="700" y="545" fill="#ccc" font-size="10">Governance engine</text>
+  <text x="700" y="560" fill="#ccc" font-size="10">Jurisdiction filter</text>
+  <text x="700" y="575" fill="#ccc" font-size="10">Audit trail</text>
+
+  <!-- INTELLIGENCE LAYER -->
+  <rect x="40" y="645" width="820" height="180" rx="8" fill="url(#intel)" filter="url(#shadow)" opacity="0.9"/>
+  <text x="60" y="670" fill="#fff" font-size="14" font-weight="bold">INTELLIGENCE LAYER</text>
+
+  <rect x="60" y="685" width="150" height="120" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="100" y="710" fill="#fff" font-size="13" font-weight="bold">ss-reason</text>
+  <text x="100" y="730" fill="#ccc" font-size="10">Reasoning traces</text>
+  <text x="100" y="745" fill="#ccc" font-size="10">Decision replay</text>
+  <text x="100" y="760" fill="#ccc" font-size="10">Proof verification</text>
+  <text x="100" y="775" fill="#ccc" font-size="10">REP protocol</text>
+
+  <rect x="230" y="685" width="150" height="120" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="270" y="710" fill="#fff" font-size="13" font-weight="bold">ss-kas</text>
+  <text x="270" y="730" fill="#ccc" font-size="10">Knowledge addressing</text>
+  <text x="270" y="745" fill="#ccc" font-size="10">Content-addressed</text>
+  <text x="270" y="760" fill="#ccc" font-size="10">Versioned facts</text>
+  <text x="270" y="775" fill="#ccc" font-size="10">KAP protocol</text>
+
+  <rect x="400" y="685" width="150" height="120" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="440" y="710" fill="#fff" font-size="13" font-weight="bold">ss-memory</text>
+  <text x="440" y="730" fill="#ccc" font-size="10">Tiered hierarchy</text>
+  <text x="440" y="745" fill="#ccc" font-size="10">TTL management</text>
+  <text x="440" y="760" fill="#ccc" font-size="10">Tier promotion</text>
+  <text x="440" y="775" fill="#ccc" font-size="10">SMP protocol</text>
+
+  <rect x="570" y="685" width="140" height="120" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="595" y="710" fill="#fff" font-size="13" font-weight="bold">ss-twin</text>
+  <text x="595" y="730" fill="#ccc" font-size="10">Digital twins</text>
+  <text x="595" y="745" fill="#ccc" font-size="10">Physical systems</text>
+  <text x="595" y="760" fill="#ccc" font-size="10">IoT integration</text>
+
+  <rect x="730" y="685" width="110" height="120" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="750" y="710" fill="#fff" font-size="13" font-weight="bold">ss-swarm</text>
+  <text x="750" y="730" fill="#ccc" font-size="10">Coordination</text>
+  <text x="750" y="745" fill="#ccc" font-size="10">Consensus</text>
+  <text x="750" y="760" fill="#ccc" font-size="10">Task distribution</text>
+
+  <!-- ORCHESTRATION LAYER -->
+  <rect x="40" y="845" width="820" height="130" rx="8" fill="url(#orch)" filter="url(#shadow)" opacity="0.9"/>
+  <text x="60" y="870" fill="#fff" font-size="14" font-weight="bold">ORCHESTRATION LAYER</text>
+
+  <rect x="60" y="885" width="240" height="70" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="100" y="910" fill="#fff" font-size="13" font-weight="bold">ss-scheduler</text>
+  <text x="100" y="930" fill="#ccc" font-size="10">Compute placement · Model selection</text>
+  <text x="100" y="945" fill="#ccc" font-size="10">Predictive scaling · Resource allocation</text>
+
+  <rect x="320" y="885" width="240" height="70" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="360" y="910" fill="#fff" font-size="13" font-weight="bold">ss-routing</text>
+  <text x="360" y="930" fill="#ccc" font-size="10">Cognitive routing by capability</text>
+  <text x="360" y="945" fill="#ccc" font-size="10">Trust-weighted path selection</text>
+
+  <rect x="580" y="885" width="260" height="70" rx="6" fill="#fff" opacity="0.12"/>
+  <text x="620" y="910" fill="#fff" font-size="13" font-weight="bold">ss-discovery</text>
+  <text x="620" y="930" fill="#ccc" font-size="10">Semantic DNS · Capability search</text>
+  <text x="620" y="945" fill="#ccc" font-size="10">Peer discovery · Service registry</text>
+
+  <!-- PROTOCOLS BAR -->
+  <rect x="40" y="995" width="820" height="65" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="450" y="1018" text-anchor="middle" fill="#8b949e" font-size="11">PROTOCOLS</text>
+  <rect x="60" y="1028" width="100" height="24" rx="4" fill="#0f3460"/>
+  <text x="110" y="1045" text-anchor="middle" fill="#58a6ff" font-size="11" font-weight="bold">SIP (stable)</text>
+  <rect x="175" y="1028" width="90" height="24" rx="4" fill="#1b5e20"/>
+  <text x="220" y="1045" text-anchor="middle" fill="#fff" font-size="11">SEP (draft)</text>
+  <rect x="280" y="1028" width="90" height="24" rx="4" fill="#1b5e20"/>
+  <text x="325" y="1045" text-anchor="middle" fill="#fff" font-size="11">SAP (draft)</text>
+  <rect x="385" y="1028" width="90" height="24" rx="4" fill="#1b5e20"/>
+  <text x="430" y="1045" text-anchor="middle" fill="#fff" font-size="11">SMP (draft)</text>
+  <rect x="490" y="1028" width="90" height="24" rx="4" fill="#4a148c"/>
+  <text x="535" y="1045" text-anchor="middle" fill="#fff" font-size="11">KAP (draft)</text>
+  <rect x="595" y="1028" width="90" height="24" rx="4" fill="#4a148c"/>
+  <text x="640" y="1045" text-anchor="middle" fill="#fff" font-size="11">REP (draft)</text>
+  <rect x="700" y="1028" width="140" height="24" rx="4" fill="#b71c1c"/>
+  <text x="770" y="1045" text-anchor="middle" fill="#fff" font-size="11">CONFORMANCE</text>
+
+  <!-- FOOTER -->
+  <line x1="40" y1="1080" x2="860" y2="1080" stroke="#30363d" stroke-width="1"/>
+  <text x="450" y="1100" text-anchor="middle" fill="#8b949e" font-size="10">SovereignStack Architecture v2026.1 — docs/architecture/</text>
+  <text x="450" y="1120" text-anchor="middle" fill="#8b949e" font-size="10">Kernel · Infrastructure · Intelligence · Orchestration · Protocols</text>
+
+  <!-- CERTIFICATION BADGE -->
+  <rect x="40" y="1135" width="820" height="45" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="450" y="1163" text-anchor="middle" fill="#8b949e" font-size="11">
+    OASA Certification: L1 Compatible → L2 Verified → L3 Certified
+  </text>
+</svg>

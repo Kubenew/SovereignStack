@@ -1,0 +1,32 @@
+{
+  "oasa_version": "2026.1",
+  "certification": {
+    "level": "L2",
+    "status": "active",
+    "issued": "2026-05-31T00:00:00Z",
+    "expires": "2027-05-31T00:00:00Z",
+    "badge_url": "https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-l2.svg"
+  },
+  "subject": {
+    "name": "SovereignStack Reference Node",
+    "version": "0.1.0",
+    "type": "node"
+  },
+  "tests": {
+    "suites": {
+      "sip": {"passed": 5, "failed": 0, "skipped": 0},
+      "sep": {"passed": 4, "failed": 0, "skipped": 0},
+      "sap": {"passed": 6, "failed": 0, "skipped": 0},
+      "smp": {"passed": 5, "failed": 0, "skipped": 0}
+    },
+    "total_passed": 20,
+    "total_failed": 0,
+    "total_skipped": 0,
+    "suite_version": "1.0"
+  },
+  "evidence": {
+    "security_audit": null,
+    "sbom": "https://github.com/Kubenew/SovereignStack/releases/download/v0.1.0/sbom.spdx.json",
+    "signature": "sig:attestation-abc123..."
+  }
+}

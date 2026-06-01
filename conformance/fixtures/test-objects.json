@@ -1,0 +1,75 @@
+{
+  "agent": {
+    "uri": "agent://a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "type": "agent",
+    "version": "1.0.0",
+    "owner": "node://owner-node-001",
+    "public_key": "ed25519:deadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe",
+    "capabilities": ["reason", "memory", "knowledge", "communicate"],
+    "metadata": {
+      "name": "test-agent-alpha",
+      "jurisdiction": "EU",
+      "tags": ["test", "fixture"]
+    },
+    "signature": "sig:abc123...",
+    "provenance": [
+      {
+        "action": "created",
+        "agent": "node://bootstrap",
+        "timestamp": "2026-05-31T00:00:00Z"
+      }
+    ]
+  },
+  "session": {
+    "uri": "session://sess-001",
+    "type": "session",
+    "version": "1.0.0",
+    "owner": "agent://a1b2c3d4",
+    "created_at": "2026-05-31T12:00:00Z",
+    "ttl_seconds": 300,
+    "status": "active",
+    "parent_session": null
+  },
+  "memory": {
+    "uri": "memory://mem-001",
+    "type": "memory",
+    "version": "1.0.0",
+    "owner": "agent://a1b2c3d4",
+    "created_at": "2026-05-31T12:00:00Z",
+    "ttl_seconds": 60,
+    "payload": {"data": "fixture memory content"},
+    "tags": ["test", "ephemeral"]
+  },
+  "knowledge": {
+    "uri": "knowledge://sha256:abc123def456",
+    "type": "knowledge",
+    "version": "1.0.0",
+    "owner": "agent://a1b2c3d4",
+    "created_at": "2026-05-31T12:00:00Z",
+    "content_hash": "sha256:abc123def456",
+    "previous_version": null,
+    "provenance": [
+      {
+        "action": "created",
+        "agent": "agent://a1b2c3d4",
+        "timestamp": "2026-05-31T12:00:00Z",
+        "reason": "ingestion"
+      }
+    ],
+    "payload": {"fact": "gravity accelerates at 9.81 m/s²"}
+  },
+  "capability": {
+    "uri": "capability://delegated:read:memory://mem-001",
+    "type": "capability",
+    "version": "1.0.0",
+    "granted_by": "node://owner-node-001",
+    "granted_to": "agent://a1b2c3d4",
+    "permissions": ["read"],
+    "target": "memory://mem-001",
+    "conditions": {
+      "max_uses": 10,
+      "expires_at": "2026-06-30T23:59:59Z"
+    },
+    "signature": "sig:def456..."
+  }
+}
