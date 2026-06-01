@@ -100,6 +100,94 @@ impl ObjectMeta {
     }
 }
 
+/// A single entry in an object's provenance chain.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProvenanceEntry {
+    /// What action occurred (created, updated, derived, etc.)
+    pub action: String,
+    /// Agent or node that performed the action
+    pub agent: SovereignUri,
+    /// When the action occurred
+    pub timestamp: Timestamp,
+    /// Optional: previous version URI (for updates)
+    pub previous: Option<String>,
+    /// Optional: reason or justification
+    pub reason: Option<String>,
+}
+
+/// Trust score for an identity or object (0–100).
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+pub struct TrustScore {
+    pub value: u8,
+}
+
+impl TrustScore {
+    pub fn new(value: u8) -> Self {
+        Self { value: value.min(100) }
+    }
+
+    pub fn meets_threshold(&self, min: u8) -> bool {
+        self.value >= min
+    }
+}
+
+impl Default for TrustScore {
+    fn default() -> Self {
+        Self { value: 50 }
+    }
+}
+
+/// A descriptor for a capability in the capability registry.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CapabilityDescriptor {
+    pub id: String,
+    pub provider: SovereignUri,
+    pub display_name: String,
+    pub inputs: Vec<CapabilityParam>,
+    pub outputs: Vec<CapabilityParam>,
+    pub trust_required: u8,
+    pub tags: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CapabilityParam {
+    pub name: String,
+    pub param_type: String,
+    pub required: bool,
+}
+
+/// A claim within a knowledge object.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct KnowledgeClaim {
+    pub statement: String,
+    pub confidence: f64,
+    pub evidence: Vec<String>,
+}
+
+/// A step within a reasoning trace.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ReasoningStep {
+    pub id: String,
+    pub step_type: String,
+    pub input: String,
+    pub output: String,
+    pub confidence: f64,
+    pub dependencies: Vec<String>,
+    pub rationale: Option<String>,
+}
+
+/// Header fields for any event bus event.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EventHeader {
+    pub event_type: String,
+    pub version: u64,
+    pub source: SovereignUri,
+    pub actor: SovereignUri,
+    pub timestamp: Timestamp,
+    pub trace_id: String,
+    pub previous_event: Option<String>,
+}
+
 /// Memory tier classification.
 ///
 /// Implements the Memory Hierarchy (Future Layer #26):
@@ -166,6 +254,89 @@ impl Default for ReplicationPolicy {
 mod tests {
     use super::*;
     use crate::uri::{UriScheme, SovereignUri};
+
+    #[test]
+    fn provenance_entry_creation() {
+        let agent = SovereignUri::new(UriScheme::Agent, "creator");
+        let entry = ProvenanceEntry {
+            action: "created".into(),
+            agent: agent.clone(),
+            timestamp: Timestamp::now(),
+            previous: None,
+            reason: None,
+        };
+        assert_eq!(entry.action, "created");
+        assert_eq!(entry.agent, agent);
+    }
+
+    #[test]
+    fn trust_score_clamping() {
+        let ts = TrustScore::new(150);
+        assert_eq!(ts.value, 100);
+        let ts2 = TrustScore::new(75);
+        assert!(ts2.meets_threshold(70));
+        assert!(!ts2.meets_threshold(80));
+    }
+
+    #[test]
+    fn capability_descriptor_roundtrip() {
+        let provider = SovereignUri::new(UriScheme::Agent, "legal-agent");
+        let desc = CapabilityDescriptor {
+            id: "capability://legal/review".into(),
+            provider: provider.clone(),
+            display_name: "Legal Review".into(),
+            inputs: vec![CapabilityParam { name: "document".into(), param_type: "artifact".into(), required: true }],
+            outputs: vec![CapabilityParam { name: "assessment".into(), param_type: "knowledge".into(), required: true }],
+            trust_required: 70,
+            tags: vec!["legal".into(), "gdpr".into()],
+        };
+        let json = serde_json::to_string(&desc).unwrap();
+        let restored: CapabilityDescriptor = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, desc.id);
+        assert_eq!(restored.provider, provider);
+    }
+
+    #[test]
+    fn event_header_creation() {
+        let source = SovereignUri::new(UriScheme::Node, "test-node");
+        let actor = SovereignUri::new(UriScheme::Agent, "test-agent");
+        let header = EventHeader {
+            event_type: "agent.spawned".into(),
+            version: 1,
+            source: source.clone(),
+            actor: actor.clone(),
+            timestamp: Timestamp::now(),
+            trace_id: "trace-abc".into(),
+            previous_event: None,
+        };
+        assert_eq!(header.event_type, "agent.spawned");
+        assert_eq!(header.trace_id, "trace-abc");
+    }
+
+    #[test]
+    fn knowledge_claim_confidence_range() {
+        let claim = KnowledgeClaim {
+            statement: "F = ma".into(),
+            confidence: 0.99,
+            evidence: vec!["evidence://exp-001".into()],
+        };
+        assert!(claim.confidence > 0.0 && claim.confidence <= 1.0);
+    }
+
+    #[test]
+    fn reasoning_step_dependencies() {
+        let step = ReasoningStep {
+            id: "step-003".into(),
+            step_type: "deduction".into(),
+            input: "premises".into(),
+            output: "conclusion".into(),
+            confidence: 0.95,
+            dependencies: vec!["step-001".into(), "step-002".into()],
+            rationale: Some("By modus ponens".into()),
+        };
+        assert_eq!(step.dependencies.len(), 2);
+        assert!(step.rationale.is_some());
+    }
 
     #[test]
     fn object_meta_creation() {

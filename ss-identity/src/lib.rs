@@ -38,6 +38,9 @@ pub mod identity;
 pub mod registry;
 pub mod trust;
 
-pub use identity::{AgentIdentity, IdentityType};
+pub use identity::{
+    AgentIdentity, IdentityDocument, IdentityType, KeyAlias,
+    ServiceEndpoint, VerificationMethod, VerificationMethodType,
+};
 pub use registry::IdentityRegistry;
 pub use trust::TrustProfile;
