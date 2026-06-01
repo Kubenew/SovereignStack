@@ -9,8 +9,10 @@ This file lists the current maintainers of the SovereignStack project and its su
 Responsible for strategic direction, standards approval, release management.
 
 | Name | GitHub | Affiliation | Area |
-|---|---|---|---|
-| _TBD_ | — | — | Core |
+|---|---|---|---|---|
+| _TBD — TSC forming_ | — | — | Core |
+| _Open_ | — | — | Standards Editor |
+| _Open_ | — | — | Release Manager |
 
 ---
 

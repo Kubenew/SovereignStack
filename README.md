@@ -1,6 +1,16 @@
 # SovereignStack
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-compatible.svg" alt="OASA Compatible" height="40">
+  <img src="https://img.shields.io/badge/RFCs-0001--0010-blue" alt="RFCs" height="40">
+  <img src="https://img.shields.io/badge/Conformance-L1%20|%20L2%20|%20L3-orange" alt="Conformance" height="40">
+  <img src="https://img.shields.io/badge/Architecture-docs%2Farchitecture-success" alt="Architecture" height="40">
+  <img src="https://img.shields.io/badge/License-Apache%202.0-blue" alt="License" height="40">
+</p>
+
 > **The Sovereign Intelligence Network** — A distributed operating system for intelligence.
+
+[![Architecture Diagram](docs/architecture/diagrams/architecture-stack.svg)](docs/architecture/00-overview.md)
 
 SovereignStack is a protocol stack and runtime that treats intelligence itself as a networked resource. It is to autonomous intelligence what TCP/IP is to data networking.
 
@@ -69,6 +79,7 @@ Alongside the core Rust primitives, SovereignStack implements a suite of Python-
 
 ```
 SovereignStack/
+├── ss-kernel/        # Core kernel (identity, resolver, eventbus, registry, capability, policy)
 ├── ss-core/          # Shared types, URI parsing, errors
 ├── ss-crypto/        # Ed25519 signing, hashing
 ├── ss-identity/      # Universal Agent Identity
@@ -92,10 +103,15 @@ SovereignStack/
 ├── ss-device/        # Reality interface layer (Planned)
 ├── ss-economy/       # Resource markets (Planned)
 ├── ss-sip/           # Sovereign Intelligence Protocol (Planned)
-├── rfcs/             # Protocol specifications
-├── docs/             # Architecture documentation
+├── reference-node/   # Minimal reference node binary
+├── conformance/      # Conformance test suites & profiles
+├── rfcs/             # Protocol specifications (RFC-0001–0010)
+├── docs/
+│   ├── architecture/ # 10-page architecture breakdown
+│   └── architecture/diagrams/ # SVG architecture diagrams
 ├── tests/            # Conformance test suite
-└── examples/         # Reference implementations
+├── examples/         # Reference implementations
+└── playground/       # Try-it-now deployment
 ```
 
 ## Standards Ecosystem
@@ -117,14 +133,18 @@ SovereignStack is governed by a formal standards framework:
 
 ### RFCs
 
-| RFC | Status |
-|---|---|
-| [RFC-0001](rfcs/RFC-0001-core-object-model.md) | Core Object Model — Draft |
-| [RFC-0002](rfcs/RFC-0002-uri-resolution.md) | URI Resolution Mechanism — Draft |
-| [RFC-0003](rfcs/RFC-0003-session-runtime.md) | Session Runtime Specification — Draft |
-| [RFC-0004](rfcs/RFC-0004-capability-system.md) | Capability System — Draft |
-| [RFC-0005](rfcs/RFC-0005-federation-protocol.md) | Federation Protocol — Draft |
-| [RFC-0006](rfcs/RFC-0006-knowledge-objects.md) | Knowledge Objects — Draft |
+| RFC | Title | Status |
+|---|---|---|
+| [RFC-0001](rfcs/RFC-0001-core-object-model.md) | Sovereign Object Model | Draft |
+| [RFC-0002](rfcs/RFC-0002-uri-resolution.md) | URI Standard + ABNF Grammar | Draft |
+| [RFC-0003](rfcs/RFC-0003-session-runtime.md) | Trust Graph | Draft |
+| [RFC-0004](rfcs/RFC-0004-capability-registry.md) | Capability Registry | Draft |
+| [RFC-0005](rfcs/RFC-0005-knowledge-objects.md) | Knowledge Objects | Draft |
+| [RFC-0006](rfcs/RFC-0006-reasoning-objects.md) | Reasoning Objects | Draft |
+| [RFC-0007](rfcs/RFC-0007-event-bus.md) | Event Bus | Draft |
+| [RFC-0008](rfcs/RFC-0008-federation-routing.md) | Federation Routing | Draft |
+| [RFC-0009](rfcs/RFC-0009-session-lifecycle.md) | Session Lifecycle | Draft |
+| [RFC-0010](rfcs/RFC-0010-conformance-framework.md) | Conformance Framework | Draft |
 
 ## Getting Started
 

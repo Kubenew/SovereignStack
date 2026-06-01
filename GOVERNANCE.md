@@ -42,8 +42,12 @@ The Core Maintainers are responsible for the overall direction and health of the
 - Resolve escalated disputes
 - Maintain project standards
 
-**Current Core Maintainers:**
-- _TBD — See [MAINTAINERS.md](MAINTAINERS.md)_
+**Current Core Maintainers (acting):**
+- _TSC Chair: [vacant] — See [MAINTAINERS.md](MAINTAINERS.md)_
+- _Standards Editor: [vacant]_
+- _Release Manager: [vacant]_
+
+**Nomination:** See MAINTAINERS.md for the nomination process. As of v0.3.0, the TSC is being formed. Candidates should demonstrate sustained contribution over 3+ months.
 
 **Becoming a Core Maintainer:**
 - Demonstrated sustained contribution over 6+ months
@@ -78,6 +82,8 @@ Working Groups (WGs) are temporary or permanent groups focused on specific areas
 | Federation WG | Mesh networking, cross-node sync, discovery | Proposed |
 | Security WG | Threat model, audit, supply chain | Active |
 | Deployment WG | Profiles, installers, reference architectures | Active |
+| **Conformance WG** | Test suites, certification, profiles | **New (v0.3.0)** |
+| **Standards WG** | RFCs, object model, URI, protocol registry | **New (v0.3.0)** |
 
 ### 2.4 RFC Reviewers
 
@@ -133,9 +139,10 @@ Draft → Discussion → Accepted → Implemented → Stable → Deprecated
 
 ### 5.1 Versioning
 
-The project uses **calendar versioning** (`YYYY.N`):
-- `2026.1` — First release of 2026
-- `2026.2` — Second release of 2026
+The project uses **semantic versioning** for development releases and **calendar versioning** for standards releases:
+
+- `v0.3.0` — "Constitution & Standards" (June 15, 2026)
+- `2026.1` — First annual standards release (future)
 
 ### 5.2 Release Channels
 
