@@ -188,6 +188,33 @@ pub struct EventHeader {
     pub previous_event: Option<String>,
 }
 
+/// A named group of compute nodes sharing a fabric leaf or rail (RFC-0030).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TopologyGroup {
+    pub id: String,
+    pub fabric: String,
+    pub nodes: Vec<String>,
+    pub leaf: Option<String>,
+    pub locality_score: u32,
+}
+
+/// A link between two fabric elements (RFC-0030).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FabricLink {
+    pub source: String,
+    pub destination: String,
+    pub bandwidth_gbps: u64,
+    pub latency_us: u64,
+}
+
+/// Locality cost between compute nodes for KV placement (RFC-0030).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MemoryLocality {
+    pub source_node: String,
+    pub target_node: String,
+    pub cost: u32,
+}
+
 /// Memory tier classification.
 ///
 /// Implements the Memory Hierarchy (Future Layer #26):
@@ -365,5 +392,44 @@ mod tests {
         let id1 = ObjectId::new();
         let id2 = ObjectId::new();
         assert_ne!(id1, id2);
+    }
+
+    // ── RFC-0030 topology types ─────────────────────────────────────────
+
+    #[test]
+    fn topology_group_creation() {
+        let group = TopologyGroup {
+            id: "topology://zcube-1/group-a".into(),
+            fabric: "fabric://zcube-a".into(),
+            nodes: vec!["node://gpu-001".into(), "node://gpu-002".into()],
+            leaf: Some("leaf://zcube-a/leaf01".into()),
+            locality_score: 0,
+        };
+        assert_eq!(group.nodes.len(), 2);
+        assert!(group.leaf.is_some());
+    }
+
+    #[test]
+    fn fabric_link_roundtrip() {
+        let link = FabricLink {
+            source: "leaf://zcube-a/leaf01".into(),
+            destination: "spine://zcube-a/spine01".into(),
+            bandwidth_gbps: 800,
+            latency_us: 2,
+        };
+        let json = serde_json::to_string(&link).unwrap();
+        let restored: FabricLink = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.bandwidth_gbps, 800);
+        assert_eq!(restored.latency_us, 2);
+    }
+
+    #[test]
+    fn memory_locality_cost() {
+        let loc = MemoryLocality {
+            source_node: "node://gpu-001".into(),
+            target_node: "node://gpu-032".into(),
+            cost: 5,
+        };
+        assert!(loc.cost > 0);
     }
 }

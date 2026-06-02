@@ -18,6 +18,7 @@ This registry tracks the lifecycle status of every protocol in the SovereignStac
 | **SMP** | Sovereign Memory Protocol | **Draft** | 0.1 | — | `ss-memory/` | `conformance/tests/smp/` |
 | **KAP** | Sovereign Knowledge Access Protocol | **Draft** | 0.1 | RFC-0006 | `ss-kas/` | Planned |
 | **REP** | Sovereign Reasoning Exchange Protocol | **Draft** | 0.1 | — | `ss-reason/` | Planned |
+| **TAP** | Topology Awareness Protocol | **Draft** | 0.1 | RFC-0030 | `ss-core/` (types) | Planned |
 
 ## Protocol Lifecycle
 
@@ -60,3 +61,4 @@ Draft → Experimental → Beta → Stable → Deprecated → Historic
 | 2026-05-31 | SIP promoted to Stable |
 | 2026-05-31 | SEP, SAP, SMP registered as Draft |
 | 2026-05-31 | KAP, REP registered as Draft |
+| 2026-06-02 | TAP registered as Draft (RFC-0030 Network Topology Awareness) |

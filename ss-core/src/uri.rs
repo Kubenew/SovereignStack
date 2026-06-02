@@ -41,6 +41,16 @@ pub enum UriScheme {
     Node,
     /// Event record: `event://evt-99`
     Event,
+    /// Fabric leaf switch: `leaf://fabric-a/leaf03`
+    Leaf,
+    /// Fabric spine switch: `spine://fabric-a/spine01`
+    Spine,
+    /// Fabric rail: `rail://fabric-a/rail7`
+    Rail,
+    /// Named fabric: `fabric://zcube-a`
+    Fabric,
+    /// Named topology: `topology://cluster-prod`
+    Topology,
 }
 
 impl UriScheme {
@@ -61,6 +71,11 @@ impl UriScheme {
             Self::Policy => "policy",
             Self::Node => "node",
             Self::Event => "event",
+            Self::Leaf => "leaf",
+            Self::Spine => "spine",
+            Self::Rail => "rail",
+            Self::Fabric => "fabric",
+            Self::Topology => "topology",
         }
     }
 }
@@ -84,6 +99,11 @@ impl FromStr for UriScheme {
             "policy" => Ok(Self::Policy),
             "node" => Ok(Self::Node),
             "event" => Ok(Self::Event),
+            "leaf" => Ok(Self::Leaf),
+            "spine" => Ok(Self::Spine),
+            "rail" => Ok(Self::Rail),
+            "fabric" => Ok(Self::Fabric),
+            "topology" => Ok(Self::Topology),
             _ => Err(Error::InvalidUri(format!("unknown scheme: {s}"))),
         }
     }
@@ -343,11 +363,47 @@ mod tests {
             "policy://gdpr-eu",
             "node://homelab-1",
             "event://evt-99",
+            "leaf://fabric-a/leaf03",
+            "spine://fabric-a/spine01",
+            "rail://fabric-a/rail7",
+            "fabric://zcube-a",
+            "topology://cluster-prod",
         ];
 
         for uri_str in uris {
             let uri = SovereignUri::parse(uri_str).unwrap();
             assert_eq!(uri.to_string(), uri_str, "roundtrip failed for {uri_str}");
         }
+    }
+
+    #[test]
+    fn parse_leaf_uri() {
+        let uri = SovereignUri::parse("leaf://fabric-a/leaf03").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Leaf);
+        assert_eq!(uri.authority(), "fabric-a");
+        assert_eq!(uri.path(), Some("leaf03"));
+    }
+
+    #[test]
+    fn parse_fabric_uri() {
+        let uri = SovereignUri::parse("fabric://zcube-a").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Fabric);
+        assert_eq!(uri.authority(), "zcube-a");
+        assert_eq!(uri.path(), None);
+    }
+
+    #[test]
+    fn parse_rail_uri() {
+        let uri = SovereignUri::parse("rail://fabric-a/rail7").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Rail);
+        assert_eq!(uri.authority(), "fabric-a");
+        assert_eq!(uri.path(), Some("rail7"));
+    }
+
+    #[test]
+    fn parse_topology_uri() {
+        let uri = SovereignUri::parse("topology://cluster-prod").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Topology);
+        assert_eq!(uri.authority(), "cluster-prod");
     }
 }

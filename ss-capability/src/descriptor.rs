@@ -40,6 +40,10 @@ pub struct CapabilityDescriptor {
     pub available: bool,
     /// Version of the capability implementation.
     pub version: String,
+    /// Topology group for fabric-aware ranking (RFC-0030).
+    pub topology_group: Option<String>,
+    /// KV cache locality for locality-aware scheduling (RFC-0030).
+    pub kv_locality: Option<String>,
 }
 
 impl CapabilityDescriptor {
@@ -60,6 +64,8 @@ impl CapabilityDescriptor {
             expires_at: None,
             available: true,
             version: "0.1.0".to_string(),
+            topology_group: None,
+            kv_locality: None,
         }
     }
 
@@ -117,6 +123,18 @@ impl CapabilityDescriptor {
         self
     }
 
+    /// Set the topology group for fabric-aware scheduling.
+    pub fn with_topology_group(mut self, group: &str) -> Self {
+        self.topology_group = Some(group.to_string());
+        self
+    }
+
+    /// Set the KV locality hint for locality-aware scheduling.
+    pub fn with_kv_locality(mut self, locality: &str) -> Self {
+        self.kv_locality = Some(locality.to_string());
+        self
+    }
+
     /// Compute a relevance score against a query.
     ///
     /// Higher scores indicate better matches. Factors in accuracy,
@@ -159,6 +177,18 @@ mod tests {
         assert_eq!(desc.cost, 0.02);
         assert_eq!(desc.latency_ms, 3000);
         assert!(desc.available);
+        assert!(desc.topology_group.is_none());
+        assert!(desc.kv_locality.is_none());
+    }
+
+    #[test]
+    fn descriptor_with_topology() {
+        let uri = SovereignUri::new(UriScheme::Agent, "inference-node-7");
+        let desc = CapabilityDescriptor::new(uri, "text_generation")
+            .with_topology_group("zcube-1/group-a")
+            .with_kv_locality("node://gpu-003");
+        assert_eq!(desc.topology_group, Some("zcube-1/group-a".to_string()));
+        assert_eq!(desc.kv_locality, Some("node://gpu-003".to_string()));
     }
 
     #[test]
