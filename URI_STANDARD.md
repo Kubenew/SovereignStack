@@ -21,6 +21,7 @@ spine://<fabric>/<spine-id>        # Fabric spine switch (RFC-0030)
 rail://<fabric>/<rail-id>          # Fabric rail (RFC-0030)
 fabric://<fabric-name>             # Named AI fabric (RFC-0030)
 topology://<cluster-name>          # Named topology graph (RFC-0030)
+link://<fabric>/<link-id>          # Named fabric link (RFC-0032)
 ```
 
 ## Resolution Rules

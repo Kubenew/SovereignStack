@@ -198,6 +198,63 @@ pub struct TopologyGroup {
     pub locality_score: u32,
 }
 
+/// A measured latency distribution (RFC-0032).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LatencyStats {
+    pub min: f64,
+    pub avg: f64,
+    pub max: f64,
+    pub p99: f64,
+}
+
+/// A measured bandwidth distribution (RFC-0032).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BandwidthStats {
+    pub min: u64,
+    pub avg: u64,
+    pub max: u64,
+    pub p99: u64,
+}
+
+/// A single hop in a computed fabric route (RFC-0032).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FabricHop {
+    pub node: String,
+    pub egress_link: Option<String>,
+}
+
+/// A computed fabric route between source and target (RFC-0032).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FabricRoute {
+    pub source: String,
+    pub target: String,
+    pub hops: Vec<FabricHop>,
+    pub estimated_latency_us: u64,
+    pub available_bandwidth_gbps: u64,
+}
+
+/// A reservation of a fabric segment (RFC-0032).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FabricReservation {
+    pub id: String,
+    pub fabric: String,
+    pub collective: Option<String>,
+    pub participants: Vec<String>,
+    pub allocated_bandwidth_gbps: u64,
+    pub expires_at: String,
+    pub lease_token: String,
+}
+
+/// A one-shot fabric measurement result (RFC-0032).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FabricMeasurement {
+    pub source: String,
+    pub target: String,
+    pub latency_us: LatencyStats,
+    pub bandwidth_gbps: BandwidthStats,
+    pub measured_at: String,
+}
+
 /// A link between two fabric elements (RFC-0030).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FabricLink {
@@ -431,5 +488,68 @@ mod tests {
             cost: 5,
         };
         assert!(loc.cost > 0);
+    }
+
+    // ── RFC-0032 fabric protocol types ────────────────────────────────────
+
+    #[test]
+    fn latencystats_ordering() {
+        let s = LatencyStats { min: 1.0, avg: 2.5, max: 10.0, p99: 8.0 };
+        assert!(s.min <= s.avg);
+        assert!(s.avg <= s.max);
+        assert!(s.p99 <= s.max);
+    }
+
+    #[test]
+    fn bandwidthstats_roundtrip() {
+        let s = BandwidthStats { min: 400, avg: 750, max: 800, p99: 790 };
+        let json = serde_json::to_string(&s).unwrap();
+        let restored: BandwidthStats = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.max, 800);
+    }
+
+    #[test]
+    fn fabric_route_creation() {
+        let route = FabricRoute {
+            source: "node://gpu-001".into(),
+            target: "node://gpu-064".into(),
+            hops: vec![
+                FabricHop { node: "node://gpu-001".into(), egress_link: Some("link://zcube-a/link-gpu001-leaf01".into()) },
+                FabricHop { node: "leaf://zcube-a/leaf01".into(), egress_link: Some("link://zcube-a/link-leaf01-spine03".into()) },
+                FabricHop { node: "spine://zcube-a/spine03".into(), egress_link: None },
+                FabricHop { node: "node://gpu-064".into(), egress_link: None },
+            ],
+            estimated_latency_us: 7,
+            available_bandwidth_gbps: 400,
+        };
+        assert_eq!(route.hops.len(), 4);
+        assert_eq!(route.estimated_latency_us, 7);
+    }
+
+    #[test]
+    fn fabric_reservation_lease_token() {
+        let res = FabricReservation {
+            id: "r-001".into(),
+            fabric: "fabric://zcube-a".into(),
+            collective: Some("all_reduce".into()),
+            participants: vec!["node://gpu-001".into(), "node://gpu-002".into()],
+            allocated_bandwidth_gbps: 400,
+            expires_at: "2026-06-02T12:05:00Z".into(),
+            lease_token: "token:ed25519:base64...".into(),
+        };
+        assert!(res.lease_token.starts_with("token:"));
+    }
+
+    #[test]
+    fn fabric_measurement_stats() {
+        let m = FabricMeasurement {
+            source: "link://zcube-a/link-gpu001-leaf01".into(),
+            target: "link://zcube-a/link-gpu064-leaf02".into(),
+            latency_us: LatencyStats { min: 2.1, avg: 2.4, max: 3.8, p99: 3.2 },
+            bandwidth_gbps: BandwidthStats { min: 760, avg: 785, max: 800, p99: 795 },
+            measured_at: "2026-06-02T12:00:05Z".into(),
+        };
+        assert!(m.bandwidth_gbps.avg > 0);
+        assert!(m.latency_us.avg > 0.0);
     }
 }

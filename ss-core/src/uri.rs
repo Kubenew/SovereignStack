@@ -51,6 +51,8 @@ pub enum UriScheme {
     Fabric,
     /// Named topology: `topology://cluster-prod`
     Topology,
+    /// Named fabric link: `link://zcube-a/link-leaf01-spine01`
+    Link,
 }
 
 impl UriScheme {
@@ -76,6 +78,7 @@ impl UriScheme {
             Self::Rail => "rail",
             Self::Fabric => "fabric",
             Self::Topology => "topology",
+            Self::Link => "link",
         }
     }
 }
@@ -104,6 +107,7 @@ impl FromStr for UriScheme {
             "rail" => Ok(Self::Rail),
             "fabric" => Ok(Self::Fabric),
             "topology" => Ok(Self::Topology),
+            "link" => Ok(Self::Link),
             _ => Err(Error::InvalidUri(format!("unknown scheme: {s}"))),
         }
     }
@@ -368,6 +372,7 @@ mod tests {
             "rail://fabric-a/rail7",
             "fabric://zcube-a",
             "topology://cluster-prod",
+            "link://zcube-a/link-leaf01-spine01",
         ];
 
         for uri_str in uris {
