@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-compatible.svg" alt="OASA Compatible" height="40">
-  <img src="https://img.shields.io/badge/RFCs-0001--0010%20%2B%200030%20%2F%200032-blue" alt="RFCs" height="40">
+  <img src="https://img.shields.io/badge/RFCs-0001--0010%20%2B%200030--0032-blue" alt="RFCs" height="40">
   <img src="https://img.shields.io/badge/Conformance-L1%20|%20L2%20|%20L3-orange" alt="Conformance" height="40">
   <img src="https://img.shields.io/badge/Architecture-docs%2Farchitecture-success" alt="Architecture" height="40">
   <img src="https://img.shields.io/badge/License-Apache%202.0-blue" alt="License" height="40">
@@ -146,6 +146,7 @@ SovereignStack is governed by a formal standards framework:
 | [RFC-0009](rfcs/RFC-0009-session-lifecycle.md) | Session Lifecycle | Draft |
 | [RFC-0010](rfcs/RFC-0010-conformance-framework.md) | Conformance Framework | Draft |
 | [RFC-0030](rfcs/RFC-0030-network-topology-awareness.md) | Network Topology Awareness | Draft |
+| [RFC-0031](rfcs/RFC-0031-kv-locality-scheduling.md) | KV Locality Scheduling | Draft |
 | [RFC-0032](rfcs/RFC-0032-ai-fabric-protocol.md) | AI Fabric Protocol | Draft |
 
 ## Getting Started

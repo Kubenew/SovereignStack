@@ -20,6 +20,7 @@ This registry tracks the lifecycle status of every protocol in the SovereignStac
 | **REP** | Sovereign Reasoning Exchange Protocol | **Draft** | 0.1 | — | `ss-reason/` | Planned |
 | **TAP** | Topology Awareness Protocol | **Draft** | 0.1 | RFC-0030 | `ss-core/` (types) | Planned |
 | **AFP** | AI Fabric Protocol | **Draft** | 0.1 | RFC-0032 | `ss-core/` (types) | Planned |
+| **SLP** | Scheduling & Locality Protocol | **Draft** | 0.1 | RFC-0031 | `ss-core/` (types) | Planned |
 
 ## Protocol Lifecycle
 
@@ -64,3 +65,4 @@ Draft → Experimental → Beta → Stable → Deprecated → Historic
 | 2026-05-31 | KAP, REP registered as Draft |
 | 2026-06-02 | TAP registered as Draft (RFC-0030 Network Topology Awareness) |
 | 2026-06-02 | AFP registered as Draft (RFC-0032 AI Fabric Protocol) |
+| 2026-06-02 | SLP registered as Draft (RFC-0031 KV Locality Scheduling) |

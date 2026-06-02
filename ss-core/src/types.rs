@@ -255,6 +255,68 @@ pub struct FabricMeasurement {
     pub measured_at: String,
 }
 
+/// A KV cache placement known to the scheduler (RFC-0031).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct KVCachePlacement {
+    pub cache_id: String,
+    pub node_id: String,
+    pub session_id: String,
+    pub model: String,
+    pub layer: u32,
+    pub context_length: u32,
+    pub size_mb: u64,
+    pub created_at: Timestamp,
+}
+
+/// Composite locality score between two nodes (RFC-0031).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LocalityScore {
+    pub source_node: String,
+    pub target_node: String,
+    pub topology_distance: f64,
+    pub kv_transfer_cost: f64,
+    pub network_cost: f64,
+    pub composite_score: f64,
+}
+
+/// A single schedule ranking for a candidate node (RFC-0031).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScheduleRank {
+    pub node_id: String,
+    pub gpu_score: f64,
+    pub capability_score: f64,
+    pub trust_score: f64,
+    pub network_cost: f64,
+    pub kv_transfer_cost: f64,
+    pub composite_score: f64,
+}
+
+/// Scheduler configuration with tunable weights (RFC-0031).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SchedulerConfig {
+    pub gpu_capacity_weight: f64,
+    pub capability_weight: f64,
+    pub trust_weight: f64,
+    pub network_weight: f64,
+    pub kv_locality_weight: f64,
+    pub prefill_decode_colocation: bool,
+    pub kv_transfer_budget_ms: u64,
+}
+
+impl Default for SchedulerConfig {
+    fn default() -> Self {
+        Self {
+            gpu_capacity_weight: 0.15,
+            capability_weight: 0.15,
+            trust_weight: 0.20,
+            network_weight: 0.15,
+            kv_locality_weight: 0.35,
+            prefill_decode_colocation: true,
+            kv_transfer_budget_ms: 20,
+        }
+    }
+}
+
 /// A link between two fabric elements (RFC-0030).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FabricLink {
@@ -551,5 +613,53 @@ mod tests {
         };
         assert!(m.bandwidth_gbps.avg > 0);
         assert!(m.latency_us.avg > 0.0);
+    }
+
+    // ── RFC-0031 KV locality scheduling types ──────────────────────────────
+
+    #[test]
+    fn kv_cache_placement_creation() {
+        let p = KVCachePlacement {
+            cache_id: "kv://zcube-a/gpu-003/session-abc/head-0".into(),
+            node_id: "node://gpu-003".into(),
+            session_id: "session://abc".into(),
+            model: "qwen2.5-72b".into(),
+            layer: 0,
+            context_length: 65536,
+            size_mb: 512,
+            created_at: Timestamp::now(),
+        };
+        assert_eq!(p.size_mb, 512);
+        assert_eq!(p.context_length, 65536);
+    }
+
+    #[test]
+    fn locality_score_composite() {
+        let s = LocalityScore {
+            source_node: "node://gpu-001".into(),
+            target_node: "node://gpu-015".into(),
+            topology_distance: 0.12,
+            kv_transfer_cost: 0.08,
+            network_cost: 0.05,
+            composite_score: 0.75,
+        };
+        assert!(s.composite_score > 0.0);
+    }
+
+    #[test]
+    fn schedule_rank_ordering() {
+        let ranks = vec![
+            ScheduleRank { node_id: "gpu-015".into(), gpu_score: 0.9, capability_score: 0.8, trust_score: 0.9, network_cost: 0.1, kv_transfer_cost: 0.05, composite_score: 0.85 },
+            ScheduleRank { node_id: "gpu-032".into(), gpu_score: 0.7, capability_score: 0.6, trust_score: 0.7, network_cost: 0.3, kv_transfer_cost: 0.25, composite_score: 0.55 },
+        ];
+        assert!(ranks[0].composite_score > ranks[1].composite_score);
+    }
+
+    #[test]
+    fn scheduler_config_defaults() {
+        let cfg = SchedulerConfig::default();
+        assert_eq!(cfg.kv_locality_weight, 0.35);
+        assert!(cfg.prefill_decode_colocation);
+        assert_eq!(cfg.kv_transfer_budget_ms, 20);
     }
 }
