@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-compatible.svg" alt="OASA Compatible" height="40">
-  <img src="https://img.shields.io/badge/RFCs-0001--0010%20%2B%200030--0032-blue" alt="RFCs" height="40">
+  <img src="https://img.shields.io/badge/RFCs-0001--0010%20%2B%200030--0037-blue" alt="RFCs" height="40">
   <img src="https://img.shields.io/badge/Conformance-L1%20|%20L2%20|%20L3-orange" alt="Conformance" height="40">
   <img src="https://img.shields.io/badge/Architecture-docs%2Farchitecture-success" alt="Architecture" height="40">
   <img src="https://img.shields.io/badge/License-Apache%202.0-blue" alt="License" height="40">
@@ -49,6 +49,11 @@ contract://task-88              # Agent contract
 org://acme                      # Organization
 robot://drone-12                # Physical device
 policy://gdpr-eu                # Governance policy
+tel://zcube-a/evt-001           # Telemetry event (RFC-0033)
+kv://zcube-a/gpu-003/session-a  # KV cache object (RFC-0034)
+gateway://eu-frankfurt          # Federation gateway (RFC-0035)
+mem://zcube-a/gpu-003/hbm       # Memory pool (RFC-0036)
+profile://zcube-standard-v1     # Cluster profile (RFC-0037)
 ```
 
 ## Architecture

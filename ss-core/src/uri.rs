@@ -53,6 +53,16 @@ pub enum UriScheme {
     Topology,
     /// Named fabric link: `link://zcube-a/link-leaf01-spine01`
     Link,
+    /// Telemetry event: `tel://zcube-a/evt-001`
+    Tel,
+    /// KV cache object: `kv://fabric/gpu-003/session-abc/head-0`
+    KV,
+    /// Federation gateway: `gateway://eu-frankfurt`
+    Gateway,
+    /// Memory pool (fabric): `mem://zcube-a/gpu-003/hbm`
+    Mem,
+    /// Cluster profile: `profile://zcube-standard-v1`
+    Profile,
 }
 
 impl UriScheme {
@@ -79,6 +89,11 @@ impl UriScheme {
             Self::Fabric => "fabric",
             Self::Topology => "topology",
             Self::Link => "link",
+            Self::Tel => "tel",
+            Self::KV => "kv",
+            Self::Gateway => "gateway",
+            Self::Mem => "mem",
+            Self::Profile => "profile",
         }
     }
 }
@@ -108,6 +123,11 @@ impl FromStr for UriScheme {
             "fabric" => Ok(Self::Fabric),
             "topology" => Ok(Self::Topology),
             "link" => Ok(Self::Link),
+            "tel" => Ok(Self::Tel),
+            "kv" => Ok(Self::KV),
+            "gateway" => Ok(Self::Gateway),
+            "mem" => Ok(Self::Mem),
+            "profile" => Ok(Self::Profile),
             _ => Err(Error::InvalidUri(format!("unknown scheme: {s}"))),
         }
     }
@@ -373,6 +393,11 @@ mod tests {
             "fabric://zcube-a",
             "topology://cluster-prod",
             "link://zcube-a/link-leaf01-spine01",
+            "tel://zcube-a/evt-001",
+            "kv://zcube-a/gpu-003/session-abc/head-0",
+            "gateway://eu-frankfurt",
+            "mem://zcube-a/gpu-003/hbm",
+            "profile://zcube-standard-v1",
         ];
 
         for uri_str in uris {
@@ -410,5 +435,43 @@ mod tests {
         let uri = SovereignUri::parse("topology://cluster-prod").unwrap();
         assert_eq!(uri.scheme(), UriScheme::Topology);
         assert_eq!(uri.authority(), "cluster-prod");
+    }
+
+    #[test]
+    fn parse_tel_uri() {
+        let uri = SovereignUri::parse("tel://zcube-a/evt-001").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Tel);
+        assert_eq!(uri.authority(), "zcube-a");
+        assert_eq!(uri.path(), Some("evt-001"));
+    }
+
+    #[test]
+    fn parse_kv_uri() {
+        let uri = SovereignUri::parse("kv://zcube-a/gpu-003/session-abc/head-0").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::KV);
+        assert_eq!(uri.authority(), "zcube-a");
+        assert_eq!(uri.path(), Some("gpu-003/session-abc/head-0"));
+    }
+
+    #[test]
+    fn parse_gateway_uri() {
+        let uri = SovereignUri::parse("gateway://eu-frankfurt").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Gateway);
+        assert_eq!(uri.authority(), "eu-frankfurt");
+    }
+
+    #[test]
+    fn parse_mem_uri() {
+        let uri = SovereignUri::parse("mem://zcube-a/gpu-003/hbm").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Mem);
+        assert_eq!(uri.authority(), "zcube-a");
+        assert_eq!(uri.path(), Some("gpu-003/hbm"));
+    }
+
+    #[test]
+    fn parse_profile_uri() {
+        let uri = SovereignUri::parse("profile://zcube-standard-v1").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Profile);
+        assert_eq!(uri.authority(), "zcube-standard-v1");
     }
 }

@@ -21,6 +21,11 @@ This registry tracks the lifecycle status of every protocol in the SovereignStac
 | **TAP** | Topology Awareness Protocol | **Draft** | 0.1 | RFC-0030 | `ss-core/` (types) | Planned |
 | **AFP** | AI Fabric Protocol | **Draft** | 0.1 | RFC-0032 | `ss-core/` (types) | Planned |
 | **SLP** | Scheduling & Locality Protocol | **Draft** | 0.1 | RFC-0031 | `ss-core/` (types) | Planned |
+| **FTP** | Fabric Telemetry Protocol | **Draft** | 0.1 | RFC-0033 | `ss-core/` (types) | Planned |
+| **DKP** | Distributed KV Placement Protocol | **Draft** | 0.1 | RFC-0034 | `ss-core/` (types) | Planned |
+| **TAF** | Topology-Aware Federation Protocol | **Draft** | 0.1 | RFC-0035 | `ss-core/` (types) | Planned |
+| **MFO** | Memory Fabric Objects Protocol | **Draft** | 0.1 | RFC-0036 | `ss-core/` (types) | Planned |
+| **ACP** | AI Cluster Profiles Protocol | **Draft** | 0.1 | RFC-0037 | `ss-core/` (types) | Planned |
 
 ## Protocol Lifecycle
 
@@ -66,3 +71,8 @@ Draft → Experimental → Beta → Stable → Deprecated → Historic
 | 2026-06-02 | TAP registered as Draft (RFC-0030 Network Topology Awareness) |
 | 2026-06-02 | AFP registered as Draft (RFC-0032 AI Fabric Protocol) |
 | 2026-06-02 | SLP registered as Draft (RFC-0031 KV Locality Scheduling) |
+| 2026-06-03 | FTP registered as Draft (RFC-0033 Fabric Telemetry Protocol) |
+| 2026-06-03 | DKP registered as Draft (RFC-0034 Distributed KV Placement) |
+| 2026-06-03 | TAF registered as Draft (RFC-0035 Topology-Aware Federation) |
+| 2026-06-03 | MFO registered as Draft (RFC-0036 Memory Fabric Objects) |
+| 2026-06-03 | ACP registered as Draft (RFC-0037 AI Cluster Profiles) |

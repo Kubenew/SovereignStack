@@ -22,6 +22,11 @@ rail://<fabric>/<rail-id>          # Fabric rail (RFC-0030)
 fabric://<fabric-name>             # Named AI fabric (RFC-0030)
 topology://<cluster-name>          # Named topology graph (RFC-0030)
 link://<fabric>/<link-id>          # Named fabric link (RFC-0032)
+tel://<fabric>/<event-id>          # Telemetry event (RFC-0033)
+kv://<fabric>/<node-id>/<session>/<head>  # KV cache object (RFC-0034)
+gateway://<location>               # Federation gateway (RFC-0035)
+mem://<fabric>/<node>/<tier>       # Memory pool (RFC-0036)
+profile://<profile-name>           # Cluster profile (RFC-0037)
 ```
 
 ## Resolution Rules
@@ -41,5 +46,10 @@ link://<fabric>/<link-id>          # Named fabric link (RFC-0032)
 - `rail://zcube-a/rail7`
 - `fabric://zcube-a`
 - `topology://cluster-prod`
+- `tel://zcube-a/evt-001`
+- `kv://zcube-a/gpu-003/session-abc/head-0`
+- `gateway://eu-frankfurt`
+- `mem://zcube-a/gpu-003/hbm`
+- `profile://zcube-standard-v1`
 
 This standard enforces **Principle 4 — Address Everything**.

@@ -317,6 +317,159 @@ impl Default for SchedulerConfig {
     }
 }
 
+/// A telemetry event from a fabric element (RFC-0033).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TelemetryEvent {
+    pub id: String,
+    pub source: String,
+    pub event_type: String,
+    pub severity: String,
+    pub timestamp: Timestamp,
+    pub metrics: std::collections::HashMap<String, f64>,
+    pub ttl_secs: u64,
+}
+
+/// A threshold rule for triggering telemetry alerts (RFC-0033).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ThresholdRule {
+    pub id: String,
+    pub metric: String,
+    pub operator: String,
+    pub value: f64,
+    pub duration_secs: u64,
+    pub actions: Vec<String>,
+}
+
+/// A telemetry subscription for streaming data (RFC-0033).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TelemetrySubscription {
+    pub sources: Vec<String>,
+    pub metrics: Vec<String>,
+    pub interval_ms: u64,
+}
+
+/// A KV cache placement plan for rebalancing (RFC-0034).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct KVPlacementPlan {
+    pub sessions: Vec<KVSessionAssignment>,
+    pub migrations: Vec<KVCacheMigration>,
+    pub total_cost_reduction: f64,
+}
+
+/// A single session assignment in a KV placement plan (RFC-0034).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct KVSessionAssignment {
+    pub session_id: String,
+    pub cache_size_mb: u64,
+    pub assigned_node: String,
+    pub cost: f64,
+}
+
+/// A KV cache migration operation (RFC-0034).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct KVCacheMigration {
+    pub cache_id: String,
+    pub from_node: String,
+    pub to_node: String,
+    pub size_mb: u64,
+    pub strategy: String,
+}
+
+/// A segment of a cross-fabric route (RFC-0035).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FabricSegment {
+    pub fabric: String,
+    pub hops: u32,
+    pub egress: Option<String>,
+    pub target: Option<String>,
+}
+
+/// A cross-fabric route for topology-aware federation (RFC-0035).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CrossFabricRoute {
+    pub segments: Vec<FabricSegment>,
+    pub total_distance: f64,
+    pub jurisdictions: Vec<String>,
+    pub estimated_latency_ms: u64,
+}
+
+/// A federation gateway node (RFC-0035).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FederationGateway {
+    pub id: String,
+    pub fabrics: Vec<String>,
+    pub jurisdictions: Vec<String>,
+    pub bandwidth_gbps: u64,
+}
+
+/// A memory pool in the memory fabric (RFC-0036).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MemoryPool {
+    pub id: String,
+    pub tier: String,
+    pub node: String,
+    pub capacity_gb: u64,
+    pub available_gb: u64,
+    pub bandwidth_gbps: u64,
+    pub latency_ns: u64,
+}
+
+/// A link in the memory fabric (RFC-0036).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MemoryFabricLink {
+    pub source: String,
+    pub target: String,
+    pub bandwidth_gbps: u64,
+    pub latency_ns: u64,
+}
+
+/// The memory topology of a cluster (RFC-0036).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MemoryTopology {
+    pub pools: Vec<MemoryPool>,
+    pub links: Vec<MemoryFabricLink>,
+}
+
+/// Cluster topology spec in a cluster profile (RFC-0037).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ClusterTopology {
+    pub fabric: String,
+    pub dimensions: Vec<u32>,
+    pub nodes: u32,
+    pub gpus_per_node: u32,
+}
+
+/// Cluster fabric spec in a cluster profile (RFC-0037).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ClusterFabricSpec {
+    pub leaf_bandwidth_gbps: u64,
+    pub spine_bandwidth_gbps: u64,
+    pub rail_count: u32,
+    pub inter_rail_latency_us: u64,
+    pub intra_rail_latency_us: u64,
+}
+
+/// Cluster memory spec in a cluster profile (RFC-0037).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ClusterMemorySpec {
+    pub hbm_per_gpu_gb: u64,
+    pub hbm_bandwidth_gbps: u64,
+    pub ddr_per_node_gb: u64,
+    pub cxl_pool_gb: u64,
+}
+
+/// A named, versioned AI cluster profile (RFC-0037).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ClusterProfile {
+    pub id: String,
+    pub name: String,
+    pub version: String,
+    pub topology: ClusterTopology,
+    pub fabric: ClusterFabricSpec,
+    pub memory: ClusterMemorySpec,
+    pub scheduler: SchedulerConfig,
+}
+
 /// A link between two fabric elements (RFC-0030).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FabricLink {
@@ -661,5 +814,230 @@ mod tests {
         assert_eq!(cfg.kv_locality_weight, 0.35);
         assert!(cfg.prefill_decode_colocation);
         assert_eq!(cfg.kv_transfer_budget_ms, 20);
+    }
+
+    // RFC-0033: Fabric Telemetry
+    #[test]
+    fn telemetry_event_creation() {
+        let e = TelemetryEvent {
+            id: "tel://zcube-a/evt-001".into(),
+            source: "leaf://zcube-a/leaf03".into(),
+            event_type: "congestion.spike".into(),
+            severity: "warning".into(),
+            timestamp: Timestamp::now(),
+            metrics: [("congestion".into(), 0.87)].into_iter().collect(),
+            ttl_secs: 300,
+        };
+        assert_eq!(e.severity, "warning");
+    }
+
+    #[test]
+    fn threshold_rule_match() {
+        let rule = ThresholdRule {
+            id: "rule-001".into(),
+            metric: "congestion".into(),
+            operator: ">".into(),
+            value: 0.80,
+            duration_secs: 5,
+            actions: vec!["alert".into(), "reroute_hint".into()],
+        };
+        assert_eq!(rule.actions.len(), 2);
+    }
+
+    #[test]
+    fn telemetry_subscription_fields() {
+        let s = TelemetrySubscription {
+            sources: vec!["leaf://zcube-a/leaf03".into()],
+            metrics: vec!["congestion".into(), "drop_rate".into()],
+            interval_ms: 1000,
+        };
+        assert!(s.interval_ms >= 100);
+    }
+
+    // RFC-0034: Distributed KV Placement
+    #[test]
+    fn kv_placement_plan_empty() {
+        let plan = KVPlacementPlan {
+            sessions: vec![],
+            migrations: vec![],
+            total_cost_reduction: 0.0,
+        };
+        assert!(plan.sessions.is_empty());
+    }
+
+    #[test]
+    fn kv_session_assignment_cost() {
+        let a = KVSessionAssignment {
+            session_id: "session://abc".into(),
+            cache_size_mb: 512,
+            assigned_node: "node://gpu-003".into(),
+            cost: 0.05,
+        };
+        assert!(a.cost > 0.0);
+    }
+
+    #[test]
+    fn kv_cache_migration_strategy() {
+        let m = KVCacheMigration {
+            cache_id: "kv://zcube-a/gpu-003/session-abc/head-0".into(),
+            from_node: "node://gpu-003".into(),
+            to_node: "node://gpu-015".into(),
+            size_mb: 512,
+            strategy: "live_migrate".into(),
+        };
+        assert_eq!(m.strategy, "live_migrate");
+    }
+
+    // RFC-0035: Topology-Aware Federation
+    #[test]
+    fn fabric_segment_egress() {
+        let seg = FabricSegment {
+            fabric: "fabric://eu-zcube".into(),
+            hops: 2,
+            egress: Some("gateway://eu-frankfurt".into()),
+            target: None,
+        };
+        assert!(seg.egress.is_some());
+    }
+
+    #[test]
+    fn cross_fabric_route_jurisdictions() {
+        let route = CrossFabricRoute {
+            segments: vec![
+                FabricSegment {
+                    fabric: "fabric://eu-zcube".into(),
+                    hops: 2, egress: Some("gateway://eu-frankfurt".into()), target: None,
+                },
+            ],
+            total_distance: 0.58,
+            jurisdictions: vec!["EU".into(), "US".into()],
+            estimated_latency_ms: 85,
+        };
+        assert_eq!(route.jurisdictions.len(), 2);
+    }
+
+    #[test]
+    fn federation_gateway_capacity() {
+        let gw = FederationGateway {
+            id: "gateway://eu-frankfurt".into(),
+            fabrics: vec!["fabric://eu-zcube".into(), "fabric://transatlantic".into()],
+            jurisdictions: vec!["EU".into()],
+            bandwidth_gbps: 400,
+        };
+        assert_eq!(gw.bandwidth_gbps, 400);
+    }
+
+    // RFC-0036: Memory Fabric Objects
+    #[test]
+    fn memory_pool_tier() {
+        let pool = MemoryPool {
+            id: "mem://zcube-a/gpu-003/hbm".into(),
+            tier: "hbm3".into(),
+            node: "node://gpu-003".into(),
+            capacity_gb: 80,
+            available_gb: 64,
+            bandwidth_gbps: 3500,
+            latency_ns: 80,
+        };
+        assert_eq!(pool.tier, "hbm3");
+    }
+
+    #[test]
+    fn memory_fabric_link_bandwidth() {
+        let link = MemoryFabricLink {
+            source: "node://gpu-003".into(),
+            target: "mem://zcube-a/gpu-003/hbm".into(),
+            bandwidth_gbps: 3500,
+            latency_ns: 80,
+        };
+        assert!(link.bandwidth_gbps > 0);
+    }
+
+    #[test]
+    fn memory_topology_pools() {
+        let topo = MemoryTopology {
+            pools: vec![
+                MemoryPool {
+                    id: "mem://zcube-a/gpu-003/hbm".into(),
+                    tier: "hbm3".into(), node: "node://gpu-003".into(),
+                    capacity_gb: 80, available_gb: 64, bandwidth_gbps: 3500, latency_ns: 80,
+                },
+            ],
+            links: vec![
+                MemoryFabricLink {
+                    source: "node://gpu-003".into(),
+                    target: "mem://zcube-a/gpu-003/hbm".into(),
+                    bandwidth_gbps: 3500, latency_ns: 80,
+                },
+            ],
+        };
+        assert_eq!(topo.pools.len(), 1);
+        assert_eq!(topo.links.len(), 1);
+    }
+
+    // RFC-0037: AI Cluster Profiles
+    #[test]
+    fn cluster_topology_dimensions() {
+        let topo = ClusterTopology {
+            fabric: "fabric://zcube-a".into(),
+            dimensions: vec![4, 4, 4],
+            nodes: 64,
+            gpus_per_node: 8,
+        };
+        assert_eq!(topo.dimensions, vec![4, 4, 4]);
+    }
+
+    #[test]
+    fn cluster_fabric_spec_defaults() {
+        let spec = ClusterFabricSpec {
+            leaf_bandwidth_gbps: 800,
+            spine_bandwidth_gbps: 3200,
+            rail_count: 8,
+            inter_rail_latency_us: 5,
+            intra_rail_latency_us: 1,
+        };
+        assert!(spec.leaf_bandwidth_gbps < spec.spine_bandwidth_gbps);
+    }
+
+    #[test]
+    fn cluster_memory_spec_hbm() {
+        let mem = ClusterMemorySpec {
+            hbm_per_gpu_gb: 80,
+            hbm_bandwidth_gbps: 3500,
+            ddr_per_node_gb: 512,
+            cxl_pool_gb: 2048,
+        };
+        assert!(mem.cxl_pool_gb > mem.ddr_per_node_gb);
+    }
+
+    #[test]
+    fn cluster_profile_creation() {
+        let profile = ClusterProfile {
+            id: "profile://zcube-standard-v1".into(),
+            name: "ZCube Standard 64-GPU".into(),
+            version: "1.0.0".into(),
+            topology: ClusterTopology {
+                fabric: "fabric://zcube-a".into(),
+                dimensions: vec![4, 4, 4],
+                nodes: 64,
+                gpus_per_node: 8,
+            },
+            fabric: ClusterFabricSpec {
+                leaf_bandwidth_gbps: 800,
+                spine_bandwidth_gbps: 3200,
+                rail_count: 8,
+                inter_rail_latency_us: 5,
+                intra_rail_latency_us: 1,
+            },
+            memory: ClusterMemorySpec {
+                hbm_per_gpu_gb: 80,
+                hbm_bandwidth_gbps: 3500,
+                ddr_per_node_gb: 512,
+                cxl_pool_gb: 2048,
+            },
+            scheduler: SchedulerConfig::default(),
+        };
+        assert_eq!(profile.name, "ZCube Standard 64-GPU");
+        assert_eq!(profile.version, "1.0.0");
     }
 }
