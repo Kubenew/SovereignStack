@@ -35,40 +35,67 @@ class MerkleTree:
     def __init__(self, events: list[dict] | None = None):
         self.events: list[dict] = events or []
         self.leaves: list[str] = []
-        self.tree: list[str | None] = []
+        self.tree: list[list[str]] = []
         self.root: str | None = None
         if self.events:
             self._rebuild()
 
     def _rebuild(self):
         self.leaves = [_hash_event(e) for e in self.events]
-        self.tree = list(self.leaves)
-        level_start = 0
-        level_size = len(self.tree)
-        while level_size > 1:
-            for i in range(0, level_size, 2):
-                left = self.tree[level_start + i]
-                if i + 1 < level_size:
-                    right = self.tree[level_start + i + 1]
-                    self.tree.append(_hash_pair(left, right))
+        self.tree = [list(self.leaves)]
+        level = 0
+        while len(self.tree[level]) > 1:
+            next_level = []
+            for i in range(0, len(self.tree[level]), 2):
+                left = self.tree[level][i]
+                if i + 1 < len(self.tree[level]):
+                    right = self.tree[level][i + 1]
+                    next_level.append(_hash_pair(left, right))
                 else:
-                    self.tree.append(left)
-            level_start += level_size
-            level_size = (level_size + 1) // 2
-        self.root = self.tree[-1] if self.tree else None
-
-    def _first_at_level(self, level: int) -> int:
-        """Return the index of the first node at a given level (0 = leaves)."""
-        idx = 0
-        size = len(self.leaves)
-        for _ in range(level):
-            idx += size
-            size = (size + 1) // 2
-        return idx
+                    next_level.append(left)
+            self.tree.append(next_level)
+            level += 1
+        self.root = self.tree[-1][0] if self.tree and self.tree[-1] else None
 
     def append(self, event: dict) -> str:
         self.events.append(event)
-        self._rebuild()
+        leaf = _hash_event(event)
+        self.leaves.append(leaf)
+        
+        if not self.tree:
+            self.tree.append([leaf])
+            self.root = leaf
+            self._save()
+            return leaf
+            
+        self.tree[0].append(leaf)
+        
+        # Propagate changes up the right edge
+        idx = len(self.tree[0]) - 1
+        for level in range(len(self.tree)):
+            if level == len(self.tree) - 1 and len(self.tree[level]) > 1:
+                # Need a new root level
+                self.tree.append([])
+                
+            if level + 1 < len(self.tree):
+                if idx % 2 == 1:
+                    # Right child, update the parent by hashing with left sibling
+                    left = self.tree[level][idx - 1]
+                    right = self.tree[level][idx]
+                    parent_hash = _hash_pair(left, right)
+                    if idx // 2 < len(self.tree[level + 1]):
+                        self.tree[level + 1][idx // 2] = parent_hash
+                    else:
+                        self.tree[level + 1].append(parent_hash)
+                else:
+                    # Left child, just carry over or append
+                    if idx // 2 < len(self.tree[level + 1]):
+                        self.tree[level + 1][idx // 2] = self.tree[level][idx]
+                    else:
+                        self.tree[level + 1].append(self.tree[level][idx])
+            idx //= 2
+            
+        self.root = self.tree[-1][0] if self.tree and self.tree[-1] else None
         self._save()
         return self.leaves[-1]
 
@@ -77,17 +104,13 @@ class MerkleTree:
             raise IndexError(f"Event index {event_index} out of range (0-{len(self.leaves)-1})")
         proof = []
         idx = event_index
-        offset = 0
-        size = len(self.leaves)
-        while size > 1:
+        for level in range(len(self.tree) - 1):
             sibling_idx = idx + 1 if idx % 2 == 0 else idx - 1
-            if sibling_idx < size:
-                sibling = self.tree[offset + sibling_idx]
+            if sibling_idx < len(self.tree[level]):
+                sibling = self.tree[level][sibling_idx]
                 position = "right" if idx % 2 == 0 else "left"
                 proof.append({"position": position, "hash": sibling})
             idx //= 2
-            offset += size
-            size = (size + 1) // 2
         return proof
 
     def verify_proof(self, leaf_hash: str, proof: list[dict], root: str) -> bool:

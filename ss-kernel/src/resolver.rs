@@ -66,7 +66,7 @@ impl UriResolver for UriResolverImpl {
     fn cache_put(&self, uri: &SovereignUri, result: ResolutionResult, ttl_secs: u64) {
         let now = Timestamp::now();
         let expires = Timestamp::from_utc(
-            *now.as_datetime() + chrono::Duration::seconds(ttl_secs as i64)
+            *now.as_datetime() + chrono::TimeDelta::seconds(ttl_secs as i64)
         );
         self.cache.insert(uri.to_string(), (result, expires));
     }

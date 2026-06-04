@@ -20,31 +20,38 @@ pub trait EventBus: Send + Sync {
 }
 
 pub struct EventBusImpl {
-    tx: tokio::sync::broadcast::Sender<Event>,
+    txs: Arc<dashmap::DashMap<String, tokio::sync::broadcast::Sender<Event>>>,
     history: Arc<dashmap::DashMap<String, Vec<Event>>>,
+    capacity: usize,
 }
 
 impl EventBusImpl {
     pub fn new(capacity: usize) -> Self {
-        let (tx, _) = tokio::sync::broadcast::channel(capacity);
         Self {
-            tx,
+            txs: Arc::new(dashmap::DashMap::new()),
             history: Arc::new(dashmap::DashMap::new()),
+            capacity,
         }
     }
 }
 
 impl EventBus for EventBusImpl {
     fn publish(&self, event: Event) {
+        let etype = event.event_type.clone();
         self.history
-            .entry(event.event_type.clone())
+            .entry(etype.clone())
             .or_default()
             .push(event.clone());
-        let _ = self.tx.send(event);
+        if let Some(tx) = self.txs.get(&etype) {
+            let _ = tx.send(event);
+        }
     }
 
-    fn subscribe(&self, _event_type: &str) -> tokio::sync::broadcast::Receiver<Event> {
-        self.tx.subscribe()
+    fn subscribe(&self, event_type: &str) -> tokio::sync::broadcast::Receiver<Event> {
+        self.txs
+            .entry(event_type.to_string())
+            .or_insert_with(|| tokio::sync::broadcast::channel(self.capacity).0)
+            .subscribe()
     }
 
     fn replay(&self, event_type: &str, _from: Timestamp) -> Vec<Event> {

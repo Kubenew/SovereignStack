@@ -92,7 +92,7 @@ impl PolicyEngine for PolicyEngineImpl {
         }
         PolicyDecision {
             allowed: true,
-            policy: SovereignUri::new("policy://default"),
+            policy: SovereignUri::new(ss_core::UriScheme::Policy, "default"),
             rule: None,
             reason: "no matching policy, default allow".into(),
         }

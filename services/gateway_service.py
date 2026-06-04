@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from contextlib import asynccontextmanager
 import os
 import requests
+import httpx
 import uuid
 import json
 import re
@@ -26,9 +27,10 @@ async def rate_limit_cleaner():
     while True:
         await asyncio.sleep(600)  # Clean every 10 minutes
         now = time.time()
-        expired_ips = [ip for ip, ts_list in request_counts.items() if not ts_list or now - ts_list[-1] >= RATE_LIMIT_WINDOW]
-        for ip in expired_ips:
-            request_counts.pop(ip, None)
+        async with rate_limit_lock:
+            expired_ips = [ip for ip, ts_list in request_counts.items() if not ts_list or now - ts_list[-1] >= RATE_LIMIT_WINDOW]
+            for ip in expired_ips:
+                request_counts.pop(ip, None)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -59,6 +61,7 @@ _jwks_cache_time = 0.0
 RATE_LIMIT_REQUESTS = int(os.getenv("RATE_LIMIT_REQUESTS", "60"))
 RATE_LIMIT_WINDOW = int(os.getenv("RATE_LIMIT_WINDOW", "60"))
 request_counts = defaultdict(list)
+rate_limit_lock = asyncio.Lock()
 
 class ChatCompletionRequest(BaseModel):
     model: str
@@ -71,13 +74,14 @@ class ChatCompletionRequest(BaseModel):
     max_tokens: int | None = 1024
     stream: bool | None = False
 
-def check_rate_limit(client_ip: str) -> bool:
+async def check_rate_limit(client_ip: str) -> bool:
     now = time.time()
-    request_counts[client_ip] = [ts for ts in request_counts[client_ip] if now - ts < RATE_LIMIT_WINDOW]
-    if len(request_counts[client_ip]) >= RATE_LIMIT_REQUESTS:
-        return False
-    request_counts[client_ip].append(now)
-    return True
+    async with rate_limit_lock:
+        request_counts[client_ip] = [ts for ts in request_counts[client_ip] if now - ts < RATE_LIMIT_WINDOW]
+        if len(request_counts[client_ip]) >= RATE_LIMIT_REQUESTS:
+            return False
+        request_counts[client_ip].append(now)
+        return True
 
 def audit(event: dict):
     event["ts"] = datetime.now(timezone.utc).isoformat()
@@ -124,8 +128,6 @@ def validate_oidc_jwt(authorization: str | None) -> tuple[bool, dict]:
             return True, {"sub": "user-123", "roles": ["inference:write"]}
         if token == "mock-unauthorized-role":
             return True, {"sub": "user-456", "roles": ["audit:read"]}
-        if len(token) > 10 and not token.startswith("ey"):
-            return True, {"sub": "generic-user", "roles": ["inference:write"]}
             
     return False, {}
 
@@ -140,44 +142,47 @@ def handle_auth(authorization: str | None, request_id: str, trace_id: str) -> JS
         return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"error": {"message": "Forbidden. User does not possess required inference write permissions.", "type": "rbac_permission_error", "code": "403"}})
     return None
 
-def fetch_rag_context(user_prompt: str) -> str:
+async def fetch_rag_context(user_prompt: str) -> str:
     try:
         headers = {}
         if spiffe_ctx.ready:
             auth_h = spiffe_ctx.get_auth_header("memory")
             if auth_h:
                 headers.update(auth_h)
-        r = requests.post(f"{MEMORY_URL}/query", json={"query": user_prompt}, headers=headers, timeout=5)
-        if r.status_code == 200:
-            return r.json().get("context", "")
+        async with httpx.AsyncClient() as client:
+            r = await client.post(f"{MEMORY_URL}/query", json={"query": user_prompt}, headers=headers, timeout=5)
+            if r.status_code == 200:
+                return r.json().get("context", "")
     except Exception:
         pass
     return ""
 
-def execute_inference(payload: ChatCompletionRequest, messages: list, user_prompt: str, context: str) -> tuple[bool, str]:
+async def execute_inference(payload: ChatCompletionRequest, messages: list, user_prompt: str, context: str) -> tuple[bool, str]:
     compute_url = MODEL_ROUTES.get(payload.model, COMPUTE_URL)
     if BACKEND == "vllm":
         vllm_payload = {"model": payload.model, "messages": messages, "temperature": payload.temperature or 0.2, "max_tokens": payload.max_tokens or 1024, "stream": False}
         try:
-            r = requests.post(f"{compute_url}/v1/chat/completions", json=vllm_payload, timeout=30)
-            if r.status_code == 200:
-                return False, r.json()["choices"][0]["message"]["content"]
+            async with httpx.AsyncClient() as client:
+                r = await client.post(f"{compute_url}/v1/chat/completions", json=vllm_payload, timeout=30)
+                if r.status_code == 200:
+                    return False, r.json()["choices"][0]["message"]["content"]
         except Exception:
             pass
         return True, ""
     else:
         try:
-            r = requests.post(f"{compute_url}/completion", json={"model": payload.model, "prompt": user_prompt, "context": context}, timeout=10)
-            if r.status_code == 200:
-                return False, r.json().get("response", "")
+            async with httpx.AsyncClient() as client:
+                r = await client.post(f"{compute_url}/completion", json={"model": payload.model, "prompt": user_prompt, "context": context}, timeout=10)
+                if r.status_code == 200:
+                    return False, r.json().get("response", "")
         except Exception:
             pass
         return True, ""
 
 @app.post("/v1/chat/completions")
-def chat(payload: ChatCompletionRequest, request: Request, authorization: str | None = Header(None)):
+async def chat(payload: ChatCompletionRequest, request: Request, authorization: str | None = Header(None)):
     client_ip = request.client.host if request.client else "unknown"
-    if not check_rate_limit(client_ip):
+    if not await check_rate_limit(client_ip):
         return JSONResponse(status_code=status.HTTP_429_TOO_MANY_REQUESTS, content={"error": {"message": "Rate limit exceeded", "type": "rate_limit_error", "code": "429"}})
 
     request_id = str(uuid.uuid4())
@@ -215,13 +220,13 @@ def chat(payload: ChatCompletionRequest, request: Request, authorization: str | 
         audit({"type": "compliance_violation", "id": request_id, "reason": "Missing or false oasa_compliance_lock in STRICT mode", "trace_id": trace_id})
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"error": {"message": "OASA compliance lock is required and must be set to true in STRICT compliance mode.", "type": "invalid_request_error", "code": "400"}})
 
-    context = fetch_rag_context(user_prompt) if payload.use_rag else ""
+    context = await fetch_rag_context(user_prompt) if payload.use_rag else ""
 
     messages = list(payload.messages)
     if context:
         messages.insert(0, {"role": "system", "content": f"Relevant context:\n{context[:2000]}"})
 
-    compute_failed, answer = execute_inference(payload, messages, user_prompt, context)
+    compute_failed, answer = await execute_inference(payload, messages, user_prompt, context)
 
     if compute_failed:
         if payload.oasa_compliance_lock:

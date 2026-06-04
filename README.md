@@ -93,21 +93,21 @@ SovereignStack/
 ├── ss-cas/           # Content-addressed storage
 ├── ss-federation/    # Sovereign routing & discovery
 ├── ss-runtime/       # Multi-model execution runtime
-├── ss-memory/        # Tiered memory subsystem (Planned)
+├── ss-memory/        # Tiered memory subsystem (Stub)
 ├── ss-sessiond/      # Session lifecycle daemon
-├── ss-scheduler/     # Compute placement (Planned)
-├── ss-swarm/         # Multi-agent coordination (Planned)
-├── ss-reason/        # Reasoning object store (Planned)
-├── ss-kas/           # Knowledge addressing system (Planned)
-├── ss-sig/           # Sovereign identity graph (Planned)
-├── ss-trust/         # Trust framework (Planned)
-├── ss-reputation/    # Reputation scoring (Planned)
-├── ss-policy/        # Governance & jurisdiction (Planned)
-├── ss-provenance/    # Computational lineage (Planned)
+├── ss-scheduler/     # Compute placement (Stub)
+├── ss-swarm/         # Multi-agent coordination (Stub)
+├── ss-reason/        # Reasoning object store (Stub)
+├── ss-kas/           # Knowledge addressing system (Stub)
+├── ss-sig/           # Sovereign identity graph (Stub)
+├── ss-trust/         # Trust framework (Stub)
+├── ss-reputation/    # Reputation scoring (Stub)
+├── ss-policy/        # Governance & jurisdiction (Stub)
+├── ss-provenance/    # Computational lineage (Stub)
 ├── ss-twin/          # Digital twin framework
-├── ss-device/        # Reality interface layer (Planned)
-├── ss-economy/       # Resource markets (Planned)
-├── ss-sip/           # Sovereign Intelligence Protocol (Planned)
+├── ss-device/        # Reality interface layer (Stub)
+├── ss-economy/       # Resource markets (Stub)
+├── ss-sip/           # Sovereign Intelligence Protocol (Stub)
 ├── reference-node/   # Minimal reference node binary
 ├── conformance/      # Conformance test suites & profiles
 ├── rfcs/             # Protocol specifications (RFC-0001–0010)

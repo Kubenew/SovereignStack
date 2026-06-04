@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Request, Header
 from pydantic import BaseModel, Field
 import os
 import requests
+import hmac
 import uuid
 import logging
 import time
@@ -121,7 +122,8 @@ active_peers: set = set()
 
 @app.post("/mesh/ping")
 def receive_ping(ping: FederationPing, authorization: str | None = Header(None)):
-    if authorization != f"Bearer {FEDERATION_TOKEN}":
+    expected = f"Bearer {FEDERATION_TOKEN}"
+    if not authorization or not hmac.compare_digest(authorization, expected):
         raise HTTPException(status_code=401, detail="Unauthorized Federation Node")
     
     active_peers.add(ping.node_id)
@@ -147,7 +149,8 @@ def list_peers():
 
 @app.post("/mesh/route/update")
 def update_route(route: MeshRoute, authorization: str | None = Header(None)):
-    if authorization != f"Bearer {FEDERATION_TOKEN}":
+    expected = f"Bearer {FEDERATION_TOKEN}"
+    if not authorization or not hmac.compare_digest(authorization, expected):
         raise HTTPException(status_code=401, detail="Unauthorized Federation Node")
     
     if route.destination_node not in routing_table or routing_table[route.destination_node].cost > route.cost:
@@ -157,7 +160,8 @@ def update_route(route: MeshRoute, authorization: str | None = Header(None)):
 
 @app.post("/mesh/relay/{target_node}")
 def relay_payload(target_node: str, request: Request, authorization: str | None = Header(None)):
-    if authorization != f"Bearer {FEDERATION_TOKEN}":
+    expected = f"Bearer {FEDERATION_TOKEN}"
+    if not authorization or not hmac.compare_digest(authorization, expected):
         raise HTTPException(status_code=401, detail="Unauthorized Federation Node")
         
     if target_node == NODE_ID:
@@ -196,7 +200,8 @@ def handle_sync(req: SyncRequest, authorization: str | None = Header(None)):
     Unified sync endpoint — handles SYNC_REQUEST, SYNC_ACK, EVENTS messages.
     Implements the sync protocol from RFC 0004.
     """
-    if authorization != f"Bearer {FEDERATION_TOKEN}":
+    expected = f"Bearer {FEDERATION_TOKEN}"
+    if not authorization or not hmac.compare_digest(authorization, expected):
         raise HTTPException(status_code=401, detail="Unauthorized Federation Node")
 
     message = SyncMessage.from_dict(req.model_dump())
@@ -209,7 +214,8 @@ def receive_events(req: SyncRequest, authorization: str | None = Header(None)):
     """
     Receive a batch of events from a peer (used for push-based sync).
     """
-    if authorization != f"Bearer {FEDERATION_TOKEN}":
+    expected = f"Bearer {FEDERATION_TOKEN}"
+    if not authorization or not hmac.compare_digest(authorization, expected):
         raise HTTPException(status_code=401, detail="Unauthorized Federation Node")
 
     message = SyncMessage(
@@ -266,7 +272,8 @@ def route_agent_message(msg: AgentMessage, authorization: str | None = Header(No
     """
     Route a message to an agent on this node or forward to another node.
     """
-    if authorization != f"Bearer {FEDERATION_TOKEN}":
+    expected = f"Bearer {FEDERATION_TOKEN}"
+    if not authorization or not hmac.compare_digest(authorization, expected):
         raise HTTPException(status_code=401, detail="Unauthorized Federation Node")
         
     if msg.target_node_id == NODE_ID:

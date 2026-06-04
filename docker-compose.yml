@@ -54,8 +54,8 @@ services:
       - --https-port=8443
       - --import-realm
     environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
       KC_HOSTNAME: localhost
       KC_HTTP_ENABLED: "true"
     ports:
@@ -121,6 +121,7 @@ services:
       start_period: 10s
     networks:
       - sovereign-isolated
+      - sovereign-public
 
   # ===========================================================================
   # vLLM — High-performance inference engine (OpenAI-compatible API)
@@ -162,19 +163,23 @@ services:
       - sovereign-isolated
 
   federation:
-    image: python:3.12-slim
+    build: .
     container_name: sovereignstack-federation
+    command: uvicorn services.federation_service:app --host 0.0.0.0 --port 8088
     networks:
       - sovereign-isolated
     ports:
       - "8088:8088"
-    volumes:
-      - ./services:/app/services
-    working_dir: /app
-    command: ["/bin/sh", "-c", "pip install fastapi uvicorn pydantic requests httpx && python -m uvicorn services.federation_service:app --host 0.0.0.0 --port 8088"]
+    env_file: [.env]
     environment:
-      - NODE_ID=sovereign-node-1
-      - FEDERATION_TOKEN=default-federation-token
+      - NODE_ID=${FEDERATION_NODE_ID:-sovereign-node-1}
+      - FEDERATION_TOKEN=${FEDERATION_TOKEN:-default-federation-token}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8088/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     restart: unless-stopped
 
   # ===========================================================================
@@ -293,6 +298,7 @@ services:
       - "3000:3000"
     networks:
       - sovereign-isolated
+      - sovereign-public
 
 volumes:
   spire-data:
@@ -302,3 +308,6 @@ networks:
     driver: bridge
     internal: true
     name: sovereign-isolated-net
+  sovereign-public:
+    driver: bridge
+    name: sovereign-public-net

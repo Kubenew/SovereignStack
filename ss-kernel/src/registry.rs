@@ -45,6 +45,25 @@ impl ObjectRegistryImpl {
 impl ObjectRegistry for ObjectRegistryImpl {
     fn store(&self, entry: ObjectEntry) {
         let uri_str = entry.uri.to_string();
+        
+        // Remove old index entries if updating
+        if let Some(old) = self.by_uri.get(&uri_str) {
+            let old = old.value();
+            if let Some(mut types) = self.by_type.get_mut(&old.object_type) {
+                types.retain(|u| u != &uri_str);
+            }
+            if let Some(ref owner) = old.owner {
+                if let Some(mut owners) = self.by_owner.get_mut(&owner.to_string()) {
+                    owners.retain(|u| u != &uri_str);
+                }
+            }
+            for tag in &old.tags {
+                if let Some(mut tags) = self.by_tag.get_mut(tag) {
+                    tags.retain(|u| u != &uri_str);
+                }
+            }
+        }
+
         self.by_uri.insert(uri_str.clone(), entry.clone());
         self.by_type
             .entry(entry.object_type.clone())

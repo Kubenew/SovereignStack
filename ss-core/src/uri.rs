@@ -209,9 +209,11 @@ impl SovereignUri {
 
     /// Create a new SovereignUri from components.
     pub fn new(scheme: UriScheme, authority: impl Into<String>) -> Self {
+        let auth = authority.into();
+        assert!(!auth.is_empty(), "authority cannot be empty");
         Self {
             scheme,
-            authority: authority.into(),
+            authority: auth,
             path: None,
             query: None,
             fragment: None,

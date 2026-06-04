@@ -24,6 +24,7 @@ pub trait CapabilityEnforcer: Send + Sync {
     fn grant(&self, capability: Capability);
     fn revoke(&self, uri: &SovereignUri);
     fn check(&self, caller: &SovereignUri, permission: &str, target: &SovereignUri) -> bool;
+    fn consume(&self, caller: &SovereignUri, permission: &str, target: &SovereignUri) -> bool;
     fn list_for(&self, identity: &SovereignUri) -> Vec<Capability>;
 }
 
@@ -69,14 +70,41 @@ impl CapabilityEnforcer for CapabilityEnforcerImpl {
                     }
                 }
                 if let Some(max) = cap.conditions.max_uses {
-                    let count = self
+                    let count = self.use_counts.get(&cap.uri.to_string()).map(|c| *c).unwrap_or(0);
+                    if count >= max {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        false
+    }
+
+    fn consume(&self, caller: &SovereignUri, permission: &str, target: &SovereignUri) -> bool {
+        for entry in self.capabilities.iter() {
+            let cap = entry.value();
+            if cap.granted_to == *caller
+                && cap.permissions.contains(&permission.to_string())
+                && cap.target == *target
+            {
+                if self.revoked.contains(&cap.uri.to_string()) {
+                    return false;
+                }
+                if let Some(expires) = cap.conditions.expires_at {
+                    if Timestamp::now() > expires {
+                        return false;
+                    }
+                }
+                if let Some(max) = cap.conditions.max_uses {
+                    let mut count = self
                         .use_counts
                         .entry(cap.uri.to_string())
                         .or_insert(0);
-                    *count += 1;
-                    if *count > max {
+                    if *count >= max {
                         return false;
                     }
+                    *count += 1;
                 }
                 return true;
             }
