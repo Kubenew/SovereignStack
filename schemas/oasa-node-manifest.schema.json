@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/Kubenew/SovereignStack/schemas/oasa-node-manifest.schema.json",
+  "$id": "https://github.com/sovereignstack/sovereignstack/schemas/oasa-node-manifest.schema.json",
   "title": "OASA Sovereign Node Manifest",
   "description": "Describes a single Sovereign Node — its identity, hardware inventory, deployed models, and current compliance status. Used by orchestration tooling (privatecloud) for fleet management.",
   "type": "object",

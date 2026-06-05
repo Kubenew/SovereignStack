@@ -18,6 +18,11 @@ from jwt import PyJWKClient, InvalidTokenError
 from services.spiffe_helper import spiffe_ctx, SPIFFE_TRUST_DOMAIN
 from services.graphql_schema import graphql_app
 from services.merkle_audit import append_event, get_current_root, get_proof_for_event, get_tree_size, get_merkle_tree
+from services.logging_config import setup_json_logging
+import logging
+
+setup_json_logging()
+logger = logging.getLogger("gateway")
 
 load_dotenv()
 
@@ -202,8 +207,11 @@ async def chat(payload: ChatCompletionRequest, request: Request, authorization: 
     if policy_enforced == "STRICT":
         policy_passed, policy_error = run_opa_policy_check(user_prompt)
         if not policy_passed:
+            logger.warning("Policy violation blocked request", extra={"trace_id": trace_id, "reason": policy_error})
             audit({"type": "policy_violation", "id": request_id, "reason": policy_error, "trace_id": trace_id})
             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"error": {"message": policy_error, "type": "policy_governance_block", "code": "403"}})
+
+    logger.info("Processing chat completion request", extra={"trace_id": trace_id, "model": payload.model, "use_rag": payload.use_rag})
 
     truncated_prompt = user_prompt[:1000] + "... [TRUNCATED]" if len(user_prompt) > 1000 else user_prompt
     audit_payload = {"type": "request", "id": request_id, "model": payload.model, "prompt": truncated_prompt, "oasa_compliance_lock": payload.oasa_compliance_lock, "oasa_audit_tag": payload.oasa_audit_tag, "oasa_jurisdiction": payload.oasa_jurisdiction}
@@ -229,10 +237,12 @@ async def chat(payload: ChatCompletionRequest, request: Request, authorization: 
     compute_failed, answer = await execute_inference(payload, messages, user_prompt, context)
 
     if compute_failed:
+        logger.error("Inference execution failed", extra={"trace_id": trace_id, "model": payload.model})
         if payload.oasa_compliance_lock:
             audit({"type": "oasa_lock_enforced", "id": request_id, "reason": "Local compute backend failure. Prevented cloud fallback.", "blocked_fallback": "api.openai.com", "trace_id": trace_id})
             return JSONResponse(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content={"error": {"message": "Local AI engine failed. OASA-Lock prevented external fallback.", "type": "oasa_lock_enforcement", "code": "503"}})
         else:
+            logger.warning("Fell back to external cloud API", extra={"trace_id": trace_id, "destination": "api.openai.com"})
             audit({"type": "exfiltration_warning", "id": request_id, "reason": "Local compute failure. Falling back to external cloud API.", "destination": "api.openai.com", "trace_id": trace_id})
             answer = f"[FALLBACK - api.openai.com] Simulated cloud fallback response for prompt: {user_prompt}"
 

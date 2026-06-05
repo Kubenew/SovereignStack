@@ -210,7 +210,7 @@ helm upgrade --install kube-prometheus prometheus-community/kube-prometheus-stac
   --set grafana.enabled=true
 
 # Import SovereignStack dashboard
-k3s kubectl apply -f https://raw.githubusercontent.com/Kubenew/SovereignStack/main/config/grafana/dashboard.json
+k3s kubectl apply -f https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/config/grafana/dashboard.json
 ```
 
 ---

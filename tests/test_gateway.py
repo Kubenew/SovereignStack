@@ -48,7 +48,7 @@ def test_gateway_strict_missing_lock():
     assert res_json["error"]["code"] == "400"
     assert "lock is required" in res_json["error"]["message"]
 
-@patch("requests.post")
+@patch("httpx.AsyncClient.post")
 def test_gateway_strict_with_lock_success(mock_post):
     # Mock compute endpoint to return success
     mock_compute_response = MagicMock()
@@ -81,7 +81,7 @@ def test_gateway_strict_with_lock_success(mock_post):
     assert res_json["choices"][0]["message"]["content"] == "This is a local response"
     assert res_json["model"] == "sovereign-llama3"
 
-@patch("requests.post")
+@patch("httpx.AsyncClient.post")
 def test_gateway_strict_with_lock_failure(mock_post):
     # Mock compute endpoint to fail (return 500)
     mock_compute_response = MagicMock()
@@ -113,7 +113,7 @@ def test_gateway_strict_with_lock_failure(mock_post):
     assert res_json["error"]["code"] == "503"
     assert "OASA-Lock prevented external fallback" in res_json["error"]["message"]
 
-@patch("requests.post")
+@patch("httpx.AsyncClient.post")
 def test_gateway_non_strict_fallback(mock_post):
     # Run in DEVELOPMENT (non-strict) mode by patching the environment variable
     with patch.dict(os.environ, {"OASA_ENFORCE_COMPLIANCE": "DEVELOPMENT"}):
@@ -181,7 +181,7 @@ def test_gateway_auth_dev_unauthorized_role():
         res_json = response.json()
         assert "inference write permissions" in res_json["error"]["message"]
 
-@patch("requests.post")
+@patch("httpx.AsyncClient.post")
 def test_gateway_auth_dev_success_token(mock_post):
     # Valid auth token and role should pass authentication checks
     mock_compute_response = MagicMock()

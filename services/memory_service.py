@@ -115,8 +115,20 @@ def embed(req: EmbedRequest, identity: dict = Depends(_memory_auth)):
 
 @app.post("/query")
 def query(req: QueryRequest, identity: dict = Depends(_memory_auth)):
-    """Semantic search — top-k retrieval (RFC 0006: POST /query)."""
-    matches = []
+    """Semantic search — top-k retrieval with BM25 scoring (RFC 0006: POST /query)."""
+    import math
+    import re as _re
+
+    # Tokenizer
+    def _tokenize(text: str) -> list[str]:
+        return _re.findall(r"[a-z0-9]+", text.lower())
+
+    query_tokens = _tokenize(req.query)
+    if not query_tokens:
+        return {"matches": [], "context": "", "count": 0}
+
+    # --- First pass: collect candidate docs & corpus stats ---
+    candidates: list[tuple[dict, list[str]]] = []
     for fn in os.listdir(MEMORY_DIR):
         if not fn.endswith(".json"):
             continue
@@ -141,11 +153,48 @@ def query(req: QueryRequest, identity: dict = Depends(_memory_auth)):
             if not all(record_meta.get(k) == v for k, v in req.filter.items()):
                 continue
 
-        # Text matching (naive — will be replaced by vector similarity)
-        if req.query.lower() in rec.get("text", "").lower():
-            matches.append(rec)
+        doc_tokens = _tokenize(rec.get("text", ""))
+        if doc_tokens:
+            candidates.append((rec, doc_tokens))
 
-    matches = matches[:req.top_k]
+    if not candidates:
+        return {"matches": [], "context": "", "count": 0}
+
+    # --- BM25 scoring ---
+    N = len(candidates)
+    avgdl = sum(len(toks) for _, toks in candidates) / N
+    k1, b = 1.5, 0.75
+
+    # Document frequency for each query term
+    df: dict[str, int] = {}
+    for qt in query_tokens:
+        df[qt] = sum(1 for _, toks in candidates if qt in toks)
+
+    scored: list[tuple[float, dict]] = []
+    for rec, doc_tokens in candidates:
+        dl = len(doc_tokens)
+        # Term frequency map for this document
+        tf_map: dict[str, int] = {}
+        for t in doc_tokens:
+            tf_map[t] = tf_map.get(t, 0) + 1
+
+        score = 0.0
+        for qt in query_tokens:
+            n_q = df.get(qt, 0)
+            if n_q == 0:
+                continue
+            idf = math.log((N - n_q + 0.5) / (n_q + 0.5) + 1.0)
+            tf = tf_map.get(qt, 0)
+            numerator = tf * (k1 + 1)
+            denominator = tf + k1 * (1 - b + b * dl / avgdl)
+            score += idf * numerator / denominator
+
+        if req.min_score is not None and score < req.min_score:
+            continue
+        scored.append((score, rec))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+    matches = [rec for _, rec in scored[:req.top_k]]
     context = "\n\n".join([m.get("text", "") for m in matches])
     return {"matches": matches, "context": context, "count": len(matches)}
 

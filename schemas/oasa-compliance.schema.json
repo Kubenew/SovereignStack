@@ -1,293 +1,231 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/Kubenew/SovereignStack/schemas/oasa-compliance.schema.json",
-  "title": "OASA Compliance Configuration",
-  "description": "Defines the compliance posture for an OASA-compliant Sovereign Node deployment. Every field maps directly to an OASA axiom or compliance metric defined in the specification.",
+  "$id": "https://raw.githubusercontent.com/Kubenew/SovereignStack/main/schemas/oasa-compliance.schema.json",
+  "title": "OASA Sovereign Node Compliance Schema",
+  "description": "Authoritative JSON Schema for validating Sovereign Node configurations against the Open Architecture Specification for Autonomous and Sovereign AI (OASA) v2026.1.",
   "type": "object",
-  "properties": {
-    "oasa_version": {
-      "type": "string",
-      "description": "The OASA specification version this configuration targets.",
-      "pattern": "^\\d{4}\\.\\d+$",
-      "examples": ["2026.1"]
-    },
-    "enforce_zero_exfiltration": {
-      "type": "boolean",
-      "description": "Axiom 1 — When true, the node MUST block all outbound network traffic that carries weight updates, prompt tokens, context embeddings, telemetry, or behavioral metadata unless cryptographically signed user consent is present.",
-      "default": true
-    },
-    "oasa_compliance_lock": {
-      "type": "boolean",
-      "description": "Master compliance switch. When true, enforcement is strict and no runtime override is permitted.",
-      "default": true
-    },
-    "compliance_level": {
-      "type": "string",
-      "description": "Granularity of compliance enforcement.",
-      "enum": ["STRICT", "ADVISORY", "AUDIT_ONLY"],
-      "default": "STRICT"
-    },
-    "air_gapped": {
-      "type": "boolean",
-      "description": "Axiom 1 / OASA-Node — The orchestration runtime must operate without any WAN/Internet connectivity.",
-      "default": true
-    },
-    "network": {
-      "type": "object",
-      "description": "Network isolation configuration.",
-      "properties": {
-        "allow_wan": {
-          "type": "boolean",
-          "description": "If false, the node blocks all WAN egress. Must be false when air_gapped is true.",
-          "default": false
-        },
-        "allowed_egress_cidrs": {
-          "type": "array",
-          "description": "Explicit CIDR allowlist for any permitted egress (e.g., update mirrors). Empty when fully air-gapped.",
-          "items": {
-            "type": "string",
-            "pattern": "^\\d{1,3}(\\.\\d{1,3}){3}/\\d{1,2}$"
-          },
-          "default": []
-        },
-        "dns_mode": {
-          "type": "string",
-          "description": "DNS resolution strategy.",
-          "enum": ["LOCAL_ONLY", "SPLIT_HORIZON", "DISABLED"],
-          "default": "LOCAL_ONLY"
-        }
-      },
-      "additionalProperties": false
-    },
-    "encryption": {
-      "type": "object",
-      "description": "OASA-Memory compliance — encryption-at-rest configuration for embeddings and KV cache.",
-      "properties": {
-        "algorithm": {
-          "type": "string",
-          "description": "Encryption algorithm. OASA mandates AES-256-GCM.",
-          "enum": ["AES-256-GCM", "AES-256-CBC", "ChaCha20-Poly1305"],
-          "default": "AES-256-GCM"
-        },
-        "key_management": {
-          "type": "string",
-          "description": "How encryption keys are stored and managed.",
-          "enum": ["TPM_2.0", "APPLE_SECURE_ENCLAVE", "HSM", "SOFTWARE_VAULT"],
-          "default": "TPM_2.0"
-        },
-        "key_rotation_days": {
-          "type": "integer",
-          "description": "Maximum number of days before mandatory key rotation.",
-          "minimum": 1,
-          "maximum": 365,
-          "default": 90
-        }
-      },
-      "required": ["algorithm", "key_management"],
-      "additionalProperties": false
-    },
-    "hardware_security": {
-      "type": "object",
-      "description": "Hardware-backed security module requirements.",
-      "properties": {
-        "tpm_required": {
-          "type": "boolean",
-          "description": "Whether a Trusted Platform Module is required.",
-          "default": true
-        },
-        "tpm_version": {
-          "type": "string",
-          "description": "Minimum TPM version.",
-          "enum": ["1.2", "2.0"],
-          "default": "2.0"
-        },
-        "hsm_type": {
-          "type": ["string", "null"],
-          "description": "External HSM device type, if used. Null when TPM-only.",
-          "examples": ["Thales Luna", "AWS CloudHSM (on-prem)", "YubiHSM 2"],
-          "default": null
-        },
-        "secure_boot": {
-          "type": "boolean",
-          "description": "Whether UEFI Secure Boot must be enabled on the Sovereign Node.",
-          "default": true
-        }
-      },
-      "additionalProperties": false
-    },
-    "compute": {
-      "type": "object",
-      "description": "OASA-Compute layer — execution and optimization constraints.",
-      "properties": {
-        "vram_budget_gb": {
-          "type": "number",
-          "description": "Hard VRAM budget in gigabytes. The runtime must not exceed this.",
-          "minimum": 1,
-          "examples": [24, 48, 80]
-        },
-        "quantization_formats": {
-          "type": "array",
-          "description": "Allowed quantization formats for model weights.",
-          "items": {
-            "type": "string",
-            "enum": ["FP16", "INT8", "INT4", "INT2", "AWQ", "GPTQ", "GGUF"]
-          },
-          "minItems": 1,
-          "default": ["FP16", "INT4", "AWQ"]
-        },
-        "accelerator_backends": {
-          "type": "array",
-          "description": "Hardware acceleration backends the node must auto-detect and support.",
-          "items": {
-            "type": "string",
-            "enum": ["NVIDIA_CUDA", "APPLE_METAL", "AMD_ROCM", "CPU_ONLY"]
-          },
-          "minItems": 1,
-          "default": ["NVIDIA_CUDA"]
-        }
-      },
-      "required": ["vram_budget_gb"],
-      "additionalProperties": false
-    },
-    "ingestion": {
-      "type": "object",
-      "description": "OASA-Ingest layer — deterministic document extraction constraints.",
-      "properties": {
-        "allow_disk_cache": {
-          "type": "boolean",
-          "description": "Must be false for OASA compliance. All transformation must occur in volatile memory (RAM).",
-          "const": false,
-          "default": false
-        },
-        "supported_formats": {
-          "type": "array",
-          "description": "Document formats the ingestion pipeline supports.",
-          "items": {
-            "type": "string",
-            "enum": ["PDF", "TIFF", "DOCX", "HTML", "XLSX", "PPTX", "SCAN"]
-          },
-          "default": ["PDF", "TIFF", "DOCX", "HTML"]
-        }
-      },
-      "additionalProperties": false
-    },
-    "audit": {
-      "type": "object",
-      "description": "Logging and audit trail configuration.",
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether full audit logging is active.",
-          "default": true
-        },
-        "log_format": {
-          "type": "string",
-          "description": "Structured log output format.",
-          "enum": ["JSON", "CEF", "SYSLOG"],
-          "default": "JSON"
-        },
-        "immutable": {
-          "type": "boolean",
-          "description": "Whether audit logs are append-only and tamper-evident.",
-          "default": true
-        },
-        "retention_days": {
-          "type": "integer",
-          "description": "Minimum number of days to retain audit logs.",
-          "minimum": 30,
-          "default": 365
-        }
-      },
-      "additionalProperties": false
-    },
-    "api": {
-      "type": "object",
-      "description": "Axiom 3 — API idempotency and OpenAI compatibility configuration.",
-      "properties": {
-        "openai_compatible": {
-          "type": "boolean",
-          "description": "Whether the node exposes OpenAI-compatible endpoints.",
-          "default": true
-        },
-        "base_url": {
-          "type": "string",
-          "description": "The local base URL for the OpenAI-compatible proxy.",
-          "format": "uri",
-          "default": "http://localhost:8080/v1"
-        },
-        "endpoints": {
-          "type": "array",
-          "description": "Required OpenAI-compatible endpoint paths.",
-          "items": {
-            "type": "string"
-          },
-          "default": ["/v1/chat/completions", "/v1/embeddings"]
-        }
-      },
-      "additionalProperties": false
-    },
-    "identity": {
-      "type": "object",
-      "description": "OASA-Auth compliance — identity provider configurations.",
-      "properties": {
-        "sso_enabled": { "type": "boolean", "default": true },
-        "sso_provider": { "type": "string", "enum": ["keycloak", "ldap", "active_directory"], "default": "keycloak" },
-        "rbac_enabled": { "type": "boolean", "default": true }
-      },
-      "required": ["sso_enabled", "sso_provider", "rbac_enabled"],
-      "additionalProperties": false
-    },
-    "observability": {
-      "type": "object",
-      "description": "OASA-Observe compliance — local distributed tracing and metrics configs.",
-      "properties": {
-        "opentelemetry_enabled": { "type": "boolean", "default": true },
-        "prometheus_metrics_enabled": { "type": "boolean", "default": true },
-        "local_sink_only": { "type": "boolean", "default": true }
-      },
-      "required": ["opentelemetry_enabled", "prometheus_metrics_enabled", "local_sink_only"],
-      "additionalProperties": false
-    },
-    "policy": {
-      "type": "object",
-      "description": "OASA-Policy compliance — Rego/OPA policy governance configs.",
-      "properties": {
-        "opa_enabled": { "type": "boolean", "default": true },
-        "dlp_enabled": { "type": "boolean", "default": true },
-        "rate_limiting_enabled": { "type": "boolean", "default": true }
-      },
-      "required": ["opa_enabled", "dlp_enabled", "rate_limiting_enabled"],
-      "additionalProperties": false
-    },
-    "model_registry": {
-      "type": "object",
-      "description": "OASA-Registry compliance — signed weight verification rules.",
-      "properties": {
-        "require_signatures": { "type": "boolean", "default": true },
-        "allowed_registries": { "type": "array", "items": { "type": "string" } }
-      },
-      "required": ["require_signatures"],
-      "additionalProperties": false
-    },
-    "sandboxing": {
-      "type": "object",
-      "description": "OASA-Sandbox compliance — runtime sandboxing requirements.",
-      "properties": {
-        "runtime": { "type": "string", "enum": ["gvisor", "kata", "firecracker", "none"], "default": "gvisor" },
-        "confidential_compute": { "type": "boolean", "default": false }
-      },
-      "required": ["runtime", "confidential_compute"],
-      "additionalProperties": false
-    }
-  },
   "required": [
     "oasa_version",
     "enforce_zero_exfiltration",
     "oasa_compliance_lock",
     "compliance_level",
     "air_gapped",
+    "network",
     "encryption",
-    "compute"
+    "hardware_security",
+    "compute",
+    "ingestion",
+    "audit",
+    "api"
   ],
-  "additionalProperties": false
+  "properties": {
+    "oasa_version": {
+      "type": "string",
+      "enum": ["2026.1"],
+      "description": "The exact version of the OASA standard implemented by the node."
+    },
+    "enforce_zero_exfiltration": {
+      "type": "boolean",
+      "const": true,
+      "description": "Must be true to enforce absolute data isolation primitives."
+    },
+    "oasa_compliance_lock": {
+      "type": "boolean",
+      "description": "If true, dynamically blocks any public cloud API fallback loops upon local failure."
+    },
+    "compliance_level": {
+      "type": "string",
+      "enum": ["READY_L1", "SECURE_L2", "STRICT_L3"],
+      "description": "The target OASA compliance tier for certification mapping."
+    },
+    "air_gapped": {
+      "type": "boolean",
+      "description": "Declares if the host node is running inside a physically or logically air-gapped network segment."
+    },
+    "network": {
+      "type": "object",
+      "required": ["allow_wan", "allowed_egress_cidrs", "dns_mode"],
+      "properties": {
+        "allow_wan": {
+          "type": "boolean",
+          "description": "Defines if wide-area network traffic is permitted. Controlled by NET-01."
+        },
+        "allowed_egress_cidrs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+          },
+          "description": "Strict whitelist of internal IPv4 CIDRs allowed for deployment node integration."
+        },
+        "dns_mode": {
+          "type": "string",
+          "enum": ["LOCAL_ONLY", "HYBRID", "DISABLED"],
+          "description": "DNS validation behavior matching control standard NET-03."
+        }
+      }
+    },
+    "encryption": {
+      "type": "object",
+      "required": ["algorithm", "key_management", "key_rotation_days"],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": ["AES-256-GCM", "CHACHA20-POLY1305"],
+          "description": "Cryptographic standard enforced for localized context data and KV-caches."
+        },
+        "key_management": {
+          "type": "string",
+          "enum": ["LOCAL_FILE", "TPM_2.0", "HSM_EXTERNAL"],
+          "description": "Key storage framework topology mapping to HW-03."
+        },
+        "key_rotation_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 365
+        }
+      }
+    },
+    "hardware_security": {
+      "type": "object",
+      "required": ["tpm_required", "tpm_version", "secure_boot"],
+      "properties": {
+        "tpm_required": { "type": "boolean" },
+        "tpm_version": { "type": "string", "enum": ["2.0", "NONE"] },
+        "hsm_type": { "type": "string" },
+        "secure_boot": { "type": "boolean" }
+      }
+    },
+    "compute": {
+      "type": "object",
+      "required": ["vram_budget_gb", "quantization_formats", "accelerator_backends"],
+      "properties": {
+        "vram_budget_gb": {
+          "type": "integer",
+          "minimum": 4,
+          "maximum": 2048,
+          "description": "Maximum physical memory threshold matching compute specifications."
+        },
+        "quantization_formats": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["FP16", "INT8", "INT4", "INT2", "AWQ", "GPTQ"]
+          }
+        },
+        "accelerator_backends": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["NVIDIA_CUDA", "APPLE_METAL", "AMD_ROCM", "CPU"]
+          }
+        }
+      }
+    },
+    "ingestion": {
+      "type": "object",
+      "required": ["allow_disk_cache", "supported_formats"],
+      "properties": {
+        "allow_disk_cache": {
+          "type": "boolean",
+          "description": "Must be false for L2/L3 compliance to enforce volatile-only parsing (HW-01)."
+        },
+        "supported_formats": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["PDF", "TIFF", "DOCX", "HTML", "TXT", "JSON"]
+          }
+        }
+      }
+    },
+    "audit": {
+      "type": "object",
+      "required": ["enabled", "log_format", "immutable", "retention_days"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "log_format": { "type": "string", "enum": ["JSON", "SYSLOG"] },
+        "immutable": { "type": "boolean", "description": "Forces log immutability via control AUD-03." },
+        "retention_days": { "type": "integer", "minimum": 30 }
+      }
+    },
+    "api": {
+      "type": "object",
+      "required": ["openai_compatible", "base_url", "endpoints"],
+      "properties": {
+        "openai_compatible": { "type": "boolean", "const": true },
+        "base_url": { "type": "string", "format": "uri" },
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["/v1/chat/completions", "/v1/embeddings", "/v1/models"]
+          }
+        }
+      }
+    }
+  },
+  "dependentRequired": {
+    "air_gapped": ["network"]
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "compliance_level": { "const": "STRICT_L3" } }
+      },
+      "then": {
+        "properties": {
+          "air_gapped": { "const": true },
+          "network": {
+            "properties": {
+              "allow_wan": { "const": false },
+              "dns_mode": { "const": "LOCAL_ONLY" }
+            }
+          },
+          "encryption": {
+            "properties": {
+              "key_management": { "const": "TPM_2.0" }
+            }
+          },
+          "hardware_security": {
+            "properties": {
+              "tpm_required": { "const": true },
+              "tpm_version": { "const": "2.0" },
+              "secure_boot": { "const": true }
+            }
+          },
+          "ingestion": {
+            "properties": {
+              "allow_disk_cache": { "const": false }
+            }
+          },
+          "audit": {
+            "properties": {
+              "immutable": { "const": true }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "compliance_level": { "const": "SECURE_L2" } }
+      },
+      "then": {
+        "properties": {
+          "network": {
+            "properties": {
+              "allow_wan": { "const": false }
+            }
+          },
+          "ingestion": {
+            "properties": {
+              "allow_disk_cache": { "const": false }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

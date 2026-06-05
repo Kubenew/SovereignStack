@@ -65,7 +65,7 @@ OASA certification level (L1–L3):
   "issued_by": "OASA Technical Steering Committee",
   "issued_at": "2026-05-31T00:00:00Z",
   "valid_until": "2027-05-31T00:00:00Z",
-  "badge_url": "https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-l2.svg",
+  "badge_url": "https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/badges/oasa-l2.svg",
   "attestation": "sig:ghi789..."
 }
 ```

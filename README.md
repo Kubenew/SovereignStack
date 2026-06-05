@@ -1,11 +1,12 @@
 # SovereignStack
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-compatible.svg" alt="OASA Compatible" height="40">
+  <img src="https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/badges/oasa-compatible.svg" alt="OASA Compatible" height="40">
   <img src="https://img.shields.io/badge/RFCs-0001--0010%20%2B%200030--0037-blue" alt="RFCs" height="40">
   <img src="https://img.shields.io/badge/Conformance-L1%20|%20L2%20|%20L3-orange" alt="Conformance" height="40">
   <img src="https://img.shields.io/badge/Architecture-docs%2Farchitecture-success" alt="Architecture" height="40">
   <img src="https://img.shields.io/badge/License-Apache%202.0-blue" alt="License" height="40">
+  <img src="https://img.shields.io/badge/OASA%20CCM-2026.1-purple" alt="OASA CCM" height="40">
 </p>
 
 > **The Sovereign Intelligence Network** — A distributed operating system for intelligence.
@@ -153,6 +154,19 @@ SovereignStack is governed by a formal standards framework:
 | [RFC-0030](rfcs/RFC-0030-network-topology-awareness.md) | Network Topology Awareness | Draft |
 | [RFC-0031](rfcs/RFC-0031-kv-locality-scheduling.md) | KV Locality Scheduling | Draft |
 | [RFC-0032](rfcs/RFC-0032-ai-fabric-protocol.md) | AI Fabric Protocol | Draft |
+| [RFC-0033](rfcs/RFC-0033-fabric-telemetry.md) | Fabric Telemetry Protocol | Draft |
+| [RFC-0034](rfcs/RFC-0034-distributed-kv-placement.md) | Distributed KV Placement | Draft |
+| [RFC-0035](rfcs/RFC-0035-topology-aware-federation.md) | Topology-Aware Federation | Draft |
+| [RFC-0036](rfcs/RFC-0036-memory-fabric-objects.md) | Memory Fabric Objects | Draft |
+| [RFC-0037](rfcs/RFC-0037-ai-cluster-profiles.md) | AI Cluster Profiles | Draft |
+
+### Compliance & Audit
+
+| Asset | Description |
+|-------|-------------|
+| [OASA CCM](compliance/oasa-ccm.md) | Core Controls Matrix — NET, RUN, HW, AUD controls for L1/L2/L3 certification |
+| [Compliance Schema](schemas/oasa-compliance.schema.json) | JSON Schema (Draft 2020-12) for automated node validation |
+| [Validation Script](tools/validate_compliance.py) | Automated compliance scanner with `--audit-host` and `--generate-template` |
 
 ## Getting Started
 

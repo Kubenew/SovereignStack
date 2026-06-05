@@ -62,7 +62,7 @@ A **10-year roadmap** spanning 6 phases — from today's foundation work through
 
 ## Get Involved
 
-- **GitHub:** https://github.com/Kubenew/SovereignStack
+- **GitHub:** https://github.com/sovereignstack/sovereignstack
 - **Documentation:** [docs/](docs/)
 - **Standards:** [STANDARDS.md](STANDARDS.md)
 - **Roadmap:** [ROADMAP-2035.md](ROADMAP-2035.md)

@@ -202,9 +202,9 @@ Certified entities can display OASA badges:
 
 | Level | Badge |
 |---|---|
-| **L1** | ![OASA L1](https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-l1.svg) |
-| **L2** | ![OASA L2](https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-l2.svg) |
-| **L3** | ![OASA L3](https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-l3.svg) |
+| **L1** | ![OASA L1](https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/badges/oasa-l1.svg) |
+| **L2** | ![OASA L2](https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/badges/oasa-l2.svg) |
+| **L3** | ![OASA L3](https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/badges/oasa-l3.svg) |
 
 ---
 

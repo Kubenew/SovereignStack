@@ -90,7 +90,7 @@ python tools/sovereign_stack.py validate sovereign-stack.yaml
 ### Badge Usage
 
 ```markdown
-![OASA Compatible](https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-compatible.svg)
+![OASA Compatible](https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/badges/oasa-compatible.svg)
 ```
 
 ---
@@ -146,7 +146,7 @@ python -m pytest tests/conformance/ -v --level L2
 ### Badge Usage
 
 ```markdown
-![OASA Verified](https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-l2.svg)
+![OASA Verified](https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/badges/oasa-l2.svg)
 ```
 
 ---
@@ -192,7 +192,7 @@ python -m pytest tests/conformance/ -v --level L2
 ### Badge Usage
 
 ```markdown
-![OASA Certified](https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-certified.svg)
+![OASA Certified](https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/badges/oasa-certified.svg)
 ```
 
 ---
@@ -265,7 +265,7 @@ The machine-readable certification attestation format:
     "status": "active",
     "issued": "2026-05-25T00:00:00Z",
     "expires": "2027-05-25T00:00:00Z",
-    "badge_url": "https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-l3.svg"
+    "badge_url": "https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/badges/oasa-l3.svg"
   },
   "subject": {
     "name": "Product/Organization Name",

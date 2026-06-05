@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/Kubenew/SovereignStack/main/schemas/certification/oasa-conformance-report.schema.json",
+  "$id": "https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/schemas/certification/oasa-conformance-report.schema.json",
   "title": "OASA Conformance Report Schema",
   "description": "Schema for OASA conformance test suite reports",
   "type": "object",

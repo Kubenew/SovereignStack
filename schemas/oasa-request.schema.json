@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/Kubenew/SovereignStack/schemas/oasa-request.schema.json",
+  "$id": "https://github.com/sovereignstack/sovereignstack/schemas/oasa-request.schema.json",
   "title": "OASA Chat Completion Request",
   "description": "Extends the standard OpenAI chat completion request with OASA compliance fields. This schema validates the JSON body sent to /v1/chat/completions on a Sovereign Node.",
   "type": "object",

@@ -64,8 +64,8 @@ The platform wraps vLLM (and other engines) behind a gateway with OIDC authentic
 
 ## Additional Resources
 
-- **Repository:** https://github.com/Kubenew/SovereignStack
-- **Documentation:** https://github.com/Kubenew/SovereignStack/tree/main/docs
-- **RFCs:** https://github.com/Kubenew/SovereignStack/tree/main/rfcs
-- **Conformance Tests:** https://github.com/Kubenew/SovereignStack/tree/main/tests
+- **Repository:** https://github.com/sovereignstack/sovereignstack
+- **Documentation:** https://github.com/sovereignstack/sovereignstack/tree/main/docs
+- **RFCs:** https://github.com/sovereignstack/sovereignstack/tree/main/rfcs
+- **Conformance Tests:** https://github.com/sovereignstack/sovereignstack/tree/main/tests
 - **Website:** *[planned]*

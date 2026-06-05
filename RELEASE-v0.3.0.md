@@ -52,7 +52,7 @@ v0.3.0 marks SovereignStack's transition from a software project into a **standa
 
 ```bash
 # Clone and build
-git clone https://github.com/Kubenew/SovereignStack.git
+git clone https://github.com/sovereignstack/sovereignstack.git
 cd SovereignStack
 cargo build --workspace
 
@@ -74,11 +74,11 @@ python -m pytest conformance/tests/ -v
 
 ## Links
 
-- [Release Branch](https://github.com/Kubenew/SovereignStack/tree/release/v0.3.0)
-- [Architecture Docs](https://github.com/Kubenew/SovereignStack/tree/main/docs/architecture/)
-- [RFCs](https://github.com/Kubenew/SovereignStack/tree/main/rfcs)
-- [Conformance](https://github.com/Kubenew/SovereignStack/tree/main/conformance)
-- [Reference Node](https://github.com/Kubenew/SovereignStack/tree/main/reference-node)
+- [Release Branch](https://github.com/sovereignstack/sovereignstack/tree/release/v0.3.0)
+- [Architecture Docs](https://github.com/sovereignstack/sovereignstack/tree/main/docs/architecture/)
+- [RFCs](https://github.com/sovereignstack/sovereignstack/tree/main/rfcs)
+- [Conformance](https://github.com/sovereignstack/sovereignstack/tree/main/conformance)
+- [Reference Node](https://github.com/sovereignstack/sovereignstack/tree/main/reference-node)
 
 ---
 

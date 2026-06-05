@@ -4,10 +4,10 @@ description: SovereignStack — OASA-compliant, air-gapped, enterprise AI infras
 type: application
 version: "2026.1"
 appVersion: "2026.1"
-home: https://github.com/Kubenew/SovereignStack
+home: https://github.com/sovereignstack/sovereignstack
 sources:
-  - https://github.com/Kubenew/SovereignStack
-icon: https://raw.githubusercontent.com/Kubenew/SovereignStack/main/docs/logo.svg
+  - https://github.com/sovereignstack/sovereignstack
+icon: https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/docs/logo.svg
 keywords:
   - oasa
   - sovereign-ai
@@ -16,5 +16,5 @@ keywords:
   - private-cloud
   - enterprise-ai
 maintainers:
-  - name: Kubenew
-    url: https://github.com/Kubenew
+  - name: sovereignstack
+    url: https://github.com/sovereignstack

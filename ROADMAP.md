@@ -1,7 +1,7 @@
 # SovereignStack Roadmap
 
 **Updated:** May 2026  
-**Tracking:** [GitHub Projects](https://github.com/Kubenew/SovereignStack/projects)
+**Tracking:** [GitHub Projects](https://github.com/sovereignstack/sovereignstack/projects)
 
 ---
 

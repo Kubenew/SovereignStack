@@ -33,7 +33,7 @@ class TestMerkleTree:
         tree = MerkleTree([e1, e2])
         assert tree.size == 2
         assert len(tree.leaves) == 2
-        assert len(tree.tree) == 3  # 2 leaves + 1 internal node
+        assert len(tree.tree) == 2  # 2 levels: leaves and root
         expected_root = _hash_pair(_hash_event(e1), _hash_event(e2))
         assert tree.root == expected_root
 
@@ -45,11 +45,10 @@ class TestMerkleTree:
         ]
         tree = MerkleTree(events)
         assert tree.size == 3
-        # Tree: [h0, h1, h2, h01, h2, h012]
-        assert len(tree.tree) == 6
-        assert tree.tree[3] == _hash_pair(tree.tree[0], tree.tree[1])  # h01
-        assert tree.tree[4] == tree.tree[2]  # h2 propagated
-        assert tree.tree[5] == _hash_pair(tree.tree[3], tree.tree[4])  # root
+        assert len(tree.tree) == 3  # 3 levels: leaves, intermediate, root
+        assert tree.tree[1][0] == _hash_pair(tree.tree[0][0], tree.tree[0][1])  # h01
+        assert tree.tree[1][1] == tree.tree[0][2]  # h2 propagated
+        assert tree.tree[2][0] == _hash_pair(tree.tree[1][0], tree.tree[1][1])  # root
 
     def test_append_event(self):
         tree = MerkleTree()

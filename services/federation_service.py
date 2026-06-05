@@ -10,7 +10,9 @@ from typing import List, Dict, Optional
 
 from services.event_log import EventLog, EventSigner
 from services.sync_engine import SyncEngine, SyncMessage, MessageType
+from services.logging_config import setup_json_logging
 
+setup_json_logging()
 logger = logging.getLogger(__name__)
 
 from contextlib import asynccontextmanager

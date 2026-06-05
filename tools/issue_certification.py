@@ -112,7 +112,7 @@ def main():
             "status": "active",
             "issued": now.isoformat(),
             "expires": expires.isoformat(),
-            "badge_url": f"https://raw.githubusercontent.com/Kubenew/SovereignStack/main/badges/oasa-{args.level.lower()}.svg"
+            "badge_url": f"https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/badges/oasa-{args.level.lower()}.svg"
         },
         "subject": {
             "name": args.subject_name,
