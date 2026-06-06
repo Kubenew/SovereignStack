@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" font-family="Monaco, monospace" font-size="11">
+  <rect width="900" height="600" fill="#0d1117"/>
+  <text x="450" y="30" text-anchor="middle" fill="#e6edf3" font-size="16" font-weight="bold">OASA Data Flow — API Gateway → Inference → Audit</text>
+
+  <!-- Box 1: Client/User -->
+  <rect x="30" y="60" width="150" height="50" rx="4" fill="#1e3a2f" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="105" y="90" text-anchor="middle" fill="#3fb950" font-weight="bold">Client / User</text>
+  <text x="105" y="103" text-anchor="middle" fill="#8b949e" font-size="10">agent:// or curl</text>
+
+  <!-- Arrow 1 -->
+  <line x1="180" y1="85" x2="230" y2="85" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="205" y="78" text-anchor="middle" fill="#8b949e" font-size="9">POST /v1/chat</text>
+
+  <!-- Box 2: API Gateway -->
+  <rect x="235" y="55" width="160" height="60" rx="4" fill="#1a3a5c" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="315" y="78" text-anchor="middle" fill="#58a6ff" font-weight="bold">OASA API Gateway</text>
+  <text x="315" y="93" text-anchor="middle" fill="#8b949e" font-size="10">DLP · Auth · Compliance Lock</text>
+  <text x="315" y="105" text-anchor="middle" fill="#8b949e" font-size="10">Rate limit · Audit init</text>
+
+  <!-- Box 2b: Policy Engine -->
+  <rect x="235" y="130" width="160" height="40" rx="4" fill="#2d1b2e" stroke="#bc8cff" stroke-width="1"/>
+  <text x="315" y="150" text-anchor="middle" fill="#bc8cff" font-weight="bold">Policy Engine</text>
+  <text x="315" y="163" text-anchor="middle" fill="#8b949e" font-size="10">Jurisdiction · Trust · Capability</text>
+
+  <line x1="315" y1="115" x2="315" y2="130" stroke="#bc8cff" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Arrow 2 -->
+  <line x1="395" y1="85" x2="445" y2="85" stroke="#3fb950" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="420" y="78" text-anchor="middle" fill="#8b949e" font-size="9">session://</text>
+
+  <!-- Box 3: Session Runtime -->
+  <rect x="450" y="55" width="160" height="60" rx="4" fill="#1e3a2f" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="530" y="78" text-anchor="middle" fill="#3fb950" font-weight="bold">Session Runtime</text>
+  <text x="530" y="93" text-anchor="middle" fill="#8b949e" font-size="10">State · Memory · Context</text>
+  <text x="530" y="105" text-anchor="middle" fill="#8b949e" font-size="10">KV Cache management</text>
+
+  <!-- Arrow 3 -->
+  <line x1="610" y1="85" x2="660" y2="85" stroke="#d29922" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="635" y="78" text-anchor="middle" fill="#8b949e" font-size="9">infer()</text>
+
+  <!-- Box 4: Inference Engine -->
+  <rect x="665" y="50" width="200" height="70" rx="4" fill="#3d2e1e" stroke="#d29922" stroke-width="1.5"/>
+  <text x="765" y="73" text-anchor="middle" fill="#d29922" font-weight="bold">Inference Backend</text>
+  <text x="765" y="88" text-anchor="middle" fill="#8b949e" font-size="10">vLLM · Llama.cpp · TEE</text>
+  <text x="765" y="103" text-anchor="middle" fill="#8b949e" font-size="10">Runtime Shield (RUN-01/02)</text>
+
+  <!-- Box 5: Fabric Scheduler (below) -->
+  <rect x="450" y="140" width="160" height="40" rx="4" fill="#1a3a5c" stroke="#58a6ff" stroke-width="1"/>
+  <text x="530" y="160" text-anchor="middle" fill="#58a6ff" font-weight="bold">Fabric Scheduler</text>
+  <text x="530" y="173" text-anchor="middle" fill="#8b949e" font-size="10">Topology · KV locality</text>
+
+  <line x1="530" y1="115" x2="530" y2="140" stroke="#58a6ff" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+  <!-- Box 6: Knowledge Store (right side) -->
+  <rect x="665" y="140" width="200" height="40" rx="4" fill="#1e3a2f" stroke="#3fb950" stroke-width="1"/>
+  <text x="765" y="160" text-anchor="middle" fill="#3fb950" font-weight="bold">Knowledge Store</text>
+  <text x="765" y="173" text-anchor="middle" fill="#8b949e" font-size="10">CAS · Provenance · Versioning</text>
+
+  <line x1="765" y1="120" x2="765" y2="140" stroke="#3fb950" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+  <!-- Arrow 4: Response back -->
+  <line x1="765" y1="50" x2="765" y2="200" stroke="#d29922" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <rect x="745" y="200" width="40" height="20" rx="3" fill="#3d2e1e" stroke="#d29922" stroke-width="1"/>
+  <text x="765" y="214" text-anchor="middle" fill="#d29922" font-size="9">Response</text>
+  <line x1="765" y1="220" x2="315" y2="220" stroke="#d29922" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <line x1="315" y1="220" x2="315" y2="115" stroke="#d29922" stroke-width="1.5" stroke-dasharray="8,4" marker-end="url(#arrow)"/>
+
+  <!-- Bottom: Audit Log -->
+  <rect x="30" y="260" width="840" height="120" rx="6" fill="#161b22" stroke="#484f58" stroke-width="1"/>
+  <text x="50" y="285" fill="#8b949e" font-weight="bold">Audit Trail (RFC-0022) · Merkle Chain</text>
+
+  <rect x="50" y="300" width="180" height="25" rx="3" fill="#2d1b2e" stroke="#bc8cff" stroke-width="1"/>
+  <text x="140" y="317" text-anchor="middle" fill="#bc8cff" font-size="10">Entry: audit://...</text>
+  <text x="250" y="317" fill="#484f58" font-size="14">→</text>
+  <rect x="270" y="300" width="180" height="25" rx="3" fill="#2d1b2e" stroke="#bc8cff" stroke-width="1"/>
+  <text x="360" y="317" text-anchor="middle" fill="#bc8cff" font-size="10">Entry: audit://...</text>
+  <text x="470" y="317" fill="#484f58" font-size="14">→</text>
+  <rect x="490" y="300" width="180" height="25" rx="3" fill="#2d1b2e" stroke="#bc8cff" stroke-width="1"/>
+  <text x="580" y="317" text-anchor="middle" fill="#bc8cff" font-size="10">Entry: audit://...</text>
+  <text x="690" y="317" fill="#484f58" font-size="14">→</text>
+  <rect x="710" y="300" width="120" height="25" rx="3" fill="#1a3a5c" stroke="#58a6ff" stroke-width="1"/>
+  <text x="770" y="317" text-anchor="middle" fill="#58a6ff" font-size="10">Merkle Root</text>
+
+  <text x="50" y="355" fill="#8b949e" font-size="10">Each audit entry: timestamp, actor, action, resource, capability, signature, merkle_proof</text>
+  <text x="50" y="370" fill="#8b949e" font-size="10">Immutable · Append-only · Retention: 90 days (L1) / 365 days (L2) / Indefinite (L3)</text>
+
+  <!-- Arrow markers def -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10" fill="#58a6ff"/>
+    </marker>
+  </defs>
+</svg>

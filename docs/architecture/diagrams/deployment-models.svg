@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" font-family="Monaco, monospace" font-size="12">
+  <rect width="900" height="500" fill="#0d1117"/>
+  <text x="450" y="30" text-anchor="middle" fill="#e6edf3" font-size="16" font-weight="bold">SovereignStack Deployment Models</text>
+
+  <!-- Model A: Air-gapped -->
+  <rect x="30" y="50" width="270" height="200" rx="6" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="165" y="72" text-anchor="middle" fill="#3fb950" font-weight="bold">Air-gapped Node</text>
+  <rect x="50" y="85" width="230" height="30" rx="3" fill="#1e3a2f" stroke="#3fb950"/>
+  <text x="165" y="104" text-anchor="middle" fill="#3fb950" font-size="11">SS Kernel + Runtime</text>
+  <rect x="50" y="125" width="230" height="30" rx="3" fill="#2d1b2e" stroke="#bc8cff"/>
+  <text x="165" y="144" text-anchor="middle" fill="#bc8cff" font-size="11">Fabric (leaf/spine)</text>
+  <rect x="50" y="165" width="230" height="30" rx="3" fill="#3d2e1e" stroke="#d29922"/>
+  <text x="165" y="184" text-anchor="middle" fill="#d29922" font-size="11">Local Inference (GPU)</text>
+  <text x="50" y="220" fill="#8b949e" font-size="10">No WAN · TPM 2.0 · Immutable audit</text>
+  <text x="50" y="236" fill="#8b949e" font-size="10">L3 Strict-Sovereign · OASA Certified</text>
+
+  <!-- Model B: Federated Mesh -->
+  <rect x="315" y="50" width="270" height="200" rx="6" fill="#161b22" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="450" y="72" text-anchor="middle" fill="#58a6ff" font-weight="bold">Federated Mesh</text>
+  <rect x="340" y="85" width="100" height="30" rx="3" fill="#1e3a2f" stroke="#3fb950"/>
+  <text x="390" y="104" text-anchor="middle" fill="#3fb950" font-size="11">Node A</text>
+  <rect x="460" y="85" width="100" height="30" rx="3" fill="#1e3a2f" stroke="#3fb950"/>
+  <text x="510" y="104" text-anchor="middle" fill="#3fb950" font-size="11">Node B</text>
+  <line x1="440" y1="100" x2="460" y2="100" stroke="#58a6ff" stroke-width="2"/>
+  <rect x="340" y="130" width="100" height="30" rx="3" fill="#1e3a2f" stroke="#3fb950"/>
+  <text x="390" y="149" text-anchor="middle" fill="#3fb950" font-size="11">Node C</text>
+  <rect x="460" y="130" width="100" height="30" rx="3" fill="#1e3a2f" stroke="#3fb950"/>
+  <text x="510" y="149" text-anchor="middle" fill="#3fb950" font-size="11">Node D</text>
+  <line x1="440" y1="145" x2="460" y2="145" stroke="#58a6ff" stroke-width="2"/>
+  <text x="340" y="195" fill="#8b949e" font-size="10">Node A (EU) ↔ Node B (US)</text>
+  <text x="340" y="210" fill="#8b949e" font-size="10">Discovery · Routing · Trust</text>
+  <text x="340" y="225" fill="#8b949e" font-size="10">L2 Secure-Runtime</text>
+  <text x="340" y="240" fill="#8b949e" font-size="10">Jurisdiction-aware routing</text>
+
+  <!-- Model C: Hybrid -->
+  <rect x="600" y="50" width="270" height="200" rx="6" fill="#161b22" stroke="#d29922" stroke-width="1.5"/>
+  <text x="735" y="72" text-anchor="middle" fill="#d29922" font-weight="bold">Hybrid (Sovereign-first)</text>
+  <rect x="620" y="85" width="230" height="30" rx="3" fill="#1e3a2f" stroke="#3fb950"/>
+  <text x="735" y="104" text-anchor="middle" fill="#3fb950" font-size="11">Sovereign Node (Local)</text>
+  <text x="620" y="135" fill="#8b949e" font-size="11">✕ Public cloud fallback blocked</text>
+  <text x="620" y="152" fill="#8b949e" font-size="11">✓ Audited cloud mirror (read-only)</text>
+  <text x="620" y="169" fill="#8b949e" font-size="11">✓ OASA Compliance Lock active</text>
+  <text x="620" y="186" fill="#8b949e" font-size="11">✓ 503 on WAN failure (RUN-03)</text>
+  <text x="620" y="220" fill="#8b949e" font-size="10">L1 Sovereign-Ready with</text>
+  <text x="620" y="236" fill="#8b949e" font-size="10">audited cloud extension</text>
+
+  <!-- Bottom: Key features -->
+  <rect x="30" y="270" width="840" height="200" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="50" y="295" fill="#e6edf3" font-weight="bold">Key Architectural Properties</text>
+
+  <rect x="50" y="310" width="240" height="65" rx="4" fill="#1a3a5c" stroke="#58a6ff" stroke-width="1"/>
+  <text x="65" y="330" fill="#58a6ff" font-weight="bold">Sovereignty First</text>
+  <text x="65" y="347" fill="#8b949e" font-size="11">Local processing by default</text>
+  <text x="65" y="363" fill="#8b949e" font-size="11">Federation is always opt-in</text>
+
+  <rect x="330" y="310" width="240" height="65" rx="4" fill="#1e3a2f" stroke="#3fb950" stroke-width="1"/>
+  <text x="345" y="330" fill="#3fb950" font-weight="bold">Verifiable Everything</text>
+  <text x="345" y="347" fill="#8b949e" font-size="11">Every object signed + hashed</text>
+  <text x="345" y="363" fill="#8b949e" font-size="11">Merkle audit trails</text>
+
+  <rect x="610" y="310" width="240" height="65" rx="4" fill="#2d1b2e" stroke="#bc8cff" stroke-width="1"/>
+  <text x="625" y="330" fill="#bc8cff" font-weight="bold">Capability-Based Security</text>
+  <text x="625" y="347" fill="#8b949e" font-size="11">Zero implicit trust</text>
+  <text x="625" y="363" fill="#8b949e" font-size="11">Revocable, time-bound</text>
+
+  <rect x="50" y="385" width="240" height="65" rx="4" fill="#3d2e1e" stroke="#d29922" stroke-width="1"/>
+  <text x="65" y="405" fill="#d29922" font-weight="bold">Offline First</text>
+  <text x="65" y="422" fill="#8b949e" font-size="11">Full functionality offline</text>
+  <text x="65" y="438" fill="#8b949e" font-size="11">Sync when connected</text>
+
+  <rect x="330" y="385" width="240" height="65" rx="4" fill="#1c1c1c" stroke="#484f58" stroke-width="1"/>
+  <text x="345" y="405" fill="#8b949e" font-weight="bold">Interoperability</text>
+  <text x="345" y="422" fill="#8b949e" font-size="11">Open standards, multiple impls</text>
+  <text x="345" y="438" fill="#8b949e" font-size="11">Conformance-tested</text>
+
+  <rect x="610" y="385" width="240" height="65" rx="4" fill="#1a3a5c" stroke="#58a6ff" stroke-width="1"/>
+  <text x="625" y="405" fill="#58a6ff" font-weight="bold">Human Control</text>
+  <text x="625" y="422" fill="#8b949e" font-size="11">Human Override always possible</text>
+  <text x="625" y="438" fill="#8b949e" font-size="11">Audit always readable</text>
+</svg>

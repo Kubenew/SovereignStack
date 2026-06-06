@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/badges/oasa-compatible.svg" alt="OASA Compatible" height="40">
-  <img src="https://img.shields.io/badge/RFCs-0001--0010%20%2B%200030--0037-blue" alt="RFCs" height="40">
+  <img src="https://img.shields.io/badge/RFCs-0001--0037-blue?logo=markdown" alt="RFCs" height="40">
   <img src="https://img.shields.io/badge/Conformance-L1%20|%20L2%20|%20L3-orange" alt="Conformance" height="40">
   <img src="https://img.shields.io/badge/Architecture-docs%2Farchitecture-success" alt="Architecture" height="40">
   <img src="https://img.shields.io/badge/License-Apache%202.0-blue" alt="License" height="40">
@@ -58,6 +58,21 @@ profile://zcube-standard-v1     # Cluster profile (RFC-0037)
 ```
 
 ## Architecture
+
+<p align="center">
+  <img src="docs/architecture/diagrams/rfc-protocol-stack.svg" alt="Protocol Stack" width="85%">
+  <br><em>SovereignStack Protocol Stack — RFCs organized by layer</em>
+</p>
+
+<p align="center">
+  <img src="docs/architecture/diagrams/deployment-models.svg" alt="Deployment Models" width="85%">
+  <br><em>Deployment Models: Air-gapped · Federated Mesh · Hybrid</em>
+</p>
+
+<p align="center">
+  <img src="docs/architecture/diagrams/data-flow.svg" alt="Data Flow" width="85%">
+  <br><em>OASA Data Flow — API Gateway → Inference → Audit Trail</em>
+</p>
 
 ```
 ss-kernel
@@ -151,6 +166,25 @@ SovereignStack is governed by a formal standards framework:
 | [RFC-0008](rfcs/RFC-0008-federation-routing.md) | Federation Routing | Draft |
 | [RFC-0009](rfcs/RFC-0009-session-lifecycle.md) | Session Lifecycle | Draft |
 | [RFC-0010](rfcs/RFC-0010-conformance-framework.md) | Conformance Framework | Draft |
+| [RFC-0011](rfcs/RFC-0011-identity-did-resolution.md) | Identity & DID Resolution | Draft |
+| [RFC-0012](rfcs/RFC-0012-cryptographic-signatures.md) | Cryptographic Signatures & Verification | Draft |
+| [RFC-0013](rfcs/RFC-0013-provenance-graph.md) | Provenance Graph | Draft |
+| [RFC-0014](rfcs/RFC-0014-agent-communication.md) | Agent Communication Protocol | Draft |
+| [RFC-0015](rfcs/RFC-0015-workflow-execution.md) | Workflow Execution Engine | Draft |
+| [RFC-0016](rfcs/RFC-0016-resource-allocation.md) | Resource Allocation & Accounting | Draft |
+| [RFC-0017](rfcs/RFC-0017-sovereign-memory-protocol.md) | Sovereign Memory Protocol (Detailed) | Draft |
+| [RFC-0018](rfcs/RFC-0018-content-addressed-storage.md) | Content-Addressable Storage | Draft |
+| [RFC-0019](rfcs/RFC-0019-trust-reputation-scoring.md) | Trust & Reputation Scoring | Draft |
+| [RFC-0020](rfcs/RFC-0020-policy-enforcement.md) | Policy Enforcement | Draft |
+| [RFC-0021](rfcs/RFC-0021-jurisdiction-data-residency.md) | Jurisdiction & Data Residency | Draft |
+| [RFC-0022](rfcs/RFC-0022-audit-log-streaming.md) | Audit Log Streaming | Draft |
+| [RFC-0023](rfcs/RFC-0023-extension-plugin-system.md) | Extension & Plugin System | Draft |
+| [RFC-0024](rfcs/RFC-0024-multi-model-routing.md) | Multi-Model Routing | Draft |
+| [RFC-0025](rfcs/RFC-0025-session-migration.md) | Session Migration | Draft |
+| [RFC-0026](rfcs/RFC-0026-capability-delegation.md) | Capability Delegation Chain | Draft |
+| [RFC-0027](rfcs/RFC-0027-swarm-coordination.md) | Swarm Coordination | Draft |
+| [RFC-0028](rfcs/RFC-0028-digital-twin-sync.md) | Digital Twin Synchronization | Draft |
+| [RFC-0029](rfcs/RFC-0029-intelligence-economy.md) | Intelligence Economy Primitives | Draft |
 | [RFC-0030](rfcs/RFC-0030-network-topology-awareness.md) | Network Topology Awareness | Draft |
 | [RFC-0031](rfcs/RFC-0031-kv-locality-scheduling.md) | KV Locality Scheduling | Draft |
 | [RFC-0032](rfcs/RFC-0032-ai-fabric-protocol.md) | AI Fabric Protocol | Draft |
@@ -168,16 +202,17 @@ SovereignStack is governed by a formal standards framework:
 | [Compliance Schema](schemas/oasa-compliance.schema.json) | JSON Schema (Draft 2020-12) for automated node validation |
 | [Validation Script](tools/validate_compliance.py) | Automated compliance scanner with `--audit-host` and `--generate-template` |
 
-## Getting Started
-
-### Prerequisites
-
-- [Rust](https://rustup.rs/) 1.75+
-- Git
-
-### Build
+## Quickstart
 
 ```bash
+# Clone & enter
+git clone https://github.com/Kubenew/SovereignStack.git
+cd SovereignStack
+
+# Launch playground (Docker Compose)
+docker compose -f playground/docker-compose.yml up -d
+
+# Or build from source
 cargo build --workspace
 ```
 
