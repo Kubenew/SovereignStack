@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="120" viewBox="0 0 400 120">
+  <defs>
+    <linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3fb950"/>
+      <stop offset="50%" style="stop-color:#58a6ff"/>
+      <stop offset="100%" style="stop-color:#bc8cff"/>
+    </linearGradient>
+  </defs>
+  <!-- Shield icon -->
+  <path d="M40 20 L120 20 L120 60 Q120 90 80 105 Q40 90 40 60 Z" fill="none" stroke="url(#sg)" stroke-width="3"/>
+  <path d="M55 65 L70 80 L100 50" fill="none" stroke="#3fb950" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Text -->
+  <text x="145" y="62" fill="#e6edf3" font-family="monospace" font-size="32" font-weight="bold">SovereignStack</text>
+  <text x="145" y="90" fill="#8b949e" font-family="monospace" font-size="14">addressable · verifiable · sovereign</text>
+  <text x="145" y="108" fill="#484f58" font-family="monospace" font-size="10">OASA v2026.1</text>
+</svg>

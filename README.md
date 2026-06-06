@@ -1,12 +1,13 @@
 # SovereignStack
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/sovereignstack/sovereignstack/main/badges/oasa-compatible.svg" alt="OASA Compatible" height="40">
-  <img src="https://img.shields.io/badge/RFCs-0001--0037-blue?logo=markdown" alt="RFCs" height="40">
-  <img src="https://img.shields.io/badge/Conformance-L1%20|%20L2%20|%20L3-orange" alt="Conformance" height="40">
-  <img src="https://img.shields.io/badge/Architecture-docs%2Farchitecture-success" alt="Architecture" height="40">
-  <img src="https://img.shields.io/badge/License-Apache%202.0-blue" alt="License" height="40">
-  <img src="https://img.shields.io/badge/OASA%20CCM-2026.1-purple" alt="OASA CCM" height="40">
+  <img src="badges/sovereignstack-logo.svg" alt="SovereignStack" height="80">
+</p>
+<p align="center">
+  <img src="badges/oasa-compatible.svg" alt="OASA Compatible" height="40">
+  <img src="badges/oasa-l1-ready.svg" alt="L1 Sovereign-Ready" height="40">
+  <img src="badges/oasa-l2-secure.svg" alt="L2 Secure-Runtime" height="40">
+  <img src="badges/oasa-l3-strict.svg" alt="L3 Strict-Sovereign" height="40">
 </p>
 
 > **The Sovereign Intelligence Network** — A distributed operating system for intelligence.
