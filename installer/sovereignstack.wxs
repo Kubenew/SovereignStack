@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SovereignStack Windows Installer (WiX v4) -->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="SovereignStack"
+    Manufacturer="SovereignStack Project"
+    Version="!(bind.Version)"
+    UpgradeCode="A1B2C3D4-E5F6-7890-ABCD-EF1234567890"
+    Scope="perMachine">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of SovereignStack is already installed." />
+
+    <Media Id="1" Cabinet="SovereignStack.cab" EmbedCab="yes" CompressionLevel="high" />
+
+    <!-- Directory structure -->
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLDIR" Name="SovereignStack">
+        <Directory Id="BINDIR" Name="bin" />
+        <Directory Id="SERVICESDIR" Name="services" />
+        <Directory Id="CONFIGDIR" Name="config" />
+        <Directory Id="DOCSDIR" Name="docs" />
+        <Directory Id="DATADIR" Name="data" />
+      </Directory>
+    </StandardDirectory>
+
+    <!-- Components: bin/ -->
+    <Component Id="ss_node_exe" Bitness="always64" Guid="B1C2D3E4-F5A6-7890-BCDE-F12345678901">
+      <File Id="ss_node_exe" Source="$(var.SourceDir)\bin\ss-node.exe" KeyPath="yes" />
+    </Component>
+    <Component Id="ss_cli_exe" Bitness="always64" Guid="C1D2E3F4-A5B6-7890-CDEF-1234567890AB">
+      <File Id="ss_cli_exe" Source="$(var.SourceDir)\bin\ss-cli.exe" KeyPath="yes" />
+    </Component>
+
+    <!-- Components: services/ (bundled via PyInstaller) -->
+    <Component Id="gateway_service_exe" Guid="D1E2F3A4-B5C6-7890-DEFA-234567890ABC">
+      <File Id="gateway_service_exe" Source="$(var.SourceDir)\services\gateway-service.exe" KeyPath="yes" />
+    </Component>
+    <Component Id="federation_service_exe" Guid="E1F2A3B4-C5D6-7890-EFAB-34567890ABCD">
+      <File Id="federation_service_exe" Source="$(var.SourceDir)\services\federation-service.exe" KeyPath="yes" />
+    </Component>
+    <Component Id="merkle_audit_exe" Guid="F1A2B3C4-D5E6-7890-FABC-4567890ABCDE">
+      <File Id="merkle_audit_exe" Source="$(var.SourceDir)\services\merkle-audit.exe" KeyPath="yes" />
+    </Component>
+
+    <!-- Components: config/ -->
+    <Component Id="env_example" Guid="A1B2C3D4-E5F6-7890-ABCD-5678901234EF">
+      <File Id="env_example" Source="$(var.SourceDir)\config\env.example" KeyPath="yes" />
+    </Component>
+
+    <!-- Components: docs/ -->
+    <Component Id="readme_md" Guid="B2C3D4E5-F6A7-8901-BCDE-6789012345FA">
+      <File Id="readme_md" Source="$(var.SourceDir)\docs\README.md" KeyPath="yes" />
+    </Component>
+
+    <!-- Feature tree -->
+    <Feature Id="SovereignStackCore" Title="SovereignStack Core" Level="1" Display="expand" Description="Core binaries and runtime">
+      <Feature Id="Binaries" Title="Node and CLI binaries" Level="1" Description="ss-node.exe and ss-cli.exe">
+        <ComponentRef Id="ss_node_exe" />
+        <ComponentRef Id="ss_cli_exe" />
+      </Feature>
+      <Feature Id="Services" Title="Microservices" Level="1" Description="Python microservices (gateway, federation, audit)">
+        <ComponentRef Id="gateway_service_exe" />
+        <ComponentRef Id="federation_service_exe" />
+        <ComponentRef Id="merkle_audit_exe" />
+      </Feature>
+      <Feature Id="Configuration" Title="Configuration files" Level="1" Description="Default configuration templates">
+        <ComponentRef Id="env_example" />
+      </Feature>
+      <Feature Id="Documentation" Title="Documentation" Level="1" Description="Getting started and reference docs">
+        <ComponentRef Id="readme_md" />
+      </Feature>
+    </Feature>
+
+    <!-- Start menu shortcuts -->
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="StartMenuShortcuts" Guid="C3D4E5F6-A7B8-9012-CDEF-7890123456AB">
+        <Shortcut Id="SovereignStackCLI" Directory="INSTALLDIR" Name="SovereignStack CLI" Target="[BINDIR]ss-cli.exe" WorkingDirectory="BINDIR" />
+        <RemoveFile Id="RemoveStartMenu" Name="SovereignStack CLI" On="uninstall" />
+      </Component>
+    </StandardDirectory>
+
+    <!-- Service install (ss-node as Windows service) -->
+    <Component Id="ss_node_service" Guid="D4E5F6A7-B8C9-0123-DEFA-8901234567BC" Bitness="always64">
+      <ServiceInstall
+        Id="SsNodeService"
+        Name="SsNode"
+        DisplayName="SovereignStack Reference Node"
+        Description="SovereignStack HTTP server — identity, capability, session, and fabric APIs"
+        Start="auto"
+        Type="ownProcess"
+        ErrorControl="normal"
+        Account="NT AUTHORITY\NetworkService"
+        Arguments="--config [CONFIGDIR] --data [DATADIR]" />
+      <ServiceControl Id="StartSsNode" Name="SsNode" Start="install" Stop="both" Remove="uninstall" />
+      <File Id="ss_node_service_file" Source="$(var.SourceDir)\bin\ss-node.exe" KeyPath="yes" />
+    </Component>
+
+    <Feature Id="WindowsService" Title="Register as Windows service" Level="1" Description="Run ss-node as a background Windows service (auto-start)">
+      <ComponentRef Id="ss_node_service" />
+      <ComponentRef Id="StartMenuShortcuts" />
+    </Feature>
+
+  </Package>
+</Wix>

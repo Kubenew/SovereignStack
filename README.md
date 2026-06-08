@@ -152,6 +152,7 @@ SovereignStack is governed by a formal standards framework:
 | [PROTOCOL_REGISTRY.md](PROTOCOL_REGISTRY.md) | 7 protocols with lifecycle management |
 | [REFERENCE_IMPLEMENTATIONS.md](REFERENCE_IMPLEMENTATIONS.md) | 13 core subsystems + 3 language bindings |
 | [ROADMAP-2035.md](ROADMAP-2035.md) | 10-year vision through Sovereign Intelligence Internet |
+| [BUILD_WINDOWS.md](BUILD_WINDOWS.md) | Windows build guide — exe, MSI, Python bundling |
 
 ### RFCs
 
@@ -209,6 +210,9 @@ SovereignStack is governed by a formal standards framework:
 # Clone & enter
 git clone https://github.com/Kubenew/SovereignStack.git
 cd SovereignStack
+
+# Windows: build .exe binaries (see BUILD_WINDOWS.md for full MSI guide)
+cargo build --release --bin ss-node --bin ss-cli
 
 # Launch playground (Docker Compose)
 docker compose -f playground/docker-compose.yml up -d
