@@ -60,7 +60,53 @@ OASA certification is structured into three cumulative assurance tiers based on 
 - **Inspection Phase:** An authorized OASA auditor (or a locked corporate CI/CD production pipeline) executes the full suite of diagnostic checks defined in this matrix.
 - **Issuance Phase:** If the architecture completely satisfies every control check up to the targeted tier (e.g., all NET, RUN, and HW targets for Tier 2), the auditor cryptographically signs the generated JSON audit report. The entity is then granted the right to display the official OASA Certified - Level [1/2/3] trust badge.
 
-## 4. Executive Impact
+## 4. Framework Cross-References
+
+Each OASA CCM control maps to multiple industry compliance frameworks. See the dedicated mapping documents for full details.
+
+| Framework | Mapping Document | Tiers Covered | Key Standard |
+|-----------|-----------------|---------------|-------------|
+| **SOC 2** | [SOC 2 Mapping](soc2-mapping.md) | L1–L3 | AICPA TSC 2023 |
+| **Gaia-X** | [Gaia-X Mapping](gaia-x-mapping.md) | L1–L3 | Gaia-X Trust Framework 24.04 |
+| **ISO 42001** | (Planned) | L2–L3 | AI Management System |
+| **EU AI Act** | (Planned) | L2–L3 | Risk-based AI regulation |
+| **NIS2** | (Planned) | L1–L3 | Network security directive |
+
+### Quick Reference: SOC 2
+
+| OASA Control | SOC 2 Criterion | Category |
+|-------------|-----------------|----------|
+| NET-01 | CC6.1, CC6.7 | Security, Confidentiality |
+| NET-02 | CC6.8 | Security |
+| NET-03 | CC6.1 | Security |
+| RUN-01 | CC7.1, A1.2 | Security, Availability |
+| RUN-02 | CC7.4, A1.3 | Security, Availability |
+| RUN-03 | A1.2 | Availability |
+| HW-01 | CC6.7, PI1.1 | Confidentiality, Processing Integrity |
+| HW-02 | CC6.3 | Security |
+| HW-03 | CC6.7 | Confidentiality |
+| AUD-01 | PI1.1, CC7.2 | Processing Integrity, Security |
+| AUD-02 | CC7.2, A1.2 | Security, Availability |
+| AUD-03 | CC6.1 | Security |
+
+### Quick Reference: Gaia-X
+
+| OASA Control | Gaia-X Criterion | Category |
+|-------------|------------------|----------|
+| NET-01 | Data Sovereignty | Resource location enforcement |
+| NET-02 | Security | Connectivity verification |
+| NET-03 | Data Sovereignty | Jurisdiction-aware DNS |
+| RUN-01 | Security | Workload monitoring |
+| RUN-02 | Transparency | Failure observability |
+| RUN-03 | Data Sovereignty | Data ecosystem confinement |
+| HW-01 | Security, Data Sovereignty | Temporary storage control |
+| HW-02 | Identity, Security | Hardware-anchored identity |
+| HW-03 | Data Sovereignty | Owner-controlled encryption |
+| AUD-01 | Transparency | Processing auditability |
+| AUD-02 | Transparency | Operational observability |
+| AUD-03 | Transparency | Tamper-proof audit |
+
+## 5. Executive Impact
 
 By checking this matrix into your SovereignStack codebase, you provide enterprise decision-makers with a highly scannable, practical template that shifts their operations from open-source experimentation to standardized risk mitigation. Corporate governance boards can immediately take this matrix, hand it to their internal IT security teams, and map out an explicit path toward air-gapped data compliance.
 

@@ -233,6 +233,30 @@ cargo build --workspace
 cargo test --workspace
 ```
 
+## Compliance & Certifications
+
+SovereignStack provides a complete audit and certification framework for enterprise AI deployments:
+
+| Asset | Description |
+|-------|-------------|
+| [OASA CCM](compliance/oasa-ccm.md) | Core Controls Matrix — 12 controls across NET/RUN/HW/AUD for L1/L2/L3 |
+| [SOC 2 Mapping](compliance/soc2-mapping.md) | Full mapping to AICPA TSC 2023 — all 5 trust categories |
+| [Gaia-X Mapping](compliance/gaia-x-mapping.md) | Mapping to Gaia-X Trust Framework + Self-Description generation |
+| [SOC 2 Type 1 Report Template](compliance/soc2-type1-report-template.json) | Pre-built evidence package template for auditor review |
+| [Compliance Schema](schemas/oasa-compliance.schema.json) | JSON Schema (Draft 2020-12) for automated node validation |
+| [Audit Evidence Schema](schemas/oasa-audit-evidence.schema.json) | Structured evidence package for `oasa-audit report` |
+| [Validation Script](tools/validate_compliance.py) | Automated compliance scanner with `--audit-host` |
+
+**Target frameworks**: ISO 42001, EU AI Act, SOC 2, NIS2, Gaia-X, CSA CCM, FedRAMP
+
+```bash
+# Generate compliance evidence package
+oasa-audit report --framework iso42001 --framework soc2
+
+# Export for auditor review
+oasa-audit export-pdf --output audit-report-2026-Q2.pdf
+```
+
 ## License
 
 Apache-2.0 OR MIT (dual-licensed)

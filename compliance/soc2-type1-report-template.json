@@ -1,0 +1,63 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Kubenew/SovereignStack/main/schemas/oasa-audit-evidence.schema.json",
+  "package_id": "audit-pkg://node-001/soc2-type1-2026-Q2",
+  "timestamp": "2026-06-15T00:00:00Z",
+  "node_id": "node://production-node-001",
+  "oasa_version": "2026.1",
+  "compliance_level": "SECURE_L2",
+  "compliance_score": 94,
+  "framework_scores": {
+    "soc2": {
+      "score": 91,
+      "controls_passed": 30,
+      "controls_total": 33,
+      "version": "SOC 2 TSC 2023"
+    },
+    "iso42001": {
+      "score": 88,
+      "controls_passed": 22,
+      "controls_total": 25,
+      "version": "ISO 42001:2025"
+    },
+    "eu_ai_act": {
+      "score": 95,
+      "controls_passed": 19,
+      "controls_total": 20,
+      "version": "EU AI Act 2024"
+    }
+  },
+  "controls": {
+    "NET-01": { "status": "pass", "evidence": ["config/network-policy.yaml", "audit://seq-1040"], "last_verified": "2026-06-15T00:00:00Z" },
+    "NET-02": { "status": "pass", "evidence": ["tools/validate_compliance.py --audit-host --target 1.1.1.1:53"], "last_verified": "2026-06-14T12:00:00Z" },
+    "NET-03": { "status": "pass", "evidence": ["config/coredns-config.yaml"], "last_verified": "2026-06-10T00:00:00Z" },
+    "RUN-01": { "status": "pass", "evidence": ["runtime/runtime_shield.log"], "last_verified": "2026-06-15T00:00:00Z" },
+    "RUN-02": { "status": "pass", "evidence": ["runtime/kill-switch-test-2026-06-14.log"], "last_verified": "2026-06-14T00:00:00Z" },
+    "RUN-03": { "status": "na", "evidence": [], "notes": "Compliance lock active; fault injection scheduled next audit cycle" },
+    "HW-01": { "status": "pass", "evidence": ["config/sovereign-deployment.yaml"], "last_verified": "2026-06-01T00:00:00Z" },
+    "HW-02": { "status": "pass", "evidence": ["audit/tpm-attestation-2026-06-01.json"], "last_verified": "2026-06-01T00:00:00Z" },
+    "HW-03": { "status": "pass", "evidence": ["audit/key-management-review-2026-Q2.pdf"], "last_verified": "2026-06-01T00:00:00Z" },
+    "AUD-01": { "status": "pass", "evidence": ["logs/input-validation-2026-06-15.log"], "last_verified": "2026-06-15T00:00:00Z" },
+    "AUD-02": { "status": "pass", "evidence": ["audit/stream-sample.json"], "last_verified": "2026-06-15T00:00:00Z" },
+    "AUD-03": { "status": "pass", "evidence": ["config/audit-retention-policy.yaml"], "last_verified": "2026-06-01T00:00:00Z" }
+  },
+  "jurisdiction": {
+    "declared": "EU",
+    "enforced": true,
+    "data_transfers_blocked": 7
+  },
+  "evidence_count": 14,
+  "evidence_artifacts": [
+    { "id": "config/network-policy.yaml", "type": "configuration", "hash": "cas://sha256:a1b2c3d4e5f6...", "size_bytes": 2048 },
+    { "id": "tools/validate_compliance.py", "type": "configuration", "hash": "cas://sha256:b2c3d4e5f6a7...", "size_bytes": 15360 },
+    { "id": "runtime/runtime_shield.log", "type": "runtime_log", "hash": "cas://sha256:c3d4e5f6a7b8...", "size_bytes": 1048576 },
+    { "id": "audit/stream-sample.json", "type": "audit_log", "hash": "cas://sha256:d4e5f6a7b8c9...", "size_bytes": 4096 }
+  ],
+  "merkle_root": "sha256:e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6",
+  "signed": true,
+  "signature": {
+    "algorithm": "ed25519",
+    "public_key": "z6Mkabcdef1234567890abcdef1234567890abcdef1234567890abcd",
+    "value": "base64url_encoded_signature_here",
+    "signed_at": "2026-06-15T12:00:00Z"
+  }
+}
