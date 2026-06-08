@@ -549,6 +549,98 @@ impl Default for ReplicationPolicy {
     }
 }
 
+// ── RFC-0040: Model Lineage ────────────────────────────────────────────────
+
+/// An AI model object (RFC-0040).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ModelObject {
+    pub id: String,
+    pub architecture: String,
+    pub parameters_b: f64,
+    pub hash: String,
+    pub lineage: ModelLineage,
+    pub compliance: ModelCompliance,
+}
+
+/// Lineage metadata for a model (RFC-0040).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ModelLineage {
+    pub base_model: String,
+    pub training_runs: Vec<String>,
+    pub datasets: Vec<String>,
+}
+
+/// Compliance metadata for a model (RFC-0040).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ModelCompliance {
+    pub license: String,
+    pub jurisdiction: String,
+    pub restrictions: Vec<String>,
+}
+
+/// A training run (RFC-0040).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TrainingRun {
+    pub id: String,
+    pub model: String,
+    pub dataset: String,
+    pub hyperparameters: std::collections::HashMap<String, f64>,
+    pub compute: ComputeSpec,
+    pub resulting_model: String,
+}
+
+/// Compute specification for a training run (RFC-0040).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ComputeSpec {
+    pub gpu_hours: u64,
+    pub hardware: String,
+    pub cluster: String,
+}
+
+/// An evaluation record (RFC-0040).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EvaluationRecord {
+    pub id: String,
+    pub model: String,
+    pub benchmark: String,
+    pub metrics: std::collections::HashMap<String, f64>,
+}
+
+/// An AI Bill of Materials (RFC-0040).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AiBom {
+    pub id: String,
+    pub model: String,
+    pub components: Vec<BomComponent>,
+}
+
+/// A component in an AI BOM (RFC-0040).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BomComponent {
+    pub component_type: String,
+    pub id: String,
+    pub license: String,
+}
+
+/// An audit evidence package (RFC-0040 / OASA Audit).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AuditEvidencePackage {
+    pub package_id: String,
+    pub node_id: String,
+    pub compliance_score: f64,
+    pub framework_scores: std::collections::HashMap<String, FrameworkScore>,
+    pub merkle_root: String,
+    pub signed: bool,
+}
+
+/// Per-framework score in an audit evidence package.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FrameworkScore {
+    pub score: f64,
+    pub controls_passed: u32,
+    pub controls_total: u32,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1039,5 +1131,82 @@ mod tests {
         };
         assert_eq!(profile.name, "ZCube Standard 64-GPU");
         assert_eq!(profile.version, "1.0.0");
+    }
+
+    // RFC-0040: Model Lineage
+    #[test]
+    fn model_object_lineage() {
+        let m = ModelObject {
+            id: "model://zcube-a/qwen2.5-72b/v3.1.0".into(),
+            architecture: "transformer-decoder".into(),
+            parameters_b: 72.0,
+            hash: "cas://sha256:a1b2c3".into(),
+            lineage: ModelLineage {
+                base_model: "model://qwen/qwen2.5-72b-base".into(),
+                training_runs: vec!["training://zcube-a/sft-042".into()],
+                datasets: vec!["dataset://instructions".into()],
+            },
+            compliance: ModelCompliance {
+                license: "apache-2.0".into(),
+                jurisdiction: "CN".into(),
+                restrictions: vec!["export_control".into()],
+            },
+        };
+        assert_eq!(m.parameters_b, 72.0);
+        assert_eq!(m.lineage.base_model, "model://qwen/qwen2.5-72b-base");
+    }
+
+    #[test]
+    fn training_run_compute() {
+        let run = TrainingRun {
+            id: "training://zcube-a/sft-042".into(),
+            model: "model://qwen/qwen2.5-72b-base".into(),
+            dataset: "dataset://instructions/v2.1".into(),
+            hyperparameters: [("learning_rate".into(), 2e-5)].into_iter().collect(),
+            compute: ComputeSpec { gpu_hours: 2048, hardware: "H100-80GB".into(), cluster: "zcube-a".into() },
+            resulting_model: "model://zcube-a/qwen2.5-72b/v3.1.0".into(),
+        };
+        assert_eq!(run.compute.gpu_hours, 2048);
+    }
+
+    #[test]
+    fn evaluation_record_metrics() {
+        let eval = EvaluationRecord {
+            id: "evaluation://zcube-a/eval-007".into(),
+            model: "model://zcube-a/qwen2.5-72b/v3.1.0".into(),
+            benchmark: "open_llm_leaderboard".into(),
+            metrics: [("mmlu".into(), 0.85)].into_iter().collect(),
+        };
+        assert_eq!(eval.metrics["mmlu"], 0.85);
+    }
+
+    #[test]
+    fn ai_bom_components() {
+        let bom = AiBom {
+            id: "bom://zcube-a/qwen2.5-72b-deployment".into(),
+            model: "model://zcube-a/qwen2.5-72b/v3.1.0".into(),
+            components: vec![
+                BomComponent { component_type: "base_model".into(), id: "model://qwen/qwen2.5-72b-base".into(), license: "apache-2.0".into() },
+                BomComponent { component_type: "dataset".into(), id: "dataset://instructions/v2.1".into(), license: "mit".into() },
+            ],
+        };
+        assert_eq!(bom.components.len(), 2);
+    }
+
+    #[test]
+    fn audit_evidence_package() {
+        let pkg = AuditEvidencePackage {
+            package_id: "audit-pkg://node-001/2026-06-03".into(),
+            node_id: "node://gpu-003".into(),
+            compliance_score: 92.0,
+            framework_scores: [
+                ("iso42001".into(), FrameworkScore { score: 88.0, controls_passed: 22, controls_total: 25 }),
+                ("soc2".into(), FrameworkScore { score: 91.0, controls_passed: 30, controls_total: 33 }),
+            ].into_iter().collect(),
+            merkle_root: "sha256:abc123...".into(),
+            signed: true,
+        };
+        assert!(pkg.compliance_score > 80.0);
+        assert_eq!(pkg.framework_scores.len(), 2);
     }
 }

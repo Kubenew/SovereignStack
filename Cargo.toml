@@ -27,6 +27,7 @@ members = [
     "ss-device",
     "ss-economy",
     "ss-sip",
+    "ss-jurisdiction",
 ]
 
 [workspace.package]

@@ -63,6 +63,16 @@ pub enum UriScheme {
     Mem,
     /// Cluster profile: `profile://zcube-standard-v1`
     Profile,
+    /// AI model: `model://huggingface/Qwen/Qwen2.5-72B`
+    Model,
+    /// Dataset: `dataset://huggingface/c4`
+    Dataset,
+    /// Training run: `training://zcube-a/run-0042`
+    Training,
+    /// Model evaluation: `evaluation://zcube-a/eval-007`
+    Evaluation,
+    /// Audit evidence package: `audit-pkg://node-001/2026-06-03`
+    AuditPkg,
 }
 
 impl UriScheme {
@@ -94,6 +104,11 @@ impl UriScheme {
             Self::Gateway => "gateway",
             Self::Mem => "mem",
             Self::Profile => "profile",
+            Self::Model => "model",
+            Self::Dataset => "dataset",
+            Self::Training => "training",
+            Self::Evaluation => "evaluation",
+            Self::AuditPkg => "audit-pkg",
         }
     }
 }
@@ -128,6 +143,11 @@ impl FromStr for UriScheme {
             "gateway" => Ok(Self::Gateway),
             "mem" => Ok(Self::Mem),
             "profile" => Ok(Self::Profile),
+            "model" => Ok(Self::Model),
+            "dataset" => Ok(Self::Dataset),
+            "training" => Ok(Self::Training),
+            "evaluation" => Ok(Self::Evaluation),
+            "audit-pkg" => Ok(Self::AuditPkg),
             _ => Err(Error::InvalidUri(format!("unknown scheme: {s}"))),
         }
     }
@@ -400,6 +420,11 @@ mod tests {
             "gateway://eu-frankfurt",
             "mem://zcube-a/gpu-003/hbm",
             "profile://zcube-standard-v1",
+            "model://huggingface/Qwen/Qwen2.5-72B",
+            "dataset://huggingface/c4",
+            "training://zcube-a/run-0042",
+            "evaluation://zcube-a/eval-007",
+            "audit-pkg://node-001/2026-06-03",
         ];
 
         for uri_str in uris {
@@ -475,5 +500,45 @@ mod tests {
         let uri = SovereignUri::parse("profile://zcube-standard-v1").unwrap();
         assert_eq!(uri.scheme(), UriScheme::Profile);
         assert_eq!(uri.authority(), "zcube-standard-v1");
+    }
+
+    #[test]
+    fn parse_model_uri() {
+        let uri = SovereignUri::parse("model://huggingface/Qwen/Qwen2.5-72B").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Model);
+        assert_eq!(uri.authority(), "huggingface");
+        assert_eq!(uri.path(), Some("Qwen/Qwen2.5-72B"));
+    }
+
+    #[test]
+    fn parse_dataset_uri() {
+        let uri = SovereignUri::parse("dataset://huggingface/c4").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Dataset);
+        assert_eq!(uri.authority(), "huggingface");
+        assert_eq!(uri.path(), Some("c4"));
+    }
+
+    #[test]
+    fn parse_training_uri() {
+        let uri = SovereignUri::parse("training://zcube-a/run-0042").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Training);
+        assert_eq!(uri.authority(), "zcube-a");
+        assert_eq!(uri.path(), Some("run-0042"));
+    }
+
+    #[test]
+    fn parse_evaluation_uri() {
+        let uri = SovereignUri::parse("evaluation://zcube-a/eval-007").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Evaluation);
+        assert_eq!(uri.authority(), "zcube-a");
+        assert_eq!(uri.path(), Some("eval-007"));
+    }
+
+    #[test]
+    fn parse_audit_pkg_uri() {
+        let uri = SovereignUri::parse("audit-pkg://node-001/2026-06-03").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::AuditPkg);
+        assert_eq!(uri.authority(), "node-001");
+        assert_eq!(uri.path(), Some("2026-06-03"));
     }
 }

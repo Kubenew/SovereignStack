@@ -9,6 +9,9 @@
   <img src="badges/oasa-l2-secure.svg" alt="L2 Secure-Runtime" height="40">
   <img src="badges/oasa-l3-strict.svg" alt="L3 Strict-Sovereign" height="40">
 </p>
+<p align="center">
+  <strong>38 RFCs</strong> (0001–0040) · <strong>30 URI schemes</strong> · <strong>15 protocols</strong>
+</p>
 
 > **The Sovereign Intelligence Network** — A distributed operating system for intelligence.
 
@@ -121,13 +124,14 @@ SovereignStack/
 ├── ss-reputation/    # Reputation scoring (Stub)
 ├── ss-policy/        # Governance & jurisdiction (Stub)
 ├── ss-provenance/    # Computational lineage (Stub)
+├── ss-jurisdiction/  # Jurisdiction compliance engine
 ├── ss-twin/          # Digital twin framework
 ├── ss-device/        # Reality interface layer (Stub)
 ├── ss-economy/       # Resource markets (Stub)
 ├── ss-sip/           # Sovereign Intelligence Protocol (Stub)
 ├── reference-node/   # Minimal reference node binary
 ├── conformance/      # Conformance test suites & profiles
-├── rfcs/             # Protocol specifications (RFC-0001–0010)
+├── rfcs/             # Protocol specifications (RFC-0001–0040)
 ├── docs/
 │   ├── architecture/ # 10-page architecture breakdown
 │   └── architecture/diagrams/ # SVG architecture diagrams
@@ -195,6 +199,7 @@ SovereignStack is governed by a formal standards framework:
 | [RFC-0035](rfcs/RFC-0035-topology-aware-federation.md) | Topology-Aware Federation | Draft |
 | [RFC-0036](rfcs/RFC-0036-memory-fabric-objects.md) | Memory Fabric Objects | Draft |
 | [RFC-0037](rfcs/RFC-0037-ai-cluster-profiles.md) | AI Cluster Profiles | Draft |
+| [RFC-0040](rfcs/RFC-0040-model-lineage-protocol.md) | Model Lineage Protocol | Draft |
 
 ### Compliance & Audit
 
@@ -202,6 +207,7 @@ SovereignStack is governed by a formal standards framework:
 |-------|-------------|
 | [OASA CCM](compliance/oasa-ccm.md) | Core Controls Matrix — NET, RUN, HW, AUD controls for L1/L2/L3 certification |
 | [Compliance Schema](schemas/oasa-compliance.schema.json) | JSON Schema (Draft 2020-12) for automated node validation |
+| [Audit Evidence Schema](schemas/oasa-audit-evidence.schema.json) | JSON Schema for `oasa-audit report` evidence packages |
 | [Validation Script](tools/validate_compliance.py) | Automated compliance scanner with `--audit-host` and `--generate-template` |
 
 ## Quickstart

@@ -26,6 +26,8 @@ This registry tracks the lifecycle status of every protocol in the SovereignStac
 | **TAF** | Topology-Aware Federation Protocol | **Draft** | 0.1 | RFC-0035 | `ss-core/` (types) | Planned |
 | **MFO** | Memory Fabric Objects Protocol | **Draft** | 0.1 | RFC-0036 | `ss-core/` (types) | Planned |
 | **ACP** | AI Cluster Profiles Protocol | **Draft** | 0.1 | RFC-0037 | `ss-core/` (types) | Planned |
+| **MLP** | Model Lineage Protocol | **Draft** | 0.1 | RFC-0040 | `ss-core/` (types) | Planned |
+| **JCE** | Jurisdiction Compliance Engine | **Draft** | 0.1 | RFC-0021 | `ss-jurisdiction/` | Planned |
 
 ## Protocol Lifecycle
 

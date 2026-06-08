@@ -27,6 +27,11 @@ kv://<fabric>/<node-id>/<session>/<head>  # KV cache object (RFC-0034)
 gateway://<location>               # Federation gateway (RFC-0035)
 mem://<fabric>/<node>/<tier>       # Memory pool (RFC-0036)
 profile://<profile-name>           # Cluster profile (RFC-0037)
+model://<registry>/<name>          # AI model identifier (RFC-0040)
+dataset://<registry>/<name>        # Dataset identifier (RFC-0040)
+training://<cluster>/<run-id>      # Training run (RFC-0040)
+evaluation://<cluster>/<eval-id>   # Model evaluation (RFC-0040)
+audit-pkg://<node>/<date>          # Audit evidence package
 ```
 
 ## Resolution Rules
@@ -51,5 +56,10 @@ profile://<profile-name>           # Cluster profile (RFC-0037)
 - `gateway://eu-frankfurt`
 - `mem://zcube-a/gpu-003/hbm`
 - `profile://zcube-standard-v1`
+- `model://huggingface/Qwen/Qwen2.5-72B`
+- `dataset://huggingface/c4`
+- `training://zcube-a/run-0042`
+- `evaluation://zcube-a/eval-007`
+- `audit-pkg://node-001/2026-06-03`
 
 This standard enforces **Principle 4 — Address Everything**.

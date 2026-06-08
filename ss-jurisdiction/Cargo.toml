@@ -1,0 +1,15 @@
+[package]
+name = "ss-jurisdiction"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "SovereignStack Jurisdiction Compliance Engine — data residency enforcement, cross-border transfer blocking, and sovereign policy evaluation"
+
+[dependencies]
+ss-core = { workspace = true }
+ss-policy = { path = "../ss-policy" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+async-trait = { workspace = true }
