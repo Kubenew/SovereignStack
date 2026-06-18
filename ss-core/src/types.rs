@@ -641,6 +641,70 @@ pub struct FrameworkScore {
     pub controls_total: u32,
 }
 
+// ── RFC-0050–0053: AI Continuity & Disaster Recovery ───────────────────────
+
+/// AI continuity manifest (RFC-0052).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ContinuityManifest {
+    pub id: String,
+    pub service: String,
+    pub primary_model: String,
+    pub fallback_models: Vec<String>,
+    pub recovery_playbooks: Vec<String>,
+    pub continuity_score: f64,
+}
+
+/// A failover chain with primary/fallback/emergency models (RFC-0051).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FailoverChain {
+    pub primary: String,
+    pub fallback: String,
+    pub emergency: String,
+    pub policy: FailoverPolicy,
+}
+
+/// Failover policy configuration (RFC-0051).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FailoverPolicy {
+    pub trigger_on: Vec<String>,
+    pub auto_rollback: bool,
+    pub quality_check_after_switch: bool,
+}
+
+/// A failover event log entry (RFC-0051).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FailoverEvent {
+    pub id: String,
+    pub trigger: String,
+    pub from: String,
+    pub to: String,
+    pub decision_time_ms: u64,
+}
+
+/// A named recovery profile with requirements (RFC-0053).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RecoveryProfile {
+    pub name: String,
+    pub compliance_level: String,
+    pub requirements: ProfileRequirements,
+}
+
+/// Requirements for a recovery profile (RFC-0053).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProfileRequirements {
+    pub min_fallback_models: u32,
+    pub max_ai_rto_seconds: u64,
+    pub max_ai_rpo_seconds: u64,
+    pub test_interval_days: u64,
+}
+
+/// AI-CDR compliance score (RFC-0050).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ContinuityScore {
+    pub score: f64,
+    pub factors: std::collections::HashMap<String, f64>,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1208,5 +1272,64 @@ mod tests {
         };
         assert!(pkg.compliance_score > 80.0);
         assert_eq!(pkg.framework_scores.len(), 2);
+    }
+
+    // RFC-0050–0053: AI Continuity & Disaster Recovery
+    #[test]
+    fn continuity_manifest_creation() {
+        let m = ContinuityManifest {
+            id: "continuity://zcube-a/legal-agent/v2".into(),
+            service: "legal-agent".into(),
+            primary_model: "model://qwen3-235b".into(),
+            fallback_models: vec!["model://qwen3-72b".into(), "model://llama4-70b".into()],
+            recovery_playbooks: vec!["playbook://zcube-a/gpu-failure".into()],
+            continuity_score: 92.0,
+        };
+        assert_eq!(m.fallback_models.len(), 2);
+        assert!(m.continuity_score > 80.0);
+    }
+
+    #[test]
+    fn failover_chain_policy() {
+        let chain = FailoverChain {
+            primary: "model://qwen3-235b".into(),
+            fallback: "model://qwen3-72b".into(),
+            emergency: "model://llama4-70b".into(),
+            policy: FailoverPolicy {
+                trigger_on: vec!["timeout".into(), "error_rate > 0.05".into()],
+                auto_rollback: true,
+                quality_check_after_switch: true,
+            },
+        };
+        assert!(chain.policy.auto_rollback);
+        assert_eq!(chain.policy.trigger_on.len(), 2);
+    }
+
+    #[test]
+    fn failover_event_log() {
+        let evt = FailoverEvent {
+            id: "failover://zcube-a/2026-06-03/evt-001".into(),
+            trigger: "model_unavailable".into(),
+            from: "model://qwen3-235b".into(),
+            to: "model://qwen3-72b".into(),
+            decision_time_ms: 120,
+        };
+        assert_eq!(evt.trigger, "model_unavailable");
+    }
+
+    #[test]
+    fn recovery_profile_requirements() {
+        let profile = RecoveryProfile {
+            name: "enterprise".into(),
+            compliance_level: "SECURE_L2".into(),
+            requirements: ProfileRequirements {
+                min_fallback_models: 1,
+                max_ai_rto_seconds: 30,
+                max_ai_rpo_seconds: 1,
+                test_interval_days: 30,
+            },
+        };
+        assert_eq!(profile.name, "enterprise");
+        assert_eq!(profile.requirements.max_ai_rto_seconds, 30);
     }
 }

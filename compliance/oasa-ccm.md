@@ -48,6 +48,17 @@ OASA certification is structured into three cumulative assurance tiers based on 
 | AUD-02 | The node outputs complete, machine-readable audit trails for every API call transaction in a unified structured JSON streaming format. | L1 | Interrogation of the stdout/stderr data streams; checking for presence of mandatory compliance metadata. | SovereignStack Core |
 | AUD-03 | Transaction logs are pushed directly into an immutable local data sync block with modify-protection and a minimum retention cap of 365 days. | L3 | Attempted alteration/deletion of historical indices under root privileges is rejected by the kernel filesystem architecture. | `audit.immutable: true` |
 
+### Section E: AI Continuity & Recovery (CONT)
+
+| ID | Control Description | Level | Verification Method | Reference Component |
+|----|--------------------|-------|--------------------|---------------------|
+| AI-CONT-01 | Documented fallback model strategy exists for all production AI services. All services MUST have a `continuity://` manifest defining primary, fallback, and emergency models. | L2 | Inspection of continuity manifests; verify `fallback_models` array is non-empty. | `rfcs/RFC-0052-ai-continuity-manifest.md` |
+| AI-CONT-02 | Inference continuity testing is performed at regular intervals. Failover events are logged to `failover://` records. | L2 | Review failover test schedule and `failover://` event logs. | `tools/runtime_shield.py` |
+| AI-CONT-03 | Provider dependency inventory is maintained. All model providers and hardware dependencies are declared in each continuity manifest. | L1 | Static validation of `continuity://` manifest `dependencies` field. | `rfcs/RFC-0050-ai-continuity-disaster-recovery.md` |
+| AI-CONT-04 | Model portability validation is performed. All fallback models MUST be deployable and functionally tested. | L2 | Deployment test logs for each model in the failover chain. | `ss-runtime/` |
+| AI-CONT-05 | Recovery Time Objective (AI-RTO) is defined and enforced per recovery profile. | L2 | Comparison of measured failover time against `max_downtime_seconds` in continuity manifest. | `rfcs/RFC-0053-sovereign-recovery-profiles.md` |
+| AI-CONT-06 | Recovery Point Objective (AI-RPO) is defined. Maximum acceptable inference state loss is declared and verified. | L3 | Measurement of state loss during controlled failover test. | `rfcs/RFC-0053-sovereign-recovery-profiles.md` |
+
 ## 3. Audit Execution & Certification Workflow
 
 ```

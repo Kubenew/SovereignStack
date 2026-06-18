@@ -32,6 +32,10 @@ dataset://<registry>/<name>        # Dataset identifier (RFC-0040)
 training://<cluster>/<run-id>      # Training run (RFC-0040)
 evaluation://<cluster>/<eval-id>   # Model evaluation (RFC-0040)
 audit-pkg://<node>/<date>          # Audit evidence package
+continuity://<cluster>/<service>   # AI continuity manifest (RFC-0052)
+recovery://<cluster>/<incident>    # Recovery procedure record (RFC-0050)
+failover://<cluster>/<date>/<evt>  # Failover event log (RFC-0051)
+playbook://<cluster>/<name>        # Recovery playbook (RFC-0050)
 ```
 
 ## Resolution Rules
@@ -61,5 +65,9 @@ audit-pkg://<node>/<date>          # Audit evidence package
 - `training://zcube-a/run-0042`
 - `evaluation://zcube-a/eval-007`
 - `audit-pkg://node-001/2026-06-03`
+- `continuity://zcube-a/legal-agent`
+- `recovery://zcube-a/incident-42`
+- `failover://zcube-a/2026-06-03/evt-001`
+- `playbook://zcube-a/gpu-failure`
 
 This standard enforces **Principle 4 — Address Everything**.

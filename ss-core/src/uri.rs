@@ -73,6 +73,14 @@ pub enum UriScheme {
     Evaluation,
     /// Audit evidence package: `audit-pkg://node-001/2026-06-03`
     AuditPkg,
+    /// AI continuity manifest: `continuity://zcube-a/legal-agent`
+    Continuity,
+    /// Recovery procedure: `recovery://zcube-a/incident-42`
+    Recovery,
+    /// Failover event: `failover://zcube-a/2026-06-03/evt-001`
+    Failover,
+    /// Recovery playbook: `playbook://zcube-a/gpu-failure`
+    Playbook,
 }
 
 impl UriScheme {
@@ -109,6 +117,10 @@ impl UriScheme {
             Self::Training => "training",
             Self::Evaluation => "evaluation",
             Self::AuditPkg => "audit-pkg",
+            Self::Continuity => "continuity",
+            Self::Recovery => "recovery",
+            Self::Failover => "failover",
+            Self::Playbook => "playbook",
         }
     }
 }
@@ -148,6 +160,10 @@ impl FromStr for UriScheme {
             "training" => Ok(Self::Training),
             "evaluation" => Ok(Self::Evaluation),
             "audit-pkg" => Ok(Self::AuditPkg),
+            "continuity" => Ok(Self::Continuity),
+            "recovery" => Ok(Self::Recovery),
+            "failover" => Ok(Self::Failover),
+            "playbook" => Ok(Self::Playbook),
             _ => Err(Error::InvalidUri(format!("unknown scheme: {s}"))),
         }
     }
@@ -425,6 +441,10 @@ mod tests {
             "training://zcube-a/run-0042",
             "evaluation://zcube-a/eval-007",
             "audit-pkg://node-001/2026-06-03",
+            "continuity://zcube-a/legal-agent",
+            "recovery://zcube-a/incident-42",
+            "failover://zcube-a/2026-06-03/evt-001",
+            "playbook://zcube-a/gpu-failure",
         ];
 
         for uri_str in uris {
@@ -540,5 +560,37 @@ mod tests {
         assert_eq!(uri.scheme(), UriScheme::AuditPkg);
         assert_eq!(uri.authority(), "node-001");
         assert_eq!(uri.path(), Some("2026-06-03"));
+    }
+
+    #[test]
+    fn parse_continuity_uri() {
+        let uri = SovereignUri::parse("continuity://zcube-a/legal-agent").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Continuity);
+        assert_eq!(uri.authority(), "zcube-a");
+        assert_eq!(uri.path(), Some("legal-agent"));
+    }
+
+    #[test]
+    fn parse_recovery_uri() {
+        let uri = SovereignUri::parse("recovery://zcube-a/incident-42").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Recovery);
+        assert_eq!(uri.authority(), "zcube-a");
+        assert_eq!(uri.path(), Some("incident-42"));
+    }
+
+    #[test]
+    fn parse_failover_uri() {
+        let uri = SovereignUri::parse("failover://zcube-a/2026-06-03/evt-001").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Failover);
+        assert_eq!(uri.authority(), "zcube-a");
+        assert_eq!(uri.path(), Some("2026-06-03/evt-001"));
+    }
+
+    #[test]
+    fn parse_playbook_uri() {
+        let uri = SovereignUri::parse("playbook://zcube-a/gpu-failure").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Playbook);
+        assert_eq!(uri.authority(), "zcube-a");
+        assert_eq!(uri.path(), Some("gpu-failure"));
     }
 }

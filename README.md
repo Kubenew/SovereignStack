@@ -10,7 +10,7 @@
   <img src="badges/oasa-l3-strict.svg" alt="L3 Strict-Sovereign" height="40">
 </p>
 <p align="center">
-  <strong>38 RFCs</strong> (0001–0040) · <strong>30 URI schemes</strong> · <strong>15 protocols</strong>
+  <strong>42 RFCs</strong> (0001–0053) · <strong>34 URI schemes</strong> · <strong>18 protocols</strong>
 </p>
 
 > **The Sovereign Intelligence Network** — A distributed operating system for intelligence.
@@ -59,6 +59,15 @@ kv://zcube-a/gpu-003/session-a  # KV cache object (RFC-0034)
 gateway://eu-frankfurt          # Federation gateway (RFC-0035)
 mem://zcube-a/gpu-003/hbm       # Memory pool (RFC-0036)
 profile://zcube-standard-v1     # Cluster profile (RFC-0037)
+model://huggingface/Qwen/Qwen2.5-72B  # AI model (RFC-0040)
+dataset://huggingface/c4        # Dataset (RFC-0040)
+training://zcube-a/run-0042     # Training run (RFC-0040)
+evaluation://zcube-a/eval-007   # Model evaluation (RFC-0040)
+audit-pkg://node-001/2026-06-03 # Audit evidence package
+continuity://zcube-a/legal-agent # AI continuity manifest (RFC-0052)
+recovery://zcube-a/incident-42  # Recovery procedure (RFC-0050)
+failover://zcube-a/evt-001      # Failover event log (RFC-0051)
+playbook://zcube-a/gpu-failure  # Recovery playbook (RFC-0050)
 ```
 
 ## Architecture
@@ -200,15 +209,11 @@ SovereignStack is governed by a formal standards framework:
 | [RFC-0036](rfcs/RFC-0036-memory-fabric-objects.md) | Memory Fabric Objects | Draft |
 | [RFC-0037](rfcs/RFC-0037-ai-cluster-profiles.md) | AI Cluster Profiles | Draft |
 | [RFC-0040](rfcs/RFC-0040-model-lineage-protocol.md) | Model Lineage Protocol | Draft |
+| [RFC-0050](rfcs/RFC-0050-ai-continuity-disaster-recovery.md) | AI Continuity & Disaster Recovery | Draft |
+| [RFC-0051](rfcs/RFC-0051-model-failover-protocol.md) | Model Failover Protocol | Draft |
+| [RFC-0052](rfcs/RFC-0052-ai-continuity-manifest.md) | AI Continuity Manifest | Draft |
+| [RFC-0053](rfcs/RFC-0053-sovereign-recovery-profiles.md) | Sovereign Recovery Profiles | Draft |
 
-### Compliance & Audit
-
-| Asset | Description |
-|-------|-------------|
-| [OASA CCM](compliance/oasa-ccm.md) | Core Controls Matrix — NET, RUN, HW, AUD controls for L1/L2/L3 certification |
-| [Compliance Schema](schemas/oasa-compliance.schema.json) | JSON Schema (Draft 2020-12) for automated node validation |
-| [Audit Evidence Schema](schemas/oasa-audit-evidence.schema.json) | JSON Schema for `oasa-audit report` evidence packages |
-| [Validation Script](tools/validate_compliance.py) | Automated compliance scanner with `--audit-host` and `--generate-template` |
 
 ## Quickstart
 
@@ -239,7 +244,7 @@ SovereignStack provides a complete audit and certification framework for enterpr
 
 | Asset | Description |
 |-------|-------------|
-| [OASA CCM](compliance/oasa-ccm.md) | Core Controls Matrix — 12 controls across NET/RUN/HW/AUD for L1/L2/L3 |
+| [OASA CCM](compliance/oasa-ccm.md) | Core Controls Matrix — 18 controls across NET/RUN/HW/AUD/CONT for L1/L2/L3 |
 | [SOC 2 Mapping](compliance/soc2-mapping.md) | Full mapping to AICPA TSC 2023 — all 5 trust categories |
 | [Gaia-X Mapping](compliance/gaia-x-mapping.md) | Mapping to Gaia-X Trust Framework + Self-Description generation |
 | [SOC 2 Type 1 Report Template](compliance/soc2-type1-report-template.json) | Pre-built evidence package template for auditor review |

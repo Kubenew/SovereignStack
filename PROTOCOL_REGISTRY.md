@@ -28,6 +28,9 @@ This registry tracks the lifecycle status of every protocol in the SovereignStac
 | **ACP** | AI Cluster Profiles Protocol | **Draft** | 0.1 | RFC-0037 | `ss-core/` (types) | Planned |
 | **MLP** | Model Lineage Protocol | **Draft** | 0.1 | RFC-0040 | `ss-core/` (types) | Planned |
 | **JCE** | Jurisdiction Compliance Engine | **Draft** | 0.1 | RFC-0021 | `ss-jurisdiction/` | Planned |
+| **AI-CDR** | AI Continuity & Disaster Recovery | **Draft** | 0.1 | RFC-0050 | `ss-core/` (types) | Planned |
+| **MFP** | Model Failover Protocol | **Draft** | 0.1 | RFC-0051 | `ss-core/` (types) | Planned |
+| **SRP** | Sovereign Recovery Profiles | **Draft** | 0.1 | RFC-0053 | `ss-core/` (types) | Planned |
 
 ## Protocol Lifecycle
 
@@ -78,3 +81,7 @@ Draft → Experimental → Beta → Stable → Deprecated → Historic
 | 2026-06-03 | TAF registered as Draft (RFC-0035 Topology-Aware Federation) |
 | 2026-06-03 | MFO registered as Draft (RFC-0036 Memory Fabric Objects) |
 | 2026-06-03 | ACP registered as Draft (RFC-0037 AI Cluster Profiles) |
+| 2026-06-03 | MLP registered as Draft (RFC-0040 Model Lineage Protocol) |
+| 2026-06-03 | AI-CDR registered as Draft (RFC-0050 AI Continuity & Disaster Recovery) |
+| 2026-06-03 | MFP registered as Draft (RFC-0051 Model Failover Protocol) |
+| 2026-06-03 | SRP registered as Draft (RFC-0053 Sovereign Recovery Profiles) |
