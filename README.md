@@ -12,7 +12,7 @@
 <p align="center">
   ## Community & Events
 
-- CFP submitted to Open Source Summit Europe 2026
+  - CFP submitted to Open Source Summit Europe 2026
   - Building Open Standards for Sovereign AI Systems:
     Provenance, Governance, and Interoperability
   <strong>42 RFCs</strong> (0001–0053) · <strong>34 URI schemes</strong> · <strong>18 protocols</strong>
