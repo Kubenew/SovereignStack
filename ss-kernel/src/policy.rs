@@ -76,11 +76,21 @@ impl PolicyEngine for PolicyEngineImpl {
         self.policies.remove(&uri.to_string());
     }
 
-    fn evaluate(&self, action: &str, _resource: &SovereignUri, _context: &PolicyContext) -> PolicyDecision {
+    fn evaluate(&self, action: &str, resource: &SovereignUri, context: &PolicyContext) -> PolicyDecision {
         for entry in self.policies.iter() {
             let policy = entry.value();
+            // Skip policies that don't match the caller's jurisdiction
+            if let Some(ref policy_jurisdiction) = policy.jurisdiction {
+                if let Some(ref caller_jurisdiction) = context.jurisdiction {
+                    if policy_jurisdiction != caller_jurisdiction {
+                        continue;
+                    }
+                }
+            }
             for rule in &policy.rules {
-                if rule.action == action {
+                if rule.action == action
+                    && (rule.resource == "*" || rule.resource == resource.to_string())
+                {
                     return PolicyDecision {
                         allowed: matches!(rule.effect, RuleEffect::Allow),
                         policy: policy.uri.clone(),
@@ -91,10 +101,10 @@ impl PolicyEngine for PolicyEngineImpl {
             }
         }
         PolicyDecision {
-            allowed: true,
+            allowed: false,
             policy: SovereignUri::new(ss_core::UriScheme::Policy, "default"),
             rule: None,
-            reason: "no matching policy, default allow".into(),
+            reason: "no matching policy, default deny".into(),
         }
     }
 

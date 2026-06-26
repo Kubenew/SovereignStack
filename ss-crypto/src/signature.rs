@@ -30,16 +30,26 @@ impl Signature {
 
     /// Verify this signature against the given payload.
     pub fn verify(&self, payload: &[u8]) -> bool {
-        let sig_bytes = match hex::decode(&self.bytes) {
-            Ok(b) => b,
-            Err(_) => return false,
+        let sig = match self.decode_signature() {
+            Some(s) => s,
+            None => return false,
         };
-        let sig_array: [u8; 64] = match sig_bytes.try_into() {
-            Ok(a) => a,
-            Err(_) => return false,
+        self.signer.verifying_key().verify(payload, &sig).is_ok()
+    }
+
+    /// Verify this signature against the given payload using an external public key.
+    pub fn verify_with_key(&self, public_key: &PublicKey, payload: &[u8]) -> bool {
+        let sig = match self.decode_signature() {
+            Some(s) => s,
+            None => return false,
         };
-        let signature = ed25519_dalek::Signature::from_bytes(&sig_array);
-        self.signer.verifying_key().verify(payload, &signature).is_ok()
+        public_key.verifying_key().verify(payload, &sig).is_ok()
+    }
+
+    fn decode_signature(&self) -> Option<ed25519_dalek::Signature> {
+        let sig_bytes = hex::decode(&self.bytes).ok()?;
+        let sig_array: [u8; 64] = sig_bytes.try_into().ok()?;
+        Some(ed25519_dalek::Signature::from_bytes(&sig_array))
     }
 
     /// Returns the signer's public key.
@@ -79,15 +89,13 @@ mod tests {
     }
 
     #[test]
-    fn verify_wrong_key_fails() {
+    fn verify_with_external_key() {
         let kp1 = KeyPair::generate();
         let kp2 = KeyPair::generate();
         let sig = Signature::sign(&kp1, b"payload");
-        // The signature was made with kp1, it should not verify with kp2's public key
-        // But our Signature struct stores the signer, so verify() uses the embedded key.
-        // This test verifies data integrity instead.
-        assert!(sig.verify(b"payload"));
-        assert!(!sig.verify(b"wrong"));
+        assert!(sig.verify_with_key(&kp1.public_key(), b"payload"));
+        assert!(!sig.verify_with_key(&kp2.public_key(), b"payload"));
+        assert!(!sig.verify_with_key(&kp1.public_key(), b"tampered"));
     }
 
     #[test]

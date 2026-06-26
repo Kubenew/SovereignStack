@@ -82,13 +82,15 @@ impl IdentityService for IdentityServiceImpl {
             return Err(IdentityError::InvalidSignature);
         }
 
-        use ed25519_dalek::{Verifier, PublicKey, Signature};
+        use ed25519_dalek::{Verifier, VerifyingKey, Signature as DalekSignature};
 
         let pk_bytes = hex::decode(&doc.public_key).map_err(|_| IdentityError::InvalidSignature)?;
-        let pk = PublicKey::from_bytes(&pk_bytes).map_err(|_| IdentityError::InvalidSignature)?;
+        let pk_array: [u8; 32] = pk_bytes.try_into().map_err(|_| IdentityError::InvalidSignature)?;
+        let pk = VerifyingKey::from_bytes(&pk_array).map_err(|_| IdentityError::InvalidSignature)?;
 
         let sig_bytes = hex::decode(&doc.signature).map_err(|_| IdentityError::InvalidSignature)?;
-        let sig = Signature::from_bytes(&sig_bytes).map_err(|_| IdentityError::InvalidSignature)?;
+        let sig_array: [u8; 64] = sig_bytes.try_into().map_err(|_| IdentityError::InvalidSignature)?;
+        let sig = DalekSignature::from_bytes(&sig_array);
 
         // Simple canonical serialization for verification
         let payload = format!("{}|{}", doc.uri, doc.created_at.unix_secs());

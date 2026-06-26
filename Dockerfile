@@ -30,7 +30,7 @@ RUN mkdir -p /app/data /app/data/ingest /app/data/memory /app/data/audit && \
 
 USER sovereign
 
-EXPOSE 8080 8081 8082 8083
+EXPOSE 8080 8081 8082
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')" || exit 1

@@ -7,15 +7,19 @@
 
 ```
 agent://<uuid-or-did>
+org://<org-name>                   # Organization
 session://<session-id>
 memory://<memory-id>
 knowledge://<knowledge-id>
 reason://<reason-trace-id>
 artifact://<artifact-id>
+contract://<task-id>                # Agent contract
+event://<event-id>                  # Event record
 workflow://<workflow-id>
 capability://<capability-id>
 policy://<policy-id>
 node://<node-id>
+robot://<device-id>                 # Physical device (RFC-0011)
 leaf://<fabric>/<leaf-id>          # Fabric leaf switch (RFC-0030)
 spine://<fabric>/<spine-id>        # Fabric spine switch (RFC-0030)
 rail://<fabric>/<rail-id>          # Fabric rail (RFC-0030)
@@ -48,6 +52,10 @@ playbook://<cluster>/<name>        # Recovery playbook (RFC-0050)
 ## Examples
 
 - `agent://a1b2c3d4-e5f6-...`
+- `org://acme`
+- `contract://task-88`
+- `event://evt-99`
+- `robot://drone-12`
 - `knowledge://sha256:abc123...`
 - `capability://delegated:read:memory://xyz`
 - `leaf://zcube-a/leaf03`

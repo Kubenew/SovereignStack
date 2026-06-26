@@ -57,10 +57,17 @@ impl UriResolver for UriResolverImpl {
     }
 
     fn cache_get(&self, uri: &SovereignUri) -> Option<ResolutionResult> {
-        self.cache.get(&uri.to_string()).map(|entry| {
-            let (result, _ts) = entry.value();
-            result.clone()
-        })
+        let key = uri.to_string();
+        if let Some(entry) = self.cache.get(&key) {
+            let (result, expires) = entry.value();
+            if Timestamp::now() > *expires {
+                drop(entry);
+                self.cache.remove(&key);
+                return None;
+            }
+            return Some(result.clone());
+        }
+        None
     }
 
     fn cache_put(&self, uri: &SovereignUri, result: ResolutionResult, ttl_secs: u64) {

@@ -88,7 +88,25 @@ impl ObjectRegistry for ObjectRegistryImpl {
     }
 
     fn delete(&self, uri: &SovereignUri) -> bool {
-        self.by_uri.remove(&uri.to_string()).is_some()
+        let uri_str = uri.to_string();
+        if let Some((_, old)) = self.by_uri.remove(&uri_str) {
+            if let Some(mut types) = self.by_type.get_mut(&old.object_type) {
+                types.retain(|u| u != &uri_str);
+            }
+            if let Some(ref owner) = old.owner {
+                if let Some(mut owners) = self.by_owner.get_mut(&owner.to_string()) {
+                    owners.retain(|u| u != &uri_str);
+                }
+            }
+            for tag in &old.tags {
+                if let Some(mut tags) = self.by_tag.get_mut(tag) {
+                    tags.retain(|u| u != &uri_str);
+                }
+            }
+            true
+        } else {
+            false
+        }
     }
 
     fn find_by_type(&self, object_type: &str) -> Vec<ObjectEntry> {

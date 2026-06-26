@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 import logging
+import threading
 
 logger = logging.getLogger(__name__)
 
@@ -164,6 +165,7 @@ class MerkleTree:
 
 # Global singleton
 _merkle_tree: MerkleTree | None = None
+_merkle_lock = threading.Lock()
 
 
 def get_merkle_tree() -> MerkleTree:
@@ -174,8 +176,9 @@ def get_merkle_tree() -> MerkleTree:
 
 
 def append_event(event: dict) -> str:
-    tree = get_merkle_tree()
-    return tree.append(event)
+    with _merkle_lock:
+        tree = get_merkle_tree()
+        return tree.append(event)
 
 
 def get_current_root() -> str | None:

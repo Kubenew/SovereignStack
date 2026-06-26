@@ -3,7 +3,6 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 import os
-import requests
 import httpx
 import uuid
 import json
@@ -27,15 +26,24 @@ logger = logging.getLogger("gateway")
 load_dotenv()
 
 import asyncio
+import aiofiles
 
 async def rate_limit_cleaner():
     while True:
-        await asyncio.sleep(600)  # Clean every 10 minutes
+        await asyncio.sleep(600)
         now = time.time()
         async with rate_limit_lock:
             expired_ips = [ip for ip, ts_list in request_counts.items() if not ts_list or now - ts_list[-1] >= RATE_LIMIT_WINDOW]
             for ip in expired_ips:
                 request_counts.pop(ip, None)
+
+_shared_client: httpx.AsyncClient | None = None
+
+async def get_http_client() -> httpx.AsyncClient:
+    global _shared_client
+    if _shared_client is None:
+        _shared_client = httpx.AsyncClient(timeout=30.0)
+    return _shared_client
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,6 +51,10 @@ async def lifespan(app: FastAPI):
     cleaner_task = asyncio.create_task(rate_limit_cleaner())
     yield
     cleaner_task.cancel()
+    global _shared_client
+    if _shared_client:
+        await _shared_client.aclose()
+        _shared_client = None
     spiffe_ctx.close()
 
 app = FastAPI(title="OASA Gateway Service", version="2026.1", lifespan=lifespan)
@@ -59,8 +71,14 @@ AUDIT_PATH = os.path.join(DATA_DIR, "audit.log")
 OIDC_ISSUER_URL = os.getenv("OIDC_ISSUER_URL", "http://keycloak:8083/realms/sovereign")
 OIDC_CLIENT_ID = os.getenv("OIDC_CLIENT_ID", "sovereign-gateway")
 
-jwks_client = PyJWKClient(f"{OIDC_ISSUER_URL}/protocol/openid-connect/certs", cache_keys=True)
+_jwks_client: PyJWKClient | None = None
 _jwks_cache_time = 0.0
+
+def _get_jwks_client() -> PyJWKClient:
+    global _jwks_client
+    if _jwks_client is None:
+        _jwks_client = PyJWKClient(f"{OIDC_ISSUER_URL}/protocol/openid-connect/certs", cache_keys=True)
+    return _jwks_client
 
 # Rate limiting
 RATE_LIMIT_REQUESTS = int(os.getenv("RATE_LIMIT_REQUESTS", "60"))
@@ -88,11 +106,11 @@ async def check_rate_limit(client_ip: str) -> bool:
         request_counts[client_ip].append(now)
         return True
 
-def audit(event: dict):
+async def audit(event: dict):
     event["ts"] = datetime.now(timezone.utc).isoformat()
     os.makedirs(os.path.dirname(AUDIT_PATH), exist_ok=True)
-    with open(AUDIT_PATH, "a", encoding="utf-8") as f:
-        f.write(json.dumps(event) + "\n")
+    async with aiofiles.open(AUDIT_PATH, "a", encoding="utf-8") as f:
+        await f.write(json.dumps(event) + "\n")
     append_event(event)
 
 def run_opa_policy_check(prompt: str) -> tuple[bool, str]:
@@ -108,7 +126,7 @@ def validate_oidc_jwt(authorization: str | None) -> tuple[bool, dict]:
     token = authorization.split(" ")[1]
     for retry in range(2):
         try:
-            signing_key = jwks_client.get_signing_key_from_jwt(token)
+            signing_key = _get_jwks_client().get_signing_key_from_jwt(token)
             claims = jwt.decode(
                 token,
                 signing_key.key,
@@ -136,14 +154,14 @@ def validate_oidc_jwt(authorization: str | None) -> tuple[bool, dict]:
             
     return False, {}
 
-def handle_auth(authorization: str | None, request_id: str, trace_id: str) -> JSONResponse | None:
+async def handle_auth(authorization: str | None, request_id: str, trace_id: str) -> JSONResponse | None:
     is_authenticated, claims = validate_oidc_jwt(authorization)
     if not is_authenticated:
-        audit({"type": "auth_failure", "id": request_id, "reason": "Missing or invalid OIDC bearer token", "trace_id": trace_id})
+        await audit({"type": "auth_failure", "id": request_id, "reason": "Missing or invalid OIDC bearer token", "trace_id": trace_id})
         return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content={"error": {"message": "Unauthorized. A valid Keycloak/OIDC Bearer token is required.", "type": "invalid_auth_error", "code": "401"}})
     roles = claims.get("roles", [])
     if "inference:write" not in roles:
-        audit({"type": "rbac_failure", "id": request_id, "reason": f"Required role inference:write missing in user roles: {roles}", "trace_id": trace_id})
+        await audit({"type": "rbac_failure", "id": request_id, "reason": f"Required role inference:write missing in user roles: {roles}", "trace_id": trace_id})
         return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"error": {"message": "Forbidden. User does not possess required inference write permissions.", "type": "rbac_permission_error", "code": "403"}})
     return None
 
@@ -154,32 +172,31 @@ async def fetch_rag_context(user_prompt: str) -> str:
             auth_h = spiffe_ctx.get_auth_header("memory")
             if auth_h:
                 headers.update(auth_h)
-        async with httpx.AsyncClient() as client:
-            r = await client.post(f"{MEMORY_URL}/query", json={"query": user_prompt}, headers=headers, timeout=5)
-            if r.status_code == 200:
-                return r.json().get("context", "")
+        client = await get_http_client()
+        r = await client.post(f"{MEMORY_URL}/query", json={"query": user_prompt}, headers=headers)
+        if r.status_code == 200:
+            return r.json().get("context", "")
     except Exception:
         pass
     return ""
 
 async def execute_inference(payload: ChatCompletionRequest, messages: list, user_prompt: str, context: str) -> tuple[bool, str]:
     compute_url = MODEL_ROUTES.get(payload.model, COMPUTE_URL)
+    client = await get_http_client()
     if BACKEND == "vllm":
         vllm_payload = {"model": payload.model, "messages": messages, "temperature": payload.temperature or 0.2, "max_tokens": payload.max_tokens or 1024, "stream": False}
         try:
-            async with httpx.AsyncClient() as client:
-                r = await client.post(f"{compute_url}/v1/chat/completions", json=vllm_payload, timeout=30)
-                if r.status_code == 200:
-                    return False, r.json()["choices"][0]["message"]["content"]
+            r = await client.post(f"{compute_url}/v1/chat/completions", json=vllm_payload)
+            if r.status_code == 200:
+                return False, r.json()["choices"][0]["message"]["content"]
         except Exception:
             pass
         return True, ""
     else:
         try:
-            async with httpx.AsyncClient() as client:
-                r = await client.post(f"{compute_url}/completion", json={"model": payload.model, "prompt": user_prompt, "context": context}, timeout=10)
-                if r.status_code == 200:
-                    return False, r.json().get("response", "")
+            r = await client.post(f"{compute_url}/completion", json={"model": payload.model, "prompt": user_prompt, "context": context})
+            if r.status_code == 200:
+                return False, r.json().get("response", "")
         except Exception:
             pass
         return True, ""
@@ -200,7 +217,7 @@ async def chat(payload: ChatCompletionRequest, request: Request, authorization: 
     span_id = request.headers.get("x-span-id", str(uuid.uuid4()).replace("-", "")[:16])
 
     if auth_enforced == "STRICT":
-        auth_error = handle_auth(authorization, request_id, trace_id)
+        auth_error = await handle_auth(authorization, request_id, trace_id)
         if auth_error:
             return auth_error
 
@@ -208,7 +225,7 @@ async def chat(payload: ChatCompletionRequest, request: Request, authorization: 
         policy_passed, policy_error = run_opa_policy_check(user_prompt)
         if not policy_passed:
             logger.warning("Policy violation blocked request", extra={"trace_id": trace_id, "reason": policy_error})
-            audit({"type": "policy_violation", "id": request_id, "reason": policy_error, "trace_id": trace_id})
+            await audit({"type": "policy_violation", "id": request_id, "reason": policy_error, "trace_id": trace_id})
             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"error": {"message": policy_error, "type": "policy_governance_block", "code": "403"}})
 
     logger.info("Processing chat completion request", extra={"trace_id": trace_id, "model": payload.model, "use_rag": payload.use_rag})
@@ -222,10 +239,10 @@ async def chat(payload: ChatCompletionRequest, request: Request, authorization: 
         audit_payload["trace_id"] = trace_id
         audit_payload["span_id"] = span_id
         
-    audit(audit_payload)
+    await audit(audit_payload)
 
     if compliance_mode == "STRICT" and not payload.oasa_compliance_lock:
-        audit({"type": "compliance_violation", "id": request_id, "reason": "Missing or false oasa_compliance_lock in STRICT mode", "trace_id": trace_id})
+        await audit({"type": "compliance_violation", "id": request_id, "reason": "Missing or false oasa_compliance_lock in STRICT mode", "trace_id": trace_id})
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"error": {"message": "OASA compliance lock is required and must be set to true in STRICT compliance mode.", "type": "invalid_request_error", "code": "400"}})
 
     context = await fetch_rag_context(user_prompt) if payload.use_rag else ""
@@ -239,11 +256,11 @@ async def chat(payload: ChatCompletionRequest, request: Request, authorization: 
     if compute_failed:
         logger.error("Inference execution failed", extra={"trace_id": trace_id, "model": payload.model})
         if payload.oasa_compliance_lock:
-            audit({"type": "oasa_lock_enforced", "id": request_id, "reason": "Local compute backend failure. Prevented cloud fallback.", "blocked_fallback": "api.openai.com", "trace_id": trace_id})
+            await audit({"type": "oasa_lock_enforced", "id": request_id, "reason": "Local compute backend failure. Prevented cloud fallback.", "blocked_fallback": "api.openai.com", "trace_id": trace_id})
             return JSONResponse(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content={"error": {"message": "Local AI engine failed. OASA-Lock prevented external fallback.", "type": "oasa_lock_enforcement", "code": "503"}})
         else:
             logger.warning("Fell back to external cloud API", extra={"trace_id": trace_id, "destination": "api.openai.com"})
-            audit({"type": "exfiltration_warning", "id": request_id, "reason": "Local compute failure. Falling back to external cloud API.", "destination": "api.openai.com", "trace_id": trace_id})
+            await audit({"type": "exfiltration_warning", "id": request_id, "reason": "Local compute failure. Falling back to external cloud API.", "destination": "api.openai.com", "trace_id": trace_id})
             answer = f"[FALLBACK - api.openai.com] Simulated cloud fallback response for prompt: {user_prompt}"
 
     truncated_answer = answer[:1000] + "... [TRUNCATED]" if len(answer) > 1000 else answer
@@ -253,7 +270,7 @@ async def chat(payload: ChatCompletionRequest, request: Request, authorization: 
         res_audit["trace_id"] = trace_id
         res_audit["span_id"] = span_id
         
-    audit(res_audit)
+    await audit(res_audit)
 
     return JSONResponse(status_code=status.HTTP_200_OK, content={"id": request_id, "object": "chat.completion", "model": payload.model, "choices": [{"index": 0, "message": {"role": "assistant", "content": answer}}]})
 
@@ -285,9 +302,10 @@ def audit_events(limit: int = 10, offset: int = 0):
     return {"events": events, "total": tree.size, "offset": offset, "limit": limit}
 
 @app.get("/.well-known/openid-configuration")
-def oidc_config():
+async def oidc_config():
     try:
-        r = requests.get(f"{OIDC_ISSUER_URL}/.well-known/openid-configuration", timeout=5)
+        client = await get_http_client()
+        r = await client.get(f"{OIDC_ISSUER_URL}/.well-known/openid-configuration")
         return JSONResponse(content=r.json())
     except Exception:
         return JSONResponse(content={"issuer": OIDC_ISSUER_URL})

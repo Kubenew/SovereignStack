@@ -54,10 +54,16 @@ impl EventBus for EventBusImpl {
             .subscribe()
     }
 
-    fn replay(&self, event_type: &str, _from: Timestamp) -> Vec<Event> {
+    fn replay(&self, event_type: &str, from: Timestamp) -> Vec<Event> {
         self.history
             .get(event_type)
-            .map(|e| e.value().clone())
+            .map(|e| {
+                e.value()
+                    .iter()
+                    .filter(|ev| ev.timestamp >= from)
+                    .cloned()
+                    .collect()
+            })
             .unwrap_or_default()
     }
 }

@@ -10,13 +10,37 @@
   <img src="badges/oasa-l3-strict.svg" alt="L3 Strict-Sovereign" height="40">
 </p>
 <p align="center">
-  ## Community & Events
-
-  - CFP submitted to Open Source Summit Europe 2026
-  - Building Open Standards for Sovereign AI Systems:
-    Provenance, Governance, and Interoperability
-  <strong>42 RFCs</strong> (0001–0053) · <strong>34 URI schemes</strong> · <strong>18 protocols</strong>
+  <strong>44 RFCs</strong> (0001–0055) · <strong>34 URI schemes</strong> · <strong>18 protocols</strong>
 </p>
+
+<p align="center">
+  <a href="/README.md">🇬🇧 English</a> ·
+  <a href="docs/i18n/de/README.md">🇩🇪 Deutsch</a> ·
+  <a href="docs/i18n/fr/README.md">🇫🇷 Français</a> ·
+  <a href="docs/i18n/es/README.md">🇪🇸 Español</a> ·
+  <a href="docs/i18n/it/README.md">🇮🇹 Italiano</a> ·
+  <a href="docs/i18n/nl/README.md">🇳🇱 Nederlands</a> ·
+  <a href="docs/i18n/pl/README.md">🇵🇱 Polski</a> ·
+  <a href="docs/i18n/cs/README.md">🇨🇿 Čeština</a> ·
+  <a href="docs/i18n/sv/README.md">🇸🇪 Svenska</a>
+</p>
+<p align="center">
+  <a href="docs/i18n/ja/README.md">🇯🇵 日本語</a> ·
+  <a href="docs/i18n/zh-CN/README.md">🇨🇳 中文</a> ·
+  <a href="docs/i18n/ko/README.md">🇰🇷 한국어</a> ·
+  <a href="docs/i18n/hi/README.md">🇮🇳 हिन्दी</a> ·
+  <a href="docs/i18n/tr/README.md">🇹🇷 Türkçe</a> ·
+  <a href="docs/i18n/ar/README.md">🇦🇪 العربية</a> ·
+  <a href="docs/i18n/pt-BR/README.md">🇵🇹 Português</a> ·
+  <a href="docs/i18n/ru/README.md">🇷🇺 Русский</a> ·
+  <a href="docs/i18n/uk/README.md">🇺🇦 Українська</a>
+</p>
+
+## Community & Events
+
+- CFP submitted to Open Source Summit Europe 2026
+- Building Open Standards for Sovereign AI Systems:
+  Provenance, Governance, and Interoperability
 
 > **The Sovereign Intelligence Network** — A distributed operating system for intelligence.
 
@@ -167,10 +191,15 @@ SovereignStack is governed by a formal standards framework:
 | [SECURITY.md](SECURITY.md) | Threat model & incident response |
 | [CONFORMANCE.md](CONFORMANCE.md) | 3-tier certification program & badges |
 | [CERTIFICATION.md](CERTIFICATION.md) | Badge levels, colors, shapes, materials |
-| [PROTOCOL_REGISTRY.md](PROTOCOL_REGISTRY.md) | 7 protocols with lifecycle management |
+| [PROTOCOL_REGISTRY.md](PROTOCOL_REGISTRY.md) | 18 protocols with lifecycle management |
 | [REFERENCE_IMPLEMENTATIONS.md](REFERENCE_IMPLEMENTATIONS.md) | 13 core subsystems + 3 language bindings |
 | [ROADMAP-2035.md](ROADMAP-2035.md) | 10-year vision through Sovereign Intelligence Internet |
 | [BUILD_WINDOWS.md](BUILD_WINDOWS.md) | Windows build guide — exe, MSI, Python bundling |
+| [docs/i18n/README.md](docs/i18n/README.md) | Internationalization — 18 languages with full i18n policy |
+
+### Internationalization
+
+SovereignStack is translated into 18 languages. The project follows the Debian model: **English is canonical**, translations are maintained copies. See the [i18n index](docs/i18n/README.md) for available languages and the translation policy.
 
 ### RFCs
 
@@ -218,6 +247,8 @@ SovereignStack is governed by a formal standards framework:
 | [RFC-0051](rfcs/RFC-0051-model-failover-protocol.md) | Model Failover Protocol | Draft |
 | [RFC-0052](rfcs/RFC-0052-ai-continuity-manifest.md) | AI Continuity Manifest | Draft |
 | [RFC-0053](rfcs/RFC-0053-sovereign-recovery-profiles.md) | Sovereign Recovery Profiles | Draft |
+| [RFC-0054](rfcs/RFC-0054-compliance-framework.md) | Compliance Framework (OASA CCM) | Draft |
+| [RFC-0055](rfcs/RFC-0055-windows-build-system.md) | Windows Build System | Draft |
 
 
 ## Quickstart

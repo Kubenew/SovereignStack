@@ -76,15 +76,42 @@ def temp_files(tmp_path):
         "oasa_version": "2026.1",
         "enforce_zero_exfiltration": True,
         "oasa_compliance_lock": True,
-        "compliance_level": "STRICT",
+        "compliance_level": "STRICT_L3",
         "air_gapped": True,
+        "network": {
+            "allow_wan": False,
+            "allowed_egress_cidrs": ["10.0.0.0/8"],
+            "dns_mode": "LOCAL_ONLY"
+        },
         "encryption": {
             "algorithm": "AES-256-GCM",
             "key_management": "TPM_2.0",
             "key_rotation_days": 90
         },
+        "hardware_security": {
+            "tpm_required": True,
+            "tpm_version": "2.0",
+            "secure_boot": True
+        },
         "compute": {
-            "vram_budget_gb": 24
+            "vram_budget_gb": 24,
+            "quantization_formats": ["INT4", "FP16"],
+            "accelerator_backends": ["NVIDIA_CUDA"]
+        },
+        "ingestion": {
+            "allow_disk_cache": False,
+            "supported_formats": ["PDF", "TIFF"]
+        },
+        "audit": {
+            "enabled": True,
+            "log_format": "JSON",
+            "immutable": True,
+            "retention_days": 90
+        },
+        "api": {
+            "openai_compatible": True,
+            "base_url": "http://localhost:8080",
+            "endpoints": ["/v1/chat/completions"]
         }
     }
     with open(compliance_json, "w", encoding="utf-8") as f:

@@ -42,6 +42,44 @@ impl CapabilityEnforcerImpl {
             use_counts: Arc::new(dashmap::DashMap::new()),
         }
     }
+
+    fn find_and_check(&self, caller: &SovereignUri, permission: &str, target: &SovereignUri, consume: bool) -> bool {
+        for entry in self.capabilities.iter() {
+            let cap = entry.value();
+            if cap.granted_to == *caller
+                && cap.permissions.contains(&permission.to_string())
+                && cap.target == *target
+            {
+                if self.revoked.contains(&cap.uri.to_string()) {
+                    return false;
+                }
+                if let Some(expires) = cap.conditions.expires_at {
+                    if Timestamp::now() > expires {
+                        return false;
+                    }
+                }
+                if let Some(max) = cap.conditions.max_uses {
+                    if consume {
+                        let mut count = self
+                            .use_counts
+                            .entry(cap.uri.to_string())
+                            .or_insert(0);
+                        if *count >= max {
+                            return false;
+                        }
+                        *count += 1;
+                    } else {
+                        let count = self.use_counts.get(&cap.uri.to_string()).map(|c| *c).unwrap_or(0);
+                        if count >= max {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        }
+        false
+    }
 }
 
 impl CapabilityEnforcer for CapabilityEnforcerImpl {
@@ -55,61 +93,11 @@ impl CapabilityEnforcer for CapabilityEnforcerImpl {
     }
 
     fn check(&self, caller: &SovereignUri, permission: &str, target: &SovereignUri) -> bool {
-        for entry in self.capabilities.iter() {
-            let cap = entry.value();
-            if cap.granted_to == *caller
-                && cap.permissions.contains(&permission.to_string())
-                && cap.target == *target
-            {
-                if self.revoked.contains(&cap.uri.to_string()) {
-                    return false;
-                }
-                if let Some(expires) = cap.conditions.expires_at {
-                    if Timestamp::now() > expires {
-                        return false;
-                    }
-                }
-                if let Some(max) = cap.conditions.max_uses {
-                    let count = self.use_counts.get(&cap.uri.to_string()).map(|c| *c).unwrap_or(0);
-                    if count >= max {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
-        false
+        self.find_and_check(caller, permission, target, false)
     }
 
     fn consume(&self, caller: &SovereignUri, permission: &str, target: &SovereignUri) -> bool {
-        for entry in self.capabilities.iter() {
-            let cap = entry.value();
-            if cap.granted_to == *caller
-                && cap.permissions.contains(&permission.to_string())
-                && cap.target == *target
-            {
-                if self.revoked.contains(&cap.uri.to_string()) {
-                    return false;
-                }
-                if let Some(expires) = cap.conditions.expires_at {
-                    if Timestamp::now() > expires {
-                        return false;
-                    }
-                }
-                if let Some(max) = cap.conditions.max_uses {
-                    let mut count = self
-                        .use_counts
-                        .entry(cap.uri.to_string())
-                        .or_insert(0);
-                    if *count >= max {
-                        return false;
-                    }
-                    *count += 1;
-                }
-                return true;
-            }
-        }
-        false
+        self.find_and_check(caller, permission, target, true)
     }
 
     fn list_for(&self, identity: &SovereignUri) -> Vec<Capability> {
