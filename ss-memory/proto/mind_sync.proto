@@ -1,0 +1,19 @@
+syntax = "proto3";
+package mind_sync;
+
+service MindSyncService {
+  rpc StreamCognitiveDeltas (stream CognitiveDeltaRequest) returns (stream CognitiveDeltaResponse);
+}
+
+message CognitiveDeltaRequest {
+  bytes parent_state_hash = 1;
+  string context_uri = 2;
+  repeated float attention_weights_delta = 3;
+  int64 timestamp_ns = 4;
+}
+
+message CognitiveDeltaResponse {
+  bytes new_state_hash = 1;
+  bool synchronization_acknowledged = 2;
+  string error_message = 3;
+}
