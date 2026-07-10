@@ -81,6 +81,12 @@ pub enum UriScheme {
     Failover,
     /// Recovery playbook: `playbook://zcube-a/gpu-failure`
     Playbook,
+    /// Agent state checkpoint: `checkpoint://cluster-a/agent-42/state-7`
+    Checkpoint,
+    /// Memory snapshot: `snapshot://zcube-a/gpu-003/snap-001`
+    Snapshot,
+    /// Agent migration: `migration://zcube-a/gpu-003/agent-42`
+    Migration,
 }
 
 impl UriScheme {
@@ -121,6 +127,9 @@ impl UriScheme {
             Self::Recovery => "recovery",
             Self::Failover => "failover",
             Self::Playbook => "playbook",
+            Self::Checkpoint => "checkpoint",
+            Self::Snapshot => "snapshot",
+            Self::Migration => "migration",
         }
     }
 }
@@ -164,6 +173,9 @@ impl FromStr for UriScheme {
             "recovery" => Ok(Self::Recovery),
             "failover" => Ok(Self::Failover),
             "playbook" => Ok(Self::Playbook),
+            "checkpoint" => Ok(Self::Checkpoint),
+            "snapshot" => Ok(Self::Snapshot),
+            "migration" => Ok(Self::Migration),
             _ => Err(Error::InvalidUri(format!("unknown scheme: {s}"))),
         }
     }
@@ -592,5 +604,29 @@ mod tests {
         assert_eq!(uri.scheme(), UriScheme::Playbook);
         assert_eq!(uri.authority(), "zcube-a");
         assert_eq!(uri.path(), Some("gpu-failure"));
+    }
+
+    #[test]
+    fn parse_checkpoint_uri() {
+        let uri = SovereignUri::parse("checkpoint://cluster-a/agent-42/state-7").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Checkpoint);
+        assert_eq!(uri.authority(), "cluster-a");
+        assert_eq!(uri.path(), Some("agent-42/state-7"));
+    }
+
+    #[test]
+    fn parse_snapshot_uri() {
+        let uri = SovereignUri::parse("snapshot://zcube-a/gpu-003/snap-001").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Snapshot);
+        assert_eq!(uri.authority(), "zcube-a");
+        assert_eq!(uri.path(), Some("gpu-003/snap-001"));
+    }
+
+    #[test]
+    fn parse_migration_uri() {
+        let uri = SovereignUri::parse("migration://zcube-a/gpu-003/agent-42").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Migration);
+        assert_eq!(uri.authority(), "zcube-a");
+        assert_eq!(uri.path(), Some("gpu-003/agent-42"));
     }
 }

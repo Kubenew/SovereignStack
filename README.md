@@ -10,7 +10,7 @@
   <img src="badges/oasa-l3-strict.svg" alt="L3 Strict-Sovereign" height="40">
 </p>
 <p align="center">
-  <strong>44 RFCs</strong> (0001–0055) · <strong>34 URI schemes</strong> · <strong>18 protocols</strong>
+  <strong>44 RFCs</strong> (0001–0055) · <strong>37 URI schemes</strong> · <strong>18 protocols</strong>
 </p>
 
 <p align="center">
@@ -97,6 +97,9 @@ continuity://zcube-a/legal-agent # AI continuity manifest (RFC-0052)
 recovery://zcube-a/incident-42  # Recovery procedure (RFC-0050)
 failover://zcube-a/evt-001      # Failover event log (RFC-0051)
 playbook://zcube-a/gpu-failure  # Recovery playbook (RFC-0050)
+checkpoint://cluster-a/agent-42  # Agent state checkpoint (RFC-0052)
+snapshot://zcube-a/gpu-003/snap  # Memory snapshot (RFC-0036)
+migration://zcube-a/gpu-003/ag   # Agent migration (RFC-0051)
 ```
 
 ## Architecture

@@ -1,0 +1,41 @@
+# SovereignStack Node Configuration — Production Profile (AGI-Ready)
+node:
+  id: "node://eu-frankfurt-01"
+  uai: "agent://cluster-operator-frankfurt"
+  jurisdiction: "eu-de"
+  trust_level: "L3-Strict-Sovereign"
+
+network:
+  listen_address: "0.0.0.0:8443"
+  spiffe_workload_api: "unix:///run/spiffe/agent.sock"
+  federation:
+    enabled: true
+    relay_endpoints:
+      - "https://sovereign-network.eu"
+      - "https://sovereign-network.us"
+    sync_interval_ms: 100
+    crdt_engine: "delta-state-merkle"
+
+gateway:
+  openai_compatible: true
+  dlp_enabled: true
+  strict_compliance_locking: true
+  allowed_frameworks:
+    - "iso42001"
+    - "eu-ai-act"
+    - "soc2"
+
+fabric:
+  memory:
+    tiered_storage:
+      session_cache: "kv://localhost:6379"
+      long_term: "mem://zcube-a/gpu-003/hbm"
+      civilizational: "knowledge://global-mesh"
+  scheduler:
+    predictive_scaling: true
+    load_smoothing_factor: 0.15
+
+audit:
+  merkle_log_path: "/var/log/sovereignstack/audit.log"
+  append_only: true
+  auto_stream_remote: true

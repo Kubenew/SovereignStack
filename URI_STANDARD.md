@@ -40,6 +40,9 @@ continuity://<cluster>/<service>   # AI continuity manifest (RFC-0052)
 recovery://<cluster>/<incident>    # Recovery procedure record (RFC-0050)
 failover://<cluster>/<date>/<evt>  # Failover event log (RFC-0051)
 playbook://<cluster>/<name>        # Recovery playbook (RFC-0050)
+checkpoint://<cluster>/<agent>/<state>  # Agent state checkpoint (RFC-0052)
+snapshot://<cluster>/<node>/<id>   # Memory snapshot (RFC-0036)
+migration://<cluster>/<node>/<agent>    # Agent migration (RFC-0051)
 ```
 
 ## Resolution Rules
@@ -77,5 +80,8 @@ playbook://<cluster>/<name>        # Recovery playbook (RFC-0050)
 - `recovery://zcube-a/incident-42`
 - `failover://zcube-a/2026-06-03/evt-001`
 - `playbook://zcube-a/gpu-failure`
+- `checkpoint://cluster-a/agent-42/state-7`
+- `snapshot://zcube-a/gpu-003/snap-001`
+- `migration://zcube-a/gpu-003/agent-42`
 
 This standard enforces **Principle 4 — Address Everything**.
