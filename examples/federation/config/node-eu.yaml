@@ -1,0 +1,12 @@
+node:
+  id: "node://eu-frankfurt-01"
+  uai: "agent://cluster-operator-frankfurt"
+  jurisdiction: "eu-de"
+  trust_level: "L3-Strict-Sovereign"
+network:
+  listen_address: "0.0.0.0:8443"
+  federation:
+    enabled: true
+    relay_endpoints:
+      - "http://federation-relay:9090"
+    sync_interval_ms: 100

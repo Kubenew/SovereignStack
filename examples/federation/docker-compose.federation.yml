@@ -1,0 +1,113 @@
+# Multi-node federation example: 3 nodes across jurisdictions
+# Usage: docker compose -f examples/federation/docker-compose.federation.yml up -d
+version: "3.9"
+
+services:
+  # ============================================================
+  # Node 1: EU-Frankfurt (primary, GDPR jurisdiction)
+  # ============================================================
+  node-eu-frankfurt:
+    image: kubenew/sovereignstack-kernel:v0.3.0
+    container_name: ss-node-eu
+    hostname: node-eu-frankfurt
+    ports:
+      - "8081:8443"
+    volumes:
+      - ./config/node-eu.yaml:/etc/sovereignstack/node.yaml:ro
+      - ss-data-eu:/var/log/sovereignstack
+    environment:
+      SS_NODE_ID: "node://eu-frankfurt-01"
+      SS_JURISDICTION: "eu-de"
+      SS_TRUST_LEVEL: "L3-Strict-Sovereign"
+    networks:
+      sovereign-mesh:
+        aliases:
+          - eu-frankfurt
+
+  # ============================================================
+  # Node 2: US-Silicon Valley (secondary, CCPA jurisdiction)
+  # ============================================================
+  node-us-silicon:
+    image: kubenew/sovereignstack-kernel:v0.3.0
+    container_name: ss-node-us
+    hostname: node-us-silicon
+    ports:
+      - "8082:8443"
+    volumes:
+      - ./config/node-us.yaml:/etc/sovereignstack/node.yaml:ro
+      - ss-data-us:/var/log/sovereignstack
+    environment:
+      SS_NODE_ID: "node://us-silicon-01"
+      SS_JURISDICTION: "us-ca"
+      SS_TRUST_LEVEL: "L2-Secure-Runtime"
+    networks:
+      sovereign-mesh:
+        aliases:
+          - us-silicon
+
+  # ============================================================
+  # Node 3: Asia-Tokyo (edge, low-latency inference)
+  # ============================================================
+  node-asia-tokyo:
+    image: kubenew/sovereignstack-kernel:v0.3.0
+    container_name: ss-node-tokyo
+    hostname: node-asia-tokyo
+    ports:
+      - "8083:8443"
+    volumes:
+      - ./config/node-tokyo.yaml:/etc/sovereignstack/node.yaml:ro
+      - ss-data-tokyo:/var/log/sovereignstack
+    environment:
+      SS_NODE_ID: "node://asia-tokyo-01"
+      SS_JURISDICTION: "jp"
+      SS_TRUST_LEVEL: "L1-Sovereign-Ready"
+    networks:
+      sovereign-mesh:
+        aliases:
+          - asia-tokyo
+
+  # ============================================================
+  # Federation relay (CRDT sync hub)
+  # ============================================================
+  federation-relay:
+    image: kubenew/sovereignstack-relay:v0.3.0
+    container_name: ss-federation-relay
+    hostname: federation-relay
+    ports:
+      - "9090:9090"
+    environment:
+      SS_RELAY_PEERS: "node://eu-frankfurt-01,node://us-silicon-01,node://asia-tokyo-01"
+      SS_SYNC_INTERVAL_MS: "100"
+      SS_CRDT_ENGINE: "delta-state-merkle"
+    networks:
+      sovereign-mesh:
+        aliases:
+          - federation-relay
+
+  # ============================================================
+  # Merkle audit aggregator
+  # ============================================================
+  audit-aggregator:
+    image: kubenew/sovereignstack-audit:v0.3.0
+    container_name: ss-audit
+    hostname: audit-aggregator
+    ports:
+      - "9091:9091"
+    volumes:
+      - ss-audit:/var/log/sovereignstack
+    environment:
+      SS_AUDIT_PEERS: "node://eu-frankfurt-01,node://us-silicon-01,node://asia-tokyo-01"
+    networks:
+      sovereign-mesh:
+        aliases:
+          - audit-aggregator
+
+volumes:
+  ss-data-eu:
+  ss-data-us:
+  ss-data-tokyo:
+  ss-audit:
+
+networks:
+  sovereign-mesh:
+    driver: bridge

@@ -56,6 +56,29 @@ SovereignStack is a protocol stack and runtime that treats intelligence itself a
 2030s → Sovereign Intelligence Networks (SovereignStack)
 ```
 
+## Quick Start (5 minutes)
+
+```bash
+# 1. Clone and launch the playground
+git clone https://github.com/Kubenew/SovereignStack.git
+cd SovereignStack
+docker compose up -d
+
+# 2. Verify the nodes are talking
+curl http://localhost:8080/health
+
+# 3. Run a conformance check
+python tools/sovereign_stack.py validate sovereign-stack.yaml
+
+# 4. Start an agent session
+python scripts/swarm_orchestrator_dashboard.py
+
+# 5. Check the Merkle audit trail
+tail -f /var/log/sovereignstack/audit.log
+```
+
+See [playground/](playground/) for Docker Compose setup and [SCALING-AGI.md](SCALING-AGI.md) for production deployment.
+
 ## Design Principles
 
 Every SovereignStack object is:
@@ -195,8 +218,11 @@ SovereignStack is governed by a formal standards framework:
 | [CONFORMANCE.md](CONFORMANCE.md) | 3-tier certification program & badges |
 | [CERTIFICATION.md](CERTIFICATION.md) | Badge levels, colors, shapes, materials |
 | [PROTOCOL_REGISTRY.md](PROTOCOL_REGISTRY.md) | 18 protocols with lifecycle management |
+| [examples/federation/](examples/federation/) | Multi-node federation example (3 jurisdictions) |
 | [REFERENCE_IMPLEMENTATIONS.md](REFERENCE_IMPLEMENTATIONS.md) | 13 core subsystems + 3 language bindings |
 | [ROADMAP-2035.md](ROADMAP-2035.md) | 10-year vision through Sovereign Intelligence Internet |
+| [SIRA.md](SIRA.md) | Sovereign Intelligence Reference Architecture (4-quadrant object model) |
+| [SCALING-AGI.md](SCALING-AGI.md) | Production scaling guide for frontier & AGI-ready deployments |
 | [BUILD_WINDOWS.md](BUILD_WINDOWS.md) | Windows build guide — exe, MSI, Python bundling |
 | [docs/i18n/README.md](docs/i18n/README.md) | Internationalization — 18 languages with full i18n policy |
 

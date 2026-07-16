@@ -1,0 +1,12 @@
+node:
+  id: "node://us-silicon-01"
+  uai: "agent://cluster-operator-silicon"
+  jurisdiction: "us-ca"
+  trust_level: "L2-Secure-Runtime"
+network:
+  listen_address: "0.0.0.0:8443"
+  federation:
+    enabled: true
+    relay_endpoints:
+      - "http://federation-relay:9090"
+    sync_interval_ms: 100

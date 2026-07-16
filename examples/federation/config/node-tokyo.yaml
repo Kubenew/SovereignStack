@@ -1,0 +1,12 @@
+node:
+  id: "node://asia-tokyo-01"
+  uai: "agent://cluster-operator-tokyo"
+  jurisdiction: "jp"
+  trust_level: "L1-Sovereign-Ready"
+network:
+  listen_address: "0.0.0.0:8443"
+  federation:
+    enabled: true
+    relay_endpoints:
+      - "http://federation-relay:9090"
+    sync_interval_ms: 100

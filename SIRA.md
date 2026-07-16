@@ -1,11 +1,18 @@
 # Sovereign Intelligence Reference Architecture (SIRA)
 
 **Version:** 1.0  
-**Status:** Draft  
+**Status:** Living Document  
 **Maintained by:** OASA Technical Steering Committee  
-**Last Updated:** July 2026
+**Last Updated:** July 2026  
+**See also:** [SCALING-AGI.md](SCALING-AGI.md) (production deployment), [RFC-0060](rfcs/RFC-0060-cognitive-mesh-architecture.md) (mesh implementation)
 
 ---
+
+## Revision History
+
+| Date | Version | Change |
+|------|---------|--------|
+| 2026-07 | 1.0 | Initial release — four-quadrant object model, protocol stack, Cognitive Bus, 3-tier deployment |
 
 ## 1. Purpose
 

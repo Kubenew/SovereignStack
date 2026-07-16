@@ -1,7 +1,9 @@
 # SCALING-AGI.md — Scaling SovereignStack for Frontier & AGI-Ready Deployments
 
 **Version:** 0.1  
-**Date:** July 2026
+**Status:** Living Document  
+**Date:** July 2026  
+**See also:** [SIRA.md](SIRA.md) (reference architecture), [deploy/azure-local/](deploy/azure-local/) (production profile)
 
 ## Overview
 
