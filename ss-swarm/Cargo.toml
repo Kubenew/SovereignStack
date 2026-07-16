@@ -5,3 +5,9 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+ss-core = { workspace = true }
+libp2p = { version = "0.54", features = ["kad", "mdns", "identify", "request-response", "tokio"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+rand = { workspace = true }

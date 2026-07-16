@@ -1,0 +1,85 @@
+syntax = "proto3";
+package sovereignstack.session_router;
+
+import "mind_sync.proto";
+
+service SessionRouterService {
+  /// Routes a session to the optimal node based on cognitive delta state and routing score.
+  rpc RouteSession (SessionRouteRequest) returns (SessionRouteResponse);
+
+  /// Returns the routing table fragment for a given cognitive context.
+  rpc GetRoutingTable (RoutingTableQuery) returns (RoutingTableFragment);
+}
+
+message SessionRouteRequest {
+  /// The session URI being routed (e.g. "session://abc-123").
+  string session_uri = 1;
+
+  /// The target capability URI (e.g. "capability://legal-review").
+  string target_capability_uri = 2;
+
+  /// Current cognitive delta state from the mind_sync fabric.
+  /// Mirrors CognitiveDeltaRequest.parent_state_hash for continuity checks.
+  bytes session_state_hash = 3;
+
+  /// Attention weight deltas carried from the reasoning chain.
+  /// Mirrors CognitiveDeltaRequest.attention_weights_delta for cache locality scoring.
+  repeated float attention_weights_delta = 4;
+
+  /// Node-level memory pressure from the kv:// fabric.
+  /// Mirrors the kv_cache_load field in DiscoveryBehavior AgentCapability.
+  map<string, double> node_cache_load = 5;
+
+  /// Routing constraints encoded as key-value pairs.
+  map<string, string> constraints = 6;
+}
+
+message SessionRouteResponse {
+  /// The resolved node URI (e.g. "node://eu-frankfurt-01").
+  string resolved_node = 1;
+
+  /// Routing score [0.0, 1.0].
+  double routing_score = 2;
+
+  /// New state hash after this routing decision.
+  /// Links back to CognitiveDeltaResponse.new_state_hash.
+  bytes new_state_hash = 3;
+
+  /// Whether the target kv cache has a hot hit for the attention deltas.
+  bool kv_cache_hit = 4;
+
+  /// Human-readable routing explanation.
+  string explanation = 5;
+}
+
+message RoutingTableQuery {
+  /// Cognitive context URI to scope the table fragment.
+  string context_uri = 1;
+
+  /// Maximum number of entries to return.
+  int32 max_entries = 2;
+}
+
+message RoutingTableEntry {
+  /// Target capability pattern (e.g. "capability://legal-review").
+  string capability_pattern = 1;
+
+  /// Resolved node URI.
+  string node_uri = 2;
+
+  /// Cognitive-magnet score [0.0, 1.0].
+  double magnet_score = 3;
+
+  /// Estimated latency in milliseconds.
+  int64 estimated_latency_ms = 4;
+
+  /// Current kv cache load at the node.
+  double cache_load = 5;
+}
+
+message RoutingTableFragment {
+  repeated RoutingTableEntry entries = 1;
+
+  /// Context hash this fragment is valid for.
+  bytes context_hash = 2;
+}
