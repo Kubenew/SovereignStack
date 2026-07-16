@@ -23,8 +23,14 @@ pub enum UriScheme {
     Artifact,
     /// Memory object: `memory://xyz789`
     Memory,
-    /// Reasoning chain: `reason://decision-42`
+    /// Root persistent cognitive state: `mind://enterprise`
+    Mind,
+    /// Verifiable reasoning graph node: `reason://decision-42`
     Reason,
+    /// Active objective: `goal://revenue-q3`
+    Goal,
+    /// Held proposition: `belief://market-growth`
+    Belief,
     /// Knowledge object: `knowledge://physics/newton`
     Knowledge,
     /// Skill/capability: `capability://legal-review`
@@ -41,6 +47,20 @@ pub enum UriScheme {
     Node,
     /// Event record: `event://evt-99`
     Event,
+    /// Execution state snapshot: `checkpoint://session-abc/step-42`
+    Checkpoint,
+    /// Verifiable audit evidence: `evidence://audit-report-2026-q2`
+    Evidence,
+    /// Cognitive routing entry: `routing://mesh/verifier`
+    Routing,
+    /// GPU/CPU allocation: `compute://zcube-a/alloc-001`
+    Compute,
+    /// Network capacity: `bandwidth://zcube-a/stream-042`
+    Bandwidth,
+    /// Persistent storage: `storage://zcube-a/pool-7`
+    Storage,
+    /// Power consumption budget: `energy://zcube-a/budget-q3`
+    Energy,
     /// Fabric leaf switch: `leaf://fabric-a/leaf03`
     Leaf,
     /// Fabric spine switch: `spine://fabric-a/spine01`
@@ -98,7 +118,10 @@ impl UriScheme {
             Self::Session => "session",
             Self::Artifact => "artifact",
             Self::Memory => "memory",
+            Self::Mind => "mind",
             Self::Reason => "reason",
+            Self::Goal => "goal",
+            Self::Belief => "belief",
             Self::Knowledge => "knowledge",
             Self::Capability => "capability",
             Self::Workflow => "workflow",
@@ -107,6 +130,13 @@ impl UriScheme {
             Self::Policy => "policy",
             Self::Node => "node",
             Self::Event => "event",
+            Self::Checkpoint => "checkpoint",
+            Self::Evidence => "evidence",
+            Self::Routing => "routing",
+            Self::Compute => "compute",
+            Self::Bandwidth => "bandwidth",
+            Self::Storage => "storage",
+            Self::Energy => "energy",
             Self::Leaf => "leaf",
             Self::Spine => "spine",
             Self::Rail => "rail",
@@ -144,7 +174,10 @@ impl FromStr for UriScheme {
             "session" => Ok(Self::Session),
             "artifact" => Ok(Self::Artifact),
             "memory" => Ok(Self::Memory),
+            "mind" => Ok(Self::Mind),
             "reason" => Ok(Self::Reason),
+            "goal" => Ok(Self::Goal),
+            "belief" => Ok(Self::Belief),
             "knowledge" => Ok(Self::Knowledge),
             "capability" => Ok(Self::Capability),
             "workflow" => Ok(Self::Workflow),
@@ -153,6 +186,13 @@ impl FromStr for UriScheme {
             "policy" => Ok(Self::Policy),
             "node" => Ok(Self::Node),
             "event" => Ok(Self::Event),
+            "checkpoint" => Ok(Self::Checkpoint),
+            "evidence" => Ok(Self::Evidence),
+            "routing" => Ok(Self::Routing),
+            "compute" => Ok(Self::Compute),
+            "bandwidth" => Ok(Self::Bandwidth),
+            "storage" => Ok(Self::Storage),
+            "energy" => Ok(Self::Energy),
             "leaf" => Ok(Self::Leaf),
             "spine" => Ok(Self::Spine),
             "rail" => Ok(Self::Rail),
@@ -437,6 +477,13 @@ mod tests {
             "policy://gdpr-eu",
             "node://homelab-1",
             "event://evt-99",
+            "checkpoint://session-abc/step-42",
+            "evidence://audit-report-2026-q2",
+            "routing://mesh/verifier",
+            "compute://zcube-a/alloc-001",
+            "bandwidth://zcube-a/stream-042",
+            "storage://zcube-a/pool-7",
+            "energy://zcube-a/budget-q3",
             "leaf://fabric-a/leaf03",
             "spine://fabric-a/spine01",
             "rail://fabric-a/rail7",

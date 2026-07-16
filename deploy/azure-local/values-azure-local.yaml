@@ -1,0 +1,28 @@
+# SovereignStack values for Azure Local (AKS on Azure Arc)
+
+identity:
+  provider: "entra-id"
+  entra_id:
+    tenant_id: "${AZURE_TENANT_ID}"
+    client_id: "${AZURE_CLIENT_ID}"
+    map_groups_to_capabilities: true
+
+storage:
+  backend: "azure-blob"
+  azure_blob:
+    container_name: "sovereign-stack-data"
+    storage_account: "${AZURE_STORAGE_ACCOUNT}"
+
+telemetry:
+  enabled: true
+  provider: "azure-monitor"
+  azure_monitor:
+    workspace_id: "${LOG_ANALYTICS_WORKSPACE_ID}"
+
+scheduler:
+  # Enable AFS Protocol cognitive scheduling over default K8s scheduler
+  enable_cognitive_scheduler: true
+  gpu_topology_awareness: true
+
+memory:
+  vector_store: "pgvector" # Assumes Azure Arc enabled PostgreSQL

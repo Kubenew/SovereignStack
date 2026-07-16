@@ -31,6 +31,17 @@ This registry tracks the lifecycle status of every protocol in the SovereignStac
 | **AI-CDR** | AI Continuity & Disaster Recovery | **Draft** | 0.1 | RFC-0050 | `ss-core/` (types) | Planned |
 | **MFP** | Model Failover Protocol | **Draft** | 0.1 | RFC-0051 | `ss-core/` (types) | Planned |
 | **SRP** | Sovereign Recovery Profiles | **Draft** | 0.1 | RFC-0053 | `ss-core/` (types) | Planned |
+| | | | | | | |
+| | **— Cognitive Mesh Family (SIRA) —** | | | | | |
+| **CRP** | Cognitive Router Protocol | **Draft** | 0.1 | RFC-0061 | `ss-routing/` | Planned |
+| **SXP** | Session Exchange Protocol | **Draft** | 0.1 | RFC-0062 | `ss-sessiond/` | Planned |
+| **DMP** | Distributed Memory Protocol | **Draft** | 0.1 | RFC-0063 | `ss-memory/` | Planned |
+| **AFS** | AI Fabric Scheduling Protocol | **Draft** | 0.1 | RFC-0064 | `ss-scheduler/` | Planned |
+| **CDP** | Capability Delegation Protocol | **Draft** | 0.1 | RFC-0065 | `ss-capability/` | Planned |
+| **CEB** | Cognitive Event Bus Protocol | **Draft** | 0.1 | RFC-0066 | `ss-eventbus/` | Planned |
+| **CKP** | Checkpoint & Recovery Protocol | **Draft** | 0.1 | RFC-0067 | `ss-sessiond/` | Planned |
+| **MAC** | Multi-Agent Consensus Protocol | **Draft** | 0.1 | RFC-0068 | `ss-swarm/` | Planned |
+| **SMR** | Semantic Routing Protocol | **Draft** | 0.1 | RFC-0069 | `ss-routing/` | Planned |
 
 ## Protocol Lifecycle
 
@@ -85,3 +96,4 @@ Draft → Experimental → Beta → Stable → Deprecated → Historic
 | 2026-06-03 | AI-CDR registered as Draft (RFC-0050 AI Continuity & Disaster Recovery) |
 | 2026-06-03 | MFP registered as Draft (RFC-0051 Model Failover Protocol) |
 | 2026-06-03 | SRP registered as Draft (RFC-0053 Sovereign Recovery Profiles) |
+| 2026-07-16 | Cognitive Mesh family registered: CRP, SXP, DMP, AFS, CDP, CEB, CKP, MAC, SMR (SIRA v1.0) |
