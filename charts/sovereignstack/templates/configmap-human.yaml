@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: human-priority-override
+  labels:
+    app.kubernetes.io/name: sovereignstack
+    app.kubernetes.io/component: policy
+data:
+  overrides.json: |
+    {
+      "veto": [],
+      "priority_routes": {
+        "agent-finance": "HIGH",
+        "agent-kyc": "LOW"
+      },
+      "operator_sessions": [
+        "operator://alice",
+        "operator://bob"
+      ]
+    }

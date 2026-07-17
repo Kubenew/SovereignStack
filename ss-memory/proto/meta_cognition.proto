@@ -1,0 +1,47 @@
+syntax = "proto3";
+package meta_cognition;
+
+service MetaCognitionService {
+  rpc StreamSelfModel (stream SelfModelDelta) returns (stream SelfModelResponse);
+  rpc LogReflection (ReflectionEntry) returns (ReflectionAck);
+  rpc TrackImprovement (ImprovementRecord) returns (ImprovementAck);
+}
+
+message SelfModelDelta {
+  string agent_id = 1;
+  repeated float weights = 2;
+  map<string, double> confidence_scores = 3;
+  int64 timestamp_ns = 4;
+}
+
+message SelfModelResponse {
+  bytes new_model_hash = 1;
+  bool acknowledged = 2;
+}
+
+message ReflectionEntry {
+  string agent_id = 1;
+  string insight_id = 2;
+  string trigger_uri = 3;
+  string summary = 4;
+  repeated string related_uris = 5;
+  int64 timestamp_ns = 6;
+}
+
+message ReflectionAck {
+  string stored_reflection_uri = 1;
+}
+
+message ImprovementRecord {
+  string agent_id = 1;
+  string improvement_id = 2;
+  string reflection_id = 3;
+  string patch_description = 4;
+  string before_uri = 5;
+  string after_uri = 6;
+  bool validated = 7;
+}
+
+message ImprovementAck {
+  string stored_improvement_uri = 1;
+}

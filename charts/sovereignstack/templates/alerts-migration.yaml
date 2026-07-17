@@ -1,0 +1,32 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: sovereignstack-alignment-circuit-breaker
+  namespace: {{ .Release.Namespace | default "sovereignstack" }}
+  labels:
+    role: alert-rules
+    app.kubernetes.io/part-of: sovereignstack
+spec:
+  groups:
+    - name: sovereignstack-alignment.rules
+      rules:
+        - alert: CognitiveAlignmentBreachSpike
+          expr: sum by (node_id, agent_uri, values_uri) (rate(sovereignstack_policy_zk_failures_total[1m])) * 60 > 2
+          for: 30s
+          labels:
+            severity: critical
+            mitigation_strategy: "autonomous-quarantine"
+          annotations:
+            summary: "Critical Alignment Drift: High-rate ZK validation failures caught on node {{ $labels.node_id }}."
+            description: "Agent {{ $labels.agent_uri }} failed ethics compliance verification for {{ $labels.values_uri }} more than twice within the last minute loop window."
+            runbook_url: "https://github.com"
+
+        - alert: AutonomousLeaseExpirationImminent
+          expr: sovereignstack_swarm_agent_lease_remaining_seconds < 300
+          for: 1m
+          labels:
+            severity: warning
+            mitigation_strategy: "trigger-migration-hook"
+          annotations:
+            summary: "Time Lease Expiring: Agent {{ $labels.agent_uri }} approaching shutdown deadline."
+            description: "Less than 5 minutes remain on the cryptographic lease window. Preparing proactive migration:// topology shifting to prevent state loss."

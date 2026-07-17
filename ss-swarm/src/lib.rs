@@ -6,6 +6,7 @@
 //! Sovereign Cognitive Router (RFC-0061).
 
 pub mod network;
+pub mod negotiation;
 pub mod router {
     use std::collections::HashMap;
     use ss_core::uri::SovereignUri;

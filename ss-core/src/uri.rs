@@ -101,12 +101,54 @@ pub enum UriScheme {
     Failover,
     /// Recovery playbook: `playbook://zcube-a/gpu-failure`
     Playbook,
-    /// Agent state checkpoint: `checkpoint://cluster-a/agent-42/state-7`
-    Checkpoint,
     /// Memory snapshot: `snapshot://zcube-a/gpu-003/snap-001`
     Snapshot,
     /// Agent migration: `migration://zcube-a/gpu-003/agent-42`
     Migration,
+    /// Meta-cognition: `meta://agent/self-model`
+    Meta,
+    /// Safety guard: `safeguard://veto-node-01`
+    Safeguard,
+    /// Values charter: `values://org/ethics-charter`
+    Values,
+    /// Protocol version: `protocol://ss-kernel/v2`
+    Protocol,
+    /// Human operator: `operator://alice`
+    Operator,
+    /// Cognitive sandbox: `sandbox://isolated-zone-9`
+    Sandbox,
+    /// Cognitive replay: `replay://session/123`
+    Replay,
+    /// Evolution lineage: `lineage://agent/improvement-log`
+    Lineage,
+    /// Cognitive lease: `lease://agent/finance`
+    Lease,
+    /// Self-model: `self://agent/metacognition`
+    Self_,
+    /// Reflection log: `reflection://agent/insight-42`
+    Reflection,
+    /// Improvement record: `improvement://agent/patch-v3`
+    Improvement,
+    /// Explanation trace: `explanation://reason/step-7`
+    Explanation,
+    /// Summary artifact: `summary://session/digest`
+    Summary,
+    /// Timeline index: `timeline://agent/history`
+    Timeline,
+    /// Governance decision: `governance://org/proposal-88`
+    Governance,
+    /// Digital twin: `twin://agent/candidate`
+    Twin,
+    /// Unified identity: `identity://human/alice`
+    Identity,
+    /// Federation mesh: `mesh://eu-fabric`
+    Mesh,
+    /// World model: `world://sim/environment`
+    World,
+    /// Execution plan: `plan://agent/strategy-7`
+    Plan,
+    /// Tool binding: `tool://agent/calculator`
+    Tool,
 }
 
 impl UriScheme {
@@ -157,9 +199,30 @@ impl UriScheme {
             Self::Recovery => "recovery",
             Self::Failover => "failover",
             Self::Playbook => "playbook",
-            Self::Checkpoint => "checkpoint",
             Self::Snapshot => "snapshot",
             Self::Migration => "migration",
+            Self::Meta => "meta",
+            Self::Safeguard => "safeguard",
+            Self::Values => "values",
+            Self::Protocol => "protocol",
+            Self::Operator => "operator",
+            Self::Sandbox => "sandbox",
+            Self::Replay => "replay",
+            Self::Lineage => "lineage",
+            Self::Lease => "lease",
+            Self::Self_ => "self",
+            Self::Reflection => "reflection",
+            Self::Improvement => "improvement",
+            Self::Explanation => "explanation",
+            Self::Summary => "summary",
+            Self::Timeline => "timeline",
+            Self::Governance => "governance",
+            Self::Twin => "twin",
+            Self::Identity => "identity",
+            Self::Mesh => "mesh",
+            Self::World => "world",
+            Self::Plan => "plan",
+            Self::Tool => "tool",
         }
     }
 }
@@ -213,9 +276,31 @@ impl FromStr for UriScheme {
             "recovery" => Ok(Self::Recovery),
             "failover" => Ok(Self::Failover),
             "playbook" => Ok(Self::Playbook),
-            "checkpoint" => Ok(Self::Checkpoint),
             "snapshot" => Ok(Self::Snapshot),
             "migration" => Ok(Self::Migration),
+            "meta" => Ok(Self::Meta),
+            "safeguard" => Ok(Self::Safeguard),
+            "values" => Ok(Self::Values),
+            "protocol" => Ok(Self::Protocol),
+            "operator" => Ok(Self::Operator),
+            "human" => Ok(Self::Operator),
+            "sandbox" => Ok(Self::Sandbox),
+            "replay" => Ok(Self::Replay),
+            "lineage" => Ok(Self::Lineage),
+            "lease" => Ok(Self::Lease),
+            "self" => Ok(Self::Self_),
+            "reflection" => Ok(Self::Reflection),
+            "improvement" => Ok(Self::Improvement),
+            "explanation" => Ok(Self::Explanation),
+            "summary" => Ok(Self::Summary),
+            "timeline" => Ok(Self::Timeline),
+            "governance" => Ok(Self::Governance),
+            "twin" => Ok(Self::Twin),
+            "identity" => Ok(Self::Identity),
+            "mesh" => Ok(Self::Mesh),
+            "world" => Ok(Self::World),
+            "plan" => Ok(Self::Plan),
+            "tool" => Ok(Self::Tool),
             _ => Err(Error::InvalidUri(format!("unknown scheme: {s}"))),
         }
     }
@@ -675,5 +760,92 @@ mod tests {
         assert_eq!(uri.scheme(), UriScheme::Migration);
         assert_eq!(uri.authority(), "zcube-a");
         assert_eq!(uri.path(), Some("gpu-003/agent-42"));
+    }
+
+    #[test]
+    fn parse_meta_uri() {
+        let uri = SovereignUri::parse("meta://agent/self-model").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Meta);
+    }
+
+    #[test]
+    fn parse_self_uri() {
+        let uri = SovereignUri::parse("self://agent/metacognition").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Self_);
+    }
+
+    #[test]
+    fn parse_governance_uri() {
+        let uri = SovereignUri::parse("governance://org/proposal-88").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Governance);
+    }
+
+    #[test]
+    fn parse_twin_uri() {
+        let uri = SovereignUri::parse("twin://agent/candidate").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Twin);
+    }
+
+    #[test]
+    fn parse_identity_uri() {
+        let uri = SovereignUri::parse("identity://human/alice").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Identity);
+    }
+
+    #[test]
+    fn parse_mesh_uri() {
+        let uri = SovereignUri::parse("mesh://eu-fabric").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Mesh);
+    }
+
+    #[test]
+    fn parse_world_uri() {
+        let uri = SovereignUri::parse("world://sim/environment").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::World);
+    }
+
+    #[test]
+    fn parse_plan_uri() {
+        let uri = SovereignUri::parse("plan://agent/strategy-7").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Plan);
+    }
+
+    #[test]
+    fn parse_tool_uri() {
+        let uri = SovereignUri::parse("tool://agent/calculator").unwrap();
+        assert_eq!(uri.scheme(), UriScheme::Tool);
+    }
+
+    #[test]
+    fn parse_all_roundtrip() {
+        let schemes = [
+            ("self", UriScheme::Self_),
+            ("reflection", UriScheme::Reflection),
+            ("improvement", UriScheme::Improvement),
+            ("explanation", UriScheme::Explanation),
+            ("summary", UriScheme::Summary),
+            ("timeline", UriScheme::Timeline),
+            ("governance", UriScheme::Governance),
+            ("twin", UriScheme::Twin),
+            ("identity", UriScheme::Identity),
+            ("mesh", UriScheme::Mesh),
+            ("world", UriScheme::World),
+            ("plan", UriScheme::Plan),
+            ("tool", UriScheme::Tool),
+            ("meta", UriScheme::Meta),
+            ("safeguard", UriScheme::Safeguard),
+            ("values", UriScheme::Values),
+            ("protocol", UriScheme::Protocol),
+            ("operator", UriScheme::Operator),
+            ("sandbox", UriScheme::Sandbox),
+            ("replay", UriScheme::Replay),
+            ("lineage", UriScheme::Lineage),
+            ("lease", UriScheme::Lease),
+        ];
+        for (s, expected) in &schemes {
+            let parsed: UriScheme = s.parse().unwrap();
+            assert_eq!(&parsed, expected, "scheme: {s}");
+            assert_eq!(parsed.as_str(), *s);
+        }
     }
 }

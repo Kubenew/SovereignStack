@@ -1,5 +1,6 @@
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     tonic_build::compile_protos("proto/mind_sync.proto")?;
     tonic_build::compile_protos("proto/session_router.proto")?;
+    tonic_build::compile_protos("proto/meta_cognition.proto")?;
     Ok(())
 }

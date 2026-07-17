@@ -2,8 +2,8 @@ apiVersion: v2
 name: sovereignstack
 description: SovereignStack — OASA-compliant, air-gapped, enterprise AI infrastructure
 type: application
-version: "2026.1"
-appVersion: "2026.1"
+version: "2026.2"
+appVersion: "2026.2"
 home: https://github.com/sovereignstack/sovereignstack
 sources:
   - https://github.com/sovereignstack/sovereignstack

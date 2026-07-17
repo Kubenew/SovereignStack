@@ -74,6 +74,55 @@ continuity://<cluster>/<service>       # AI continuity manifest (RFC-0052)
 recovery://<cluster>/<incident>        # Recovery procedure record (RFC-0050)
 failover://<cluster>/<date>/<evt>      # Failover event log (RFC-0051)
 playbook://<cluster>/<name>            # Recovery playbook (RFC-0050)
+snapshot://<node>/<snap>               # Memory snapshot
+migration://<source>/<dest>/<agent>    # Agent migration checkpoint
+```
+
+### Cognitive Meta-Objects
+
+```
+meta://<agent>/<model>                 # Self-model state
+self://<agent>/<aspect>                # Introspective view
+reflection://<agent>/<insight>         # Logged reflection
+improvement://<agent>/<patch>          # Applied improvement
+```
+
+### Safety & Governance Objects
+
+```
+safeguard://<guardian-node>            # Safety guard / kill-switch
+values://<org>/<charter>               # Values charter
+protocol://<kernel>/<version>          # Protocol version marker
+operator://<human>                     # Human operator identity
+governance://<org>/<proposal>          # Governance decision
+```
+
+### Sandbox & Replay Objects
+
+```
+sandbox://<zone>/<agent>               # Sandboxed execution environment
+replay://<session>/<id>                # Cognitive replay session
+timeline://<agent>/<history>           # Ordered event timeline
+```
+
+### Evolution & Provenance
+
+```
+lineage://<agent>/<log>                # Evolution lineage
+lease://<agent>/<resource>             # Cognitive lease
+explanation://<reasoner>/<step>        # Step-by-step explanation
+summary://<session>/<digest>           # Condensed summary
+twin://<agent>/<candidate>             # Digital twin instance
+identity://<domain>/<entity>           # Stable identity
+```
+
+### Federation & World Model
+
+```
+mesh://<fabric-id>                     # Federation mesh
+world://<sim>/<environment>            # World model segment
+plan://<agent>/<strategy>              # Execution plan
+tool://<agent>/<name>                  # Tool binding
 ```
 
 ### Cognitive Economics Objects
@@ -151,5 +200,41 @@ energy://<allocation-id>               # Power consumption budget
 - `bandwidth://zcube-a/stream-042`
 - `storage://zcube-a/pool-7`
 - `energy://zcube-a/budget-q3`
+
+### Meta-Cognition
+- `meta://agent-finance/self-model-v3`
+- `self://agent-finance/confidence`
+- `reflection://agent-finance/insight-42`
+- `improvement://agent-finance/patch-trading-strategy`
+
+### Safety & Governance
+- `safeguard://veto-node-01`
+- `values://acme/ethics-charter-v2`
+- `protocol://ss-kernel/v2`
+- `operator://alice`
+- `governance://acme/proposal-88`
+
+### Sandbox & Replay
+- `sandbox://isolated-zone-9/agent-fuzz`
+- `replay://session/abc123`
+- `timeline://agent-finance/history`
+
+### Evolution & Provenance
+- `lineage://agent-finance/improvement-log`
+- `lease://agent-finance/gpu-003`
+- `explanation://reason-7/step-3`
+- `summary://session-finance/digest`
+- `twin://agent-finance/candidate-v2`
+- `identity://human/alice`
+
+### Federation & World Model
+- `mesh://eu-fabric`
+- `world://sim-market-7/environment`
+- `plan://agent-finance/strategy-q3`
+- `tool://agent-finance/calculator`
+
+### Infrastructure (new)
+- `snapshot://zcube-a/gpu-003/snap-001`
+- `migration://zcube-a/gpu-003/agent-42`
 
 This standard enforces **Principle 4 — Address Everything**.

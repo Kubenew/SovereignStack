@@ -5,6 +5,10 @@ service MindSyncService {
   rpc StreamCognitiveDeltas (stream CognitiveDeltaRequest) returns (stream CognitiveDeltaResponse);
 }
 
+service SovereignAlignmentService {
+  rpc StreamAlignmentProofs (stream ZkAlignmentProofMessage) returns (stream AlignmentVerificationResponse);
+}
+
 message CognitiveDeltaRequest {
   bytes parent_state_hash = 1;
   string context_uri = 2;
@@ -16,4 +20,18 @@ message CognitiveDeltaResponse {
   bytes new_state_hash = 1;
   bool synchronization_acknowledged = 2;
   string error_message = 3;
+}
+
+message ZkAlignmentProofMessage {
+  string agent_id = 1;
+  bytes values_hash = 2;
+  bytes decision_digest = 3;
+  bytes proof_blob = 4;
+  bytes public_inputs = 5;
+}
+
+message AlignmentVerificationResponse {
+  bool aligned = 1;
+  string verdict = 2;
+  string reason = 3;
 }

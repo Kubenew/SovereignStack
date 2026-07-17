@@ -1,7 +1,7 @@
 # SovereignStack Protocol Registry
 
-**Version:** 2026.1
-**Last Updated:** May 31, 2026
+**Version:** 2026.2
+**Last Updated:** July 16, 2026
 **Maintained by:** OASA Technical Steering Committee
 
 ## Purpose
@@ -42,6 +42,21 @@ This registry tracks the lifecycle status of every protocol in the SovereignStac
 | **CKP** | Checkpoint & Recovery Protocol | **Draft** | 0.1 | RFC-0067 | `ss-sessiond/` | Planned |
 | **MAC** | Multi-Agent Consensus Protocol | **Draft** | 0.1 | RFC-0068 | `ss-swarm/` | Planned |
 | **SMR** | Semantic Routing Protocol | **Draft** | 0.1 | RFC-0069 | `ss-routing/` | Planned |
+| | | | | | | |
+| | **— Meta-Cognition & Governance Family —** | | | | | |
+| **MCP** | Meta-Cognition Protocol | **Draft** | 0.1 | RFC-0045 | `ss-memory/proto/meta_cognition.proto` | Planned |
+| **GVP** | Governance Protocol | **Draft** | 0.1 | RFC-0046 | `ss-core/` (URI) | Planned |
+| **DTP** | Digital Twin Protocol | **Draft** | 0.1 | RFC-0047 | `ss-core/` (URI) | Planned |
+| **FMP** | Federation Mesh Protocol | **Draft** | 0.1 | RFC-0048 | `ss-swarm/` | Planned |
+| **WMP** | World Model & Planning Protocol | **Draft** | 0.1 | RFC-0049 | `ss-core/` (URI) | Planned |
+| **CLP** | Cognitive Lease Protocol | **Draft** | 0.1 | RFC-0050 | `ss-policy/src/circuit_breaker.rs` | `scripts/test_cognitive_leases.py` |
+| **XPP** | Explainability & Provenance Protocol | **Draft** | 0.1 | RFC-0051 | `ss-core/` (URI) | Planned |
+| **SRF** | Safe Resource Fencing Protocol | **Draft** | 0.1 | RFC-0052 | `ss-core/` (URI) | Planned |
+| **HLP** | Human-in-the-Loop Priority Protocol | **Draft** | 0.1 | RFC-0053 | `ss-policy/src/proof_verifier.rs` | `charts/.../configmap-human.yaml` |
+| **CNP** | Capability Negotiation Protocol | **Draft** | 0.1 | RFC-0054 | `ss-swarm/src/negotiation.rs` | Planned |
+| **CBP** | Circuit Breaker Policy Protocol | **Draft** | 0.1 | RFC-0055 | `ss-policy/src/circuit_breaker.rs` | `scripts/test_mesh_degradation.py` |
+| **ZAP** | Zero-Knowledge Alignment Protocol | **Draft** | 0.1 | RFC-0056 | `ss-policy/src/zk_alignment.rs` | `scripts/generate_alignment_proof.py` |
+| **ASP** | Alignment Streamer Protocol | **Draft** | 0.1 | RFC-0057 | `ss-memory/src/grpc_server.rs` | `ss-memory/proto/mind_sync.proto` |
 
 ## Protocol Lifecycle
 
@@ -96,4 +111,17 @@ Draft → Experimental → Beta → Stable → Deprecated → Historic
 | 2026-06-03 | AI-CDR registered as Draft (RFC-0050 AI Continuity & Disaster Recovery) |
 | 2026-06-03 | MFP registered as Draft (RFC-0051 Model Failover Protocol) |
 | 2026-06-03 | SRP registered as Draft (RFC-0053 Sovereign Recovery Profiles) |
-| 2026-07-16 | Cognitive Mesh family registered: CRP, SXP, DMP, AFS, CDP, CEB, CKP, MAC, SMR (SIRA v1.0) |
+ | 2026-07-16 | Cognitive Mesh family registered: CRP, SXP, DMP, AFS, CDP, CEB, CKP, MAC, SMR (SIRA v1.0) |
+| 2026-07-16 | **Meta-Cognition Protocol** (MCP) registered as Draft (RFC-0045) |
+| 2026-07-16 | **Governance Protocol** (GVP) registered as Draft (RFC-0046) |
+| 2026-07-16 | **Digital Twin Protocol** (DTP) registered as Draft (RFC-0047) |
+| 2026-07-16 | **Federation Mesh Protocol** (FMP) registered as Draft (RFC-0048) |
+| 2026-07-16 | **World Model & Planning Protocol** (WMP) registered as Draft (RFC-0049) |
+| 2026-07-16 | **Cognitive Lease Protocol** (CLP) registered as Draft (RFC-0050) |
+| 2026-07-16 | **Explainability & Provenance Protocol** (XPP) registered as Draft (RFC-0051) |
+| 2026-07-16 | **Safe Resource Fencing Protocol** (SRF) registered as Draft (RFC-0052) |
+| 2026-07-16 | **Human-in-the-Loop Priority Protocol** (HLP) registered as Draft (RFC-0053) |
+| 2026-07-16 | **Capability Negotiation Protocol** (CNP) registered as Draft (RFC-0054) |
+| 2026-07-16 | **Circuit Breaker Policy Protocol** (CBP) registered as Draft (RFC-0055) |
+| 2026-07-16 | **Zero-Knowledge Alignment Protocol** (ZAP) registered as Draft (RFC-0056) |
+| 2026-07-16 | **gRPC Alignment Streamer Protocol** (ASP) registered as Draft (RFC-0057) |
