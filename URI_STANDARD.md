@@ -129,6 +129,20 @@ plan://<agent>/<strategy>              # Execution plan
 tool://<agent>/<name>                  # Tool binding
 ```
 
+### Cognitive Development Objects (RFC-0072)
+
+```
+idea://<project>/<id>                  # Raw idea / hypothesis
+research://<topic>/<source>            # Research artifact
+decision://<project>/<id>              # Architectural decision record
+architecture://<module>/<name>         # Architecture boundary
+spec://<feature>/<name>                # Feature specification
+build://<project>/<epic>               # Build plan
+release://<project>/<version>          # Release artifact
+project://<id>                         # Project state
+flow://<router>/<route>                # Workflow routing
+```
+
 ### Cognitive Economics Objects
 
 ```
@@ -240,5 +254,16 @@ energy://<allocation-id>               # Power consumption budget
 ### Infrastructure (new)
 - `snapshot://zcube-a/gpu-003/snap-001`
 - `migration://zcube-a/gpu-003/agent-42`
+
+### Cognitive Development (RFC-0072)
+- `idea://project-cortex/042` — raw idea
+- `research://MCTS/arXiv-2501.12345` — research artifact
+- `decision://project-cortex/ADR-007` — architectural decision
+- `architecture://ss-policy/module-boundary` — architecture boundary
+- `spec://cognitive-router/routing-logic` — feature spec
+- `build://project-cortex/epic-3` — build plan
+- `release://sovereignstack/v2026.3` — release artifact
+- `project://cortex` — project state
+- `flow://router/idea-to-spec` — workflow routing
 
 This standard enforces **Principle 4 — Address Everything**.

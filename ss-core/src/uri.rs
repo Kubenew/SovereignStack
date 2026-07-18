@@ -151,6 +151,24 @@ pub enum UriScheme {
     Tool,
     /// Identity transition certificate: `transition://agent/from-version/to-version`
     Transition,
+    /// Raw idea: `idea://project/1234`
+    Idea,
+    /// Research artifact: `research://topic/source`
+    Research,
+    /// Architectural decision record: `decision://project/ADR-042`
+    Decision,
+    /// Architecture boundary: `architecture://module/name`
+    Architecture,
+    /// Feature specification: `spec://feature/name`
+    Spec,
+    /// Build plan: `build://project/epic`
+    Build,
+    /// Release artifact: `release://project/version`
+    Release,
+    /// Project state: `project://id`
+    Project,
+    /// Workflow routing: `flow://router/route`
+    Flow,
 }
 
 impl UriScheme {
@@ -226,6 +244,15 @@ impl UriScheme {
             Self::Plan => "plan",
             Self::Tool => "tool",
             Self::Transition => "transition",
+            Self::Idea => "idea",
+            Self::Research => "research",
+            Self::Decision => "decision",
+            Self::Architecture => "architecture",
+            Self::Spec => "spec",
+            Self::Build => "build",
+            Self::Release => "release",
+            Self::Project => "project",
+            Self::Flow => "flow",
         }
     }
 }
@@ -305,6 +332,15 @@ impl FromStr for UriScheme {
             "plan" => Ok(Self::Plan),
             "tool" => Ok(Self::Tool),
             "transition" => Ok(Self::Transition),
+            "idea" => Ok(Self::Idea),
+            "research" => Ok(Self::Research),
+            "decision" => Ok(Self::Decision),
+            "architecture" => Ok(Self::Architecture),
+            "spec" => Ok(Self::Spec),
+            "build" => Ok(Self::Build),
+            "release" => Ok(Self::Release),
+            "project" => Ok(Self::Project),
+            "flow" => Ok(Self::Flow),
             _ => Err(Error::InvalidUri(format!("unknown scheme: {s}"))),
         }
     }
@@ -837,6 +873,15 @@ mod tests {
             ("plan", UriScheme::Plan),
             ("tool", UriScheme::Tool),
             ("transition", UriScheme::Transition),
+            ("idea", UriScheme::Idea),
+            ("research", UriScheme::Research),
+            ("decision", UriScheme::Decision),
+            ("architecture", UriScheme::Architecture),
+            ("spec", UriScheme::Spec),
+            ("build", UriScheme::Build),
+            ("release", UriScheme::Release),
+            ("project", UriScheme::Project),
+            ("flow", UriScheme::Flow),
         ];
         for (s, expected) in &schemes {
             let parsed: UriScheme = s.parse().unwrap();

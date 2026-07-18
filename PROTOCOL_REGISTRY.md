@@ -61,6 +61,9 @@ This registry tracks the lifecycle status of every protocol in the SovereignStac
 | | **— Search & Reasoning Family —** | | | | | |
 | **SOP** | Search Objects Protocol | **Draft** | 0.1 | RFC-0070 | `docs/rfc/RFC-0070-search-objects.md` | Planned |
 | **SEP** | Search Execution Protocol | **Draft** | 0.1 | RFC-0071 | `docs/rfc/RFC-0071-search-execution-protocol.md` | Planned |
+| | | | | | | |
+| | **— Cognitive Development Family (RFC-0072) —** | | | | | |
+| **CDW** | Cognitive Development Workflow | **Draft** | 0.1 | RFC-0072 | `docs/rfc/RFC-0072-cognitive-development-workflow.md` | Planned |
 
 ## Protocol Lifecycle
 
@@ -131,3 +134,4 @@ Draft → Experimental → Beta → Stable → Deprecated → Historic
  | 2026-07-16 | **gRPC Alignment Streamer Protocol** (ASP) registered as Draft (RFC-0057) |
 | 2026-07-18 | **Search Objects Protocol** (SOP) registered as Draft (RFC-0070) |
 | 2026-07-18 | **Search Execution Protocol** (SEP) registered as Draft (RFC-0071) |
+| 2026-07-18 | **Cognitive Development Workflow** (CDW) registered as Draft (RFC-0072) |
