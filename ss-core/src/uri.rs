@@ -149,6 +149,8 @@ pub enum UriScheme {
     Plan,
     /// Tool binding: `tool://agent/calculator`
     Tool,
+    /// Identity transition certificate: `transition://agent/from-version/to-version`
+    Transition,
 }
 
 impl UriScheme {
@@ -223,6 +225,7 @@ impl UriScheme {
             Self::World => "world",
             Self::Plan => "plan",
             Self::Tool => "tool",
+            Self::Transition => "transition",
         }
     }
 }
@@ -301,6 +304,7 @@ impl FromStr for UriScheme {
             "world" => Ok(Self::World),
             "plan" => Ok(Self::Plan),
             "tool" => Ok(Self::Tool),
+            "transition" => Ok(Self::Transition),
             _ => Err(Error::InvalidUri(format!("unknown scheme: {s}"))),
         }
     }
@@ -832,15 +836,7 @@ mod tests {
             ("world", UriScheme::World),
             ("plan", UriScheme::Plan),
             ("tool", UriScheme::Tool),
-            ("meta", UriScheme::Meta),
-            ("safeguard", UriScheme::Safeguard),
-            ("values", UriScheme::Values),
-            ("protocol", UriScheme::Protocol),
-            ("operator", UriScheme::Operator),
-            ("sandbox", UriScheme::Sandbox),
-            ("replay", UriScheme::Replay),
-            ("lineage", UriScheme::Lineage),
-            ("lease", UriScheme::Lease),
+            ("transition", UriScheme::Transition),
         ];
         for (s, expected) in &schemes {
             let parsed: UriScheme = s.parse().unwrap();

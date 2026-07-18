@@ -57,6 +57,10 @@ This registry tracks the lifecycle status of every protocol in the SovereignStac
 | **CBP** | Circuit Breaker Policy Protocol | **Draft** | 0.1 | RFC-0055 | `ss-policy/src/circuit_breaker.rs` | `scripts/test_mesh_degradation.py` |
 | **ZAP** | Zero-Knowledge Alignment Protocol | **Draft** | 0.1 | RFC-0056 | `ss-policy/src/zk_alignment.rs` | `scripts/generate_alignment_proof.py` |
 | **ASP** | Alignment Streamer Protocol | **Draft** | 0.1 | RFC-0057 | `ss-memory/src/grpc_server.rs` | `ss-memory/proto/mind_sync.proto` |
+| | | | | | | |
+| | **— Search & Reasoning Family —** | | | | | |
+| **SOP** | Search Objects Protocol | **Draft** | 0.1 | RFC-0070 | `docs/rfc/RFC-0070-search-objects.md` | Planned |
+| **SEP** | Search Execution Protocol | **Draft** | 0.1 | RFC-0071 | `docs/rfc/RFC-0071-search-execution-protocol.md` | Planned |
 
 ## Protocol Lifecycle
 
@@ -124,4 +128,6 @@ Draft → Experimental → Beta → Stable → Deprecated → Historic
 | 2026-07-16 | **Capability Negotiation Protocol** (CNP) registered as Draft (RFC-0054) |
 | 2026-07-16 | **Circuit Breaker Policy Protocol** (CBP) registered as Draft (RFC-0055) |
 | 2026-07-16 | **Zero-Knowledge Alignment Protocol** (ZAP) registered as Draft (RFC-0056) |
-| 2026-07-16 | **gRPC Alignment Streamer Protocol** (ASP) registered as Draft (RFC-0057) |
+ | 2026-07-16 | **gRPC Alignment Streamer Protocol** (ASP) registered as Draft (RFC-0057) |
+| 2026-07-18 | **Search Objects Protocol** (SOP) registered as Draft (RFC-0070) |
+| 2026-07-18 | **Search Execution Protocol** (SEP) registered as Draft (RFC-0071) |

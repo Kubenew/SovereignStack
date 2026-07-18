@@ -114,7 +114,11 @@ explanation://<reasoner>/<step>        # Step-by-step explanation
 summary://<session>/<digest>           # Condensed summary
 twin://<agent>/<candidate>             # Digital twin instance
 identity://<domain>/<entity>           # Stable identity
+transition://<agent>/<from>/<to>       # Identity transition certificate (RFC-0057)
 ```
+
+> **Note:** Meta objects (`meta://`) use versioned snapshots: `meta://agent/self-model/1`, `meta://agent/self-model/2`. The alias `meta://agent/self-model/current` points to the latest.
+
 
 ### Federation & World Model
 
