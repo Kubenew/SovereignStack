@@ -1,0 +1,10 @@
+{
+  "id": "3cf7a9d1-1fb6-4f17-b506-f834f3ca41f1",
+  "doc_id": "test-doc",
+  "org_id": "default",
+  "text": "Hello world",
+  "metadata": {},
+  "created_at": 1782194657.9466395,
+  "ttl_seconds": null,
+  "node_id": "test-weight-node"
+}

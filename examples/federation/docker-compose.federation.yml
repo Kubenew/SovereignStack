@@ -111,3 +111,75 @@ volumes:
 networks:
   sovereign-mesh:
     driver: bridge
+
+  # ============================================================
+  # Phase 3: Tokenized Financial Ledger Oracle
+  # ============================================================
+  mock-ledger:
+    image: python:3.12-slim
+    container_name: ss-mock-ledger
+    hostname: mock-ledger
+    ports:
+      - "8545:8545"
+    volumes:
+      - ../financial_adapter:/app
+    working_dir: /app
+    command: bash -c "pip install -r requirements.txt && uvicorn ledger_adapter:app --host 0.0.0.0 --port 8545"
+    networks:
+      sovereign-mesh:
+        aliases:
+          - mock-ledger
+
+  # ============================================================
+  # Phase 3: Sovereign Trading Agent (US Jurisdiction)
+  # ============================================================
+  trading-agent-us:
+    image: python:3.12-slim
+    container_name: ss-trading-agent-us
+    hostname: trading-agent-us
+    depends_on:
+      - mock-ledger
+      - audit-aggregator
+    volumes:
+      - ../financial_adapter:/app
+    working_dir: /app
+    environment:
+      LEDGER_URL: "http://mock-ledger:8545"
+      AUDIT_URL: "http://audit-aggregator:9091"
+      SS_JURISDICTION: "us-ca"
+    command: bash -c "pip install -r requirements.txt && python trading_agent.py"
+    networks:
+      sovereign-mesh:
+        aliases:
+          - trading-agent-us
+
+  # ============================================================
+  # Phase 4: Observability Stack (Prometheus + Grafana)
+  # ============================================================
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: ss-prometheus
+    hostname: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../financial_adapter/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      sovereign-mesh:
+        aliases:
+          - prometheus
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: ss-grafana
+    hostname: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=sovereign
+    volumes:
+      - ../../monitoring/grafana-cognitive-mesh.json:/var/lib/grafana/dashboards/grafana-cognitive-mesh.json
+    networks:
+      sovereign-mesh:
+        aliases:
+          - grafana

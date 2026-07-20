@@ -1,0 +1,10 @@
+ledger:
+  node_url: "http://mock-ledger:8545"
+  network_id: "2030-finnet"
+  oracle_endpoint: "/api/v1/oracle"
+  timeout_ms: 5000
+
+policy:
+  compliance_profile: "../../financial_compliance.json"
+  enforce_strict_l3: true
+  min_retention_days: 2555
