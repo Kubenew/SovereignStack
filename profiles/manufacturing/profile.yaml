@@ -1,0 +1,40 @@
+name: Sovereign Manufacturing Profile
+version: "1.0.0"
+domain: Manufacturing
+description: Blueprint for deploying SovereignStack in supply chain coordination, industrial IoT, and digital twin factories.
+
+uri_extensions:
+  - product://
+  - lot://
+  - assembly://
+  - inspection://
+  - factory://
+  - supplier://
+  - machine://
+
+policies:
+  - supply_chain_transparency: "Require provenance records for all components in an assembly://."
+  - predictive_maintenance: "Trigger alerts based on machine:// telemetry anomalies."
+  - quality_control: "Enforce digital signature on all inspection:// records."
+
+compliance_mappings:
+  - ISO_9001: "Quality management processes mapped to agent workflows."
+  - Supply_Chain_Act: "End-to-end component traceability."
+
+reference_agents:
+  - agent://supply-chain-optimizer
+  - agent://quality-inspector
+  - agent://maintenance-scheduler
+  - agent://production-planner
+
+apis:
+  - name: Component Traceability
+    protocol: SIP
+    description: "Query full lineage of a manufactured product."
+  - name: Factory Telemetry
+    protocol: SIP
+    description: "Ingest and process real-time machine data."
+
+example_workflows:
+  - workflows/predictive-maintenance.yaml
+  - workflows/supply-chain-traceability.yaml

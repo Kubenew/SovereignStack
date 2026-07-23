@@ -1,0 +1,29 @@
+name: Portfolio Rebalancing
+description: Automated portfolio rebalancing via sovereign agents and market integration.
+
+actors:
+  - fund_manager: agent://portfolio-manager
+  - market_maker: agent://market-maker
+  - risk_assessor: agent://risk-assessor
+
+steps:
+  1:
+    actor: fund_manager
+    action: Analyze current allocations vs target model
+    resource: portfolio://pension-fund-eu/balanced
+  2:
+    actor: risk_assessor
+    action: Run VaR simulation on proposed trades
+    resource: risk://simulation/var-102
+  3:
+    actor: fund_manager
+    action: Generate market orders for rebalancing
+    resource: market://order/batch-77
+  4:
+    actor: market_maker
+    action: Fill orders and execute trades
+    resource: market://trade/batch-77-fills
+  5:
+    actor: fund_manager
+    action: Confirm new portfolio state and record provenance
+    resource: portfolio://pension-fund-eu/balanced/history

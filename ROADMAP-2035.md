@@ -15,6 +15,13 @@
 - Knowledge & Reasoning Objects, Provenance Graph
 - Subsystems: `ss-kas`, `ss-reason`, `ss-lineage`
 
+## Phase 3.5 (2028–2029): Sovereign Economy & Industry Profiles
+- Sovereign Finance Profile (SFIN), Digital Twin Entity Model (RFC-0060)
+- ss-economy expansion: payments, settlement, treasury, assets, markets, insurance, risk, derivatives, accounting, tax, identity, compliance
+- Protocol mappings: ISO 20022, OpenID Connect, SPIFFE/SPIRE, OpenTelemetry
+- Industry profiles: finance, government, healthcare, manufacturing, robotics, defense
+- Reference architectures for banking, insurance, government, healthcare, manufacturing
+
 ## Phase 4 (2029–2030): Intelligence Infrastructure
 - Capability Registry, Swarm Execution, Distributed Scheduling
 - Subsystems: `ss-capability`, `ss-swarm`, `ss-scheduler`

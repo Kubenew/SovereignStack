@@ -117,6 +117,35 @@ identity://<domain>/<entity>           # Stable identity
 transition://<agent>/<from>/<to>       # Identity transition certificate (RFC-0057)
 ```
 
+### Digital Twin Objects (RFC-0060)
+
+```
+person://<person-id>                  # Natural person digital twin
+company://<company-id>                # Corporate entity
+bank://<institution-id>               # Financial institution
+factory://<facility-id>               # Manufacturing facility
+hospital://<facility-id>              # Healthcare institution
+vehicle://<vehicle-id>                # Vehicle / autonomous platform
+portfolio://<portfolio-id>            # Investment portfolio
+fund://<fund-id>                      # Investment fund
+bond://<bond-id>                      # Debt instrument
+asset://<asset-id>                    # Tokenized real-world asset
+```
+
+Each digital twin owns: `identity`, `policy`, `capabilities`, `provenance`, `events`, `memory`, `economic_state`. See [RFC-0060](rfcs/RFC-0060-digital-twin-entity-model.md).
+
+### Financial Economy Objects
+
+```
+payment://<payment-id>                # Payment instruction
+settlement://<settlement-id>          # Settlement record
+treasury://<account-id>               # Treasury account
+derivative://<contract-id>            # Derivative contract
+insurance://<policy-id>               # Insurance policy
+account://<ledger-id>/<account>       # Ledger account
+tax://<jurisdiction>/<event-id>       # Taxable event
+```
+
 > **Note:** Meta objects (`meta://`) use versioned snapshots: `meta://agent/self-model/1`, `meta://agent/self-model/2`. The alias `meta://agent/self-model/current` points to the latest.
 
 
@@ -265,5 +294,26 @@ energy://<allocation-id>               # Power consumption budget
 - `release://sovereignstack/v2026.3` — release artifact
 - `project://cortex` — project state
 - `flow://router/idea-to-spec` — workflow routing
+
+### Digital Twins (RFC-0060)
+- `person://alice-j-doe` — natural person
+- `company://acme-corp` — corporate entity
+- `bank://eu-central-bank` — financial institution
+- `factory://munich-plant-7` — manufacturing facility
+- `hospital://charite-berlin` — healthcare institution
+- `vehicle://fleet-42/truck-009` — autonomous vehicle
+- `portfolio://pension-fund-eu/balanced` — investment portfolio
+- `fund://sovereign-wealth-no` — investment fund
+- `bond://de-bund-2035` — government bond
+- `asset://tokenized/real-estate/berlin-01` — tokenized asset
+
+### Financial Economy
+- `payment://swift/pacs008-20260723-001` — cross-border payment
+- `settlement://dvp/trade-88421` — delivery-vs-payment settlement
+- `treasury://acme/main-usd` — treasury account
+- `derivative://swap/irs-20260101-42` — interest rate swap
+- `insurance://policy/auto-fleet-2026` — insurance policy
+- `account://acme/gl/1000-assets` — general ledger account
+- `tax://de/vat/evt-20260723` — taxable event
 
 This standard enforces **Principle 4 — Address Everything**.

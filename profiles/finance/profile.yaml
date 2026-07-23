@@ -1,0 +1,56 @@
+name: Sovereign Finance Profile (SFIN)
+version: "1.0.0"
+domain: Finance
+description: Standardized blueprint for deploying SovereignStack in banking, capital markets, and insurance.
+
+uri_extensions:
+  - payment://
+  - settlement://
+  - treasury://
+  - bond://
+  - fund://
+  - portfolio://
+  - derivative://
+  - insurance://
+  - account://
+  - tax://
+
+policies:
+  - kyc_aml_enforcement: "Require KYC profile for all identities prior to payment execution."
+  - transaction_limits: "Require multi-signature authorization for payments > 10,000 USD."
+  - settlement_windows: "Force settlement within T+1."
+  - risk_thresholds: "Reject trades exceeding 15% VaR."
+
+compliance_mappings:
+  - ISO_20022: "Mapped via ss-economy/payments"
+  - PSD2: "Mapped via ss-economy/fin_compliance"
+  - MiFID_II: "Mapped via ss-economy/markets"
+  - Basel_IV: "Mapped via ss-economy/risk"
+  - SOX: "Mapped via ss-economy/accounting"
+  - Dodd_Frank: "Mapped via ss-economy/derivatives"
+
+reference_agents:
+  - agent://kyc-verifier
+  - agent://settlement-engine
+  - agent://risk-assessor
+  - agent://market-maker
+  - agent://compliance-officer
+
+apis:
+  - name: Payment Initiation
+    protocol: SIP
+    description: "Initiate ISO 20022 compliant payments."
+  - name: Balance Inquiry
+    protocol: SIP
+    description: "Query treasury account positions."
+  - name: Position Management
+    protocol: SIP
+    description: "Manage portfolio positions and risk."
+  - name: Risk Calculation
+    protocol: SIP
+    description: "Request on-demand VaR and stress testing."
+
+example_workflows:
+  - workflows/cross-border-payment.yaml
+  - workflows/trade-settlement.yaml
+  - workflows/portfolio-rebalancing.yaml

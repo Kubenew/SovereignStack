@@ -1,0 +1,39 @@
+name: Sovereign Robotics Profile
+version: "1.0.0"
+domain: Robotics
+description: Blueprint for deploying SovereignStack for autonomous vehicle fleets, drone operations, and physical actuation.
+
+uri_extensions:
+  - robot://
+  - fleet://
+  - mission://
+  - telemetry://
+  - actuator://
+  - sensor://
+
+policies:
+  - mission_boundaries: "Geofence enforcement for robot:// operations."
+  - fleet_coordination: "Allow Swarm Coordination (RFC-0027) within designated fleet:// domains."
+  - emergency_stop: "Global override capability for immediate halt commands."
+
+compliance_mappings:
+  - ISO_10218: "Safety requirements for industrial robots."
+  - FAA_UAS: "Drone flight regulations and telemetry reporting."
+
+reference_agents:
+  - agent://fleet-commander
+  - agent://mission-planner
+  - agent://safety-monitor
+  - agent://navigation-system
+
+apis:
+  - name: Telemetry Stream
+    protocol: SIP
+    description: "Real-time streaming of sensor data."
+  - name: Mission Dispatch
+    protocol: SIP
+    description: "Assign and track complex tasks to a robot or fleet."
+
+example_workflows:
+  - workflows/fleet-coordination.yaml
+  - workflows/emergency-override.yaml

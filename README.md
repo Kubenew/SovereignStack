@@ -10,7 +10,7 @@
   <img src="badges/oasa-l3-strict.svg" alt="L3 Strict-Sovereign" height="40">
 </p>
 <p align="center">
-  <strong>44 RFCs</strong> (0001–0055) · <strong>37 URI schemes</strong> · <strong>18 protocols</strong>
+  <strong>45 RFCs</strong> (0001–0060) · <strong>54 URI schemes</strong> · <strong>18 protocols</strong>
 </p>
 
 <p align="center">
@@ -42,11 +42,11 @@
 - Building Open Standards for Sovereign AI Systems:
   Provenance, Governance, and Interoperability
 
-> **The Sovereign Intelligence Network** — A distributed operating system for intelligence.
+> **The Sovereign Intelligence Network** — An open operating system and protocol stack for sovereign intelligence, autonomous agents, and digital economies.
 
 [![Architecture Diagram](docs/architecture/diagrams/architecture-stack.svg)](docs/architecture/00-overview.md)
 
-SovereignStack is a protocol stack and runtime that treats intelligence itself as a networked resource. It is to autonomous intelligence what TCP/IP is to data networking.
+SovereignStack is a protocol stack and runtime that treats intelligence, identity, and economic value as networked resources. It is to autonomous intelligence and digital economies what TCP/IP is to data networking — a universal substrate for sovereign agents, digital twins, and programmable finance.
 
 ```
 1970s → ARPANET          (packet switching)
@@ -123,6 +123,27 @@ playbook://zcube-a/gpu-failure  # Recovery playbook (RFC-0050)
 checkpoint://cluster-a/agent-42  # Agent state checkpoint (RFC-0052)
 snapshot://zcube-a/gpu-003/snap  # Memory snapshot (RFC-0036)
 migration://zcube-a/gpu-003/ag   # Agent migration (RFC-0051)
+
+# Digital Twin Objects (RFC-0060)
+person://alice-j-doe             # Natural person digital twin
+company://acme-corp              # Corporate entity
+bank://eu-central-bank           # Financial institution
+factory://munich-plant-7         # Manufacturing facility
+hospital://charite-berlin        # Healthcare institution
+vehicle://fleet-42/truck-009     # Autonomous vehicle
+portfolio://pension-fund/balanced # Investment portfolio
+fund://sovereign-wealth-no       # Investment fund
+bond://de-bund-2035              # Debt instrument
+asset://tokenized/berlin-01      # Tokenized real-world asset
+
+# Financial Economy Objects
+payment://swift/pacs008-001      # Payment instruction
+settlement://dvp/trade-88421    # Settlement record
+treasury://acme/main-usd        # Treasury account
+derivative://swap/irs-42         # Derivative contract
+insurance://policy/auto-fleet    # Insurance policy
+account://acme/gl/1000-assets   # Ledger account
+tax://de/vat/evt-20260723       # Taxable event
 ```
 
 ## Architecture
@@ -189,16 +210,37 @@ SovereignStack/
 ├── ss-policy/        # Governance & jurisdiction (Stub)
 ├── ss-provenance/    # Computational lineage (Stub)
 ├── ss-jurisdiction/  # Jurisdiction compliance engine
-├── ss-twin/          # Digital twin framework
+├── ss-twin/          # Digital twin framework (IoT/robotics)
 ├── ss-device/        # Reality interface layer (Stub)
-├── ss-economy/       # Resource markets (Stub)
+├── ss-economy/       # Financial economy primitives
+│   ├── payments      # Payment processing
+│   ├── settlement    # Trade & payment settlement
+│   ├── treasury      # Treasury & liquidity management
+│   ├── assets        # Tokenized asset registry
+│   ├── markets       # Order books, trading, market data
+│   ├── insurance     # Policies, claims, underwriting
+│   ├── risk          # Risk models, VaR, stress testing
+│   ├── derivatives   # Options, futures, swaps
+│   ├── accounting    # Double-entry ledger
+│   ├── tax           # Tax computation & jurisdiction
+│   ├── fin_identity  # KYC/AML/sanctions
+│   └── fin_compliance # Regulatory compliance engine
 ├── ss-sip/           # Sovereign Intelligence Protocol (Stub)
 ├── reference-node/   # Minimal reference node binary
+├── profiles/         # Industry profiles
+│   ├── finance/      # Sovereign Finance Profile (SFIN)
+│   ├── government/   # Government & public sector
+│   ├── healthcare/   # Healthcare & life sciences
+│   ├── manufacturing/# Manufacturing & supply chain
+│   ├── robotics/     # Robotics & autonomous systems
+│   └── defense/      # Defense & national security
 ├── conformance/      # Conformance test suites & profiles
-├── rfcs/             # Protocol specifications (RFC-0001–0040)
+├── rfcs/             # Protocol specifications (RFC-0001–0060)
 ├── docs/
 │   ├── architecture/ # 10-page architecture breakdown
-│   └── architecture/diagrams/ # SVG architecture diagrams
+│   ├── architecture/diagrams/ # SVG architecture diagrams
+│   ├── protocol-mappings/     # ISO 20022, OIDC, SPIFFE, OTel
+│   └── reference-architectures/ # Banking, insurance, gov, healthcare, mfg
 ├── tests/            # Conformance test suite
 ├── examples/         # Reference implementations
 └── playground/       # Try-it-now deployment
@@ -278,6 +320,7 @@ SovereignStack is translated into 18 languages. The project follows the Debian m
 | [RFC-0053](rfcs/RFC-0053-sovereign-recovery-profiles.md) | Sovereign Recovery Profiles | Draft |
 | [RFC-0054](rfcs/RFC-0054-compliance-framework.md) | Compliance Framework (OASA CCM) | Draft |
 | [RFC-0055](rfcs/RFC-0055-windows-build-system.md) | Windows Build System | Draft |
+| [RFC-0060](rfcs/RFC-0060-digital-twin-entity-model.md) | Digital Twin Entity Model | Draft |
 
 
 ## Quickstart

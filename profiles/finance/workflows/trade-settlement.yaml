@@ -1,0 +1,34 @@
+name: Trade Settlement (DvP)
+description: Delivery-vs-Payment trade settlement using tokenized assets.
+
+actors:
+  - buyer: portfolio://alpha-fund
+  - seller: portfolio://beta-fund
+  - settlement_engine: agent://settlement-engine
+  - asset_registry: agent://asset-registry
+
+steps:
+  1:
+    actor: buyer
+    action: Submit trade order
+    resource: settlement://dvp/trade-88421
+  2:
+    actor: seller
+    action: Match trade order
+    resource: settlement://dvp/trade-88421
+  3:
+    actor: settlement_engine
+    action: Lock cash in buyer's treasury account
+    resource: treasury://bank/alpha-cash
+  4:
+    actor: asset_registry
+    action: Lock tokenized asset in seller's custody
+    resource: asset://tokenized/bond-123
+  5:
+    actor: settlement_engine
+    action: Execute atomic swap (DvP)
+    resource: settlement://dvp/trade-88421/exec
+  6:
+    actor: asset_registry
+    action: Update asset ownership to buyer
+    resource: asset://tokenized/bond-123/owner

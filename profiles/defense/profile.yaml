@@ -1,0 +1,39 @@
+name: Sovereign Defense Profile
+version: "1.0.0"
+domain: Defense
+description: Blueprint for deploying SovereignStack in mission systems, C4ISR, and secure enclaves.
+
+uri_extensions:
+  - mission://
+  - intel://
+  - clearance://
+  - unit://
+  - asset://
+  - enclave://
+
+policies:
+  - strict_sovereignty: "Air-gapped operation support with local-only resolution."
+  - clearance_enforcement: "Require cryptographic proof of clearance:// level for data access."
+  - tamper_evidence: "Immediate lockdown on detection of unauthorized node modifications."
+
+compliance_mappings:
+  - DoD_IL6: "Impact Level 6 security controls for classified information."
+  - ITAR: "Export control compliance mechanisms."
+
+reference_agents:
+  - agent://intel-analyst
+  - agent://mission-commander
+  - agent://threat-detector
+  - agent://logistics-coordinator
+
+apis:
+  - name: Secure Intelligence Sharing
+    protocol: SIP
+    description: "Share intel:// objects between allied enclaves with strict policy enforcement."
+  - name: Tactical Deployment
+    protocol: SIP
+    description: "Provision and migrate agents to edge nodes."
+
+example_workflows:
+  - workflows/tactical-intel-analysis.yaml
+  - workflows/secure-enclave-federation.yaml

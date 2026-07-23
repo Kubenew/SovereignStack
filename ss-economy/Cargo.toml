@@ -1,7 +1,30 @@
 [package]
 name = "ss-economy"
+description = "SovereignStack Financial Economy Primitives — payments, settlement, treasury, assets, markets, insurance, risk, derivatives, accounting, tax, identity, and compliance"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
+[features]
+default = ["payments", "settlement", "treasury", "assets", "markets", "insurance", "risk", "derivatives", "accounting", "tax", "fin_identity", "fin_compliance"]
+payments = []
+settlement = []
+treasury = []
+assets = []
+markets = []
+insurance = []
+risk = []
+derivatives = []
+accounting = []
+tax = []
+fin_identity = []
+fin_compliance = []
+
 [dependencies]
+ss-core = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+async-trait = { workspace = true }

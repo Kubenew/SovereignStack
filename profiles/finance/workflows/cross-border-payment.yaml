@@ -1,0 +1,35 @@
+name: Cross-Border Payment
+description: End-to-end sovereign cross-border payment sequence utilizing ISO 20022 and ss-economy.
+
+actors:
+  - payer: person://alice
+  - payee: person://bob
+  - origin_bank: bank://us-bank
+  - dest_bank: bank://eu-bank
+  - kyc_verifier: agent://kyc-verifier
+
+steps:
+  1:
+    actor: payer
+    action: Submit payment instruction
+    resource: payment://swift/pacs008-001
+  2:
+    actor: kyc_verifier
+    action: Verify sender identity and run AML check
+    resource: identity://aml-check/123
+  3:
+    actor: origin_bank
+    action: Debit payer treasury account
+    resource: treasury://us-bank/alice-acct
+  4:
+    actor: origin_bank
+    action: Route payment to dest_bank via Federation
+    resource: gateway://eu-frankfurt
+  5:
+    actor: dest_bank
+    action: Credit payee treasury account
+    resource: treasury://eu-bank/bob-acct
+  6:
+    actor: origin_bank
+    action: Post settlement to Accounting Ledger
+    resource: account://us-bank/gl/1000

@@ -1,0 +1,41 @@
+name: Sovereign Government Profile
+version: "1.0.0"
+domain: Government
+description: Blueprint for deploying SovereignStack for citizen services, inter-agency federation, and regulatory enforcement.
+
+uri_extensions:
+  - citizen://
+  - regulation://
+  - permit://
+  - case://
+  - agency://
+  - tax://
+  - legislation://
+
+policies:
+  - citizen_data_sovereignty: "Require explicit citizen capability token for data access."
+  - inter_agency_federation: "Allow restricted data sharing between specific agency:// domains."
+  - audit_trail_mandate: "All regulatory actions require immutable provenance logs."
+
+compliance_mappings:
+  - GDPR: "Mapped via core SovereignStack data residency."
+  - NIST_800_53: "Mapped via OASA CCM."
+  - FedRAMP: "Mapped via OASA L3 Strict-Sovereign deployment."
+
+reference_agents:
+  - agent://citizen-service-bot
+  - agent://regulatory-auditor
+  - agent://case-manager
+  - agent://policy-analyzer
+
+apis:
+  - name: Permit Issuance
+    protocol: SIP
+    description: "Issue and verify digital permits."
+  - name: Regulatory Filing
+    protocol: SIP
+    description: "Submit and validate regulatory compliance data."
+
+example_workflows:
+  - workflows/citizen-data-request.yaml
+  - workflows/inter-agency-data-sharing.yaml

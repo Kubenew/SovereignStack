@@ -1,6 +1,6 @@
 # SovereignStack Roadmap
 
-**Updated:** May 2026  
+**Updated:** July 2026  
 **Tracking:** [GitHub Projects](https://github.com/sovereignstack/sovereignstack/projects)
 
 ---
@@ -71,6 +71,19 @@
 | ✅ | Certification Program | Certified Node, Runtime, Federation |
 | ✅ | Enterprise Platform | Support contracts, managed updates, deployment audits |
 
+## 2028.1 — Sovereign Finance & Industry Profiles
+
+| Status | Feature | Description |
+|---|---|---|
+| 🚧 | Sovereign Finance Profile (SFIN) | Standards for payments, treasury, tokenized assets, settlements, financial AI workflows |
+| 🚧 | ss-economy Expansion | 12 sub-modules: payments, settlement, treasury, assets, markets, insurance, risk, derivatives, accounting, tax, identity, compliance |
+| 🚧 | Digital Twin Entity Model (RFC-0060) | 10 entity URI schemes (`person://`, `company://`, `bank://`, etc.) with 7-facet state model |
+| 📅 | Reference Node v2 | Runnable demo combining kernel, identity, policy, provenance, and economy modules |
+| 📅 | Protocol Mappings | Integration guides for ISO 20022, OpenID Connect, SPIFFE/SPIRE, OpenTelemetry, financial messaging |
+| 📅 | Reference Architectures | Deployment diagrams and examples for banking, insurance, government, healthcare, manufacturing |
+| 📅 | Industry Profiles | Dedicated profiles for finance, government, healthcare, manufacturing, robotics, defense |
+| 🔮 | Conformance & Certification | Measurable SFIN compliance levels leveraging OASA CCM |
+
 ## 2026 Kubernetes Enhancements
 
 | Status | Feature | Description |
@@ -89,3 +102,4 @@
 | 🚧 | In progress |
 | 📅 | Planned |
 | 🔮 | Future concept |
+

@@ -1,0 +1,40 @@
+name: Sovereign Healthcare Profile
+version: "1.0.0"
+domain: Healthcare
+description: Blueprint for deploying SovereignStack in clinical workflows, patient data sovereignty, and life sciences.
+
+uri_extensions:
+  - patient://
+  - diagnosis://
+  - prescription://
+  - trial://
+  - provider://
+  - device://
+  - lab://
+
+policies:
+  - patient_consent: "Require active capability token from patient:// for accessing medical records."
+  - hipaa_deidentification: "Automatically strip PII from datasets shared outside provider:// domain."
+  - clinical_provenance: "Cryptographically sign all diagnoses and prescriptions."
+
+compliance_mappings:
+  - HIPAA: "Mapped via access controls and audit logging."
+  - HL7_FHIR: "Data schema mapping to SovereignStack objects."
+
+reference_agents:
+  - agent://clinical-decision-support
+  - agent://patient-coordinator
+  - agent://compliance-monitor
+  - agent://trial-analyzer
+
+apis:
+  - name: Medical Record Exchange
+    protocol: SIP
+    description: "Securely share patient data between providers."
+  - name: Prescription Fulfillment
+    protocol: SIP
+    description: "End-to-end verifiable prescription workflow."
+
+example_workflows:
+  - workflows/patient-referral.yaml
+  - workflows/clinical-trial-matching.yaml
