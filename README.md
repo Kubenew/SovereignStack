@@ -10,7 +10,7 @@
   <img src="badges/oasa-l3-strict.svg" alt="L3 Strict-Sovereign" height="40">
 </p>
 <p align="center">
-  <strong>45 RFCs</strong> (0001–0060) · <strong>54 URI schemes</strong> · <strong>18 protocols</strong>
+  <strong>47 RFCs</strong> (0001–0074) · <strong>77 URI schemes</strong> · <strong>19 protocols</strong>
 </p>
 
 <p align="center">
@@ -42,18 +42,35 @@
 - Building Open Standards for Sovereign AI Systems:
   Provenance, Governance, and Interoperability
 
-> **The Sovereign Intelligence Network** — An open operating system and protocol stack for sovereign intelligence, autonomous agents, and digital economies.
+> **The Operating System for Autonomous Digital Economies** — An open protocol stack for sovereign intelligence, digital twins, and programmable finance.
 
 [![Architecture Diagram](docs/architecture/diagrams/architecture-stack.svg)](docs/architecture/00-overview.md)
 
-SovereignStack is a protocol stack and runtime that treats intelligence, identity, and economic value as networked resources. It is to autonomous intelligence and digital economies what TCP/IP is to data networking — a universal substrate for sovereign agents, digital twins, and programmable finance.
+SovereignStack is an operating system and protocol stack that treats intelligence, identity, and economic value as networked resources. It is to autonomous digital economies what Linux is to servers, Kubernetes is to containers, and TCP/IP is to networking — a universal substrate for sovereign agents, digital twins, and programmable finance.
 
 ```
-1970s → ARPANET          (packet switching)
-1990s → Internet         (global connectivity)
-2000s → Cloud            (elastic compute)
-2020s → AI Platforms     (model serving)
-2030s → Sovereign Intelligence Networks (SovereignStack)
+Linux              (1991 — server operating system)
+Kubernetes         (2014 — container orchestration)
+SPIFFE             (2017 — workload identity)
+OpenTelemetry      (2019 — observability)
+TCP/IP             (1974 — network protocol)
+SovereignStack     (2026 — operating system for autonomous digital economies)
+```
+
+### Six-Layer Architecture
+
+```
+Applications          Finance · Healthcare · Manufacturing · Government · Defense
+─────────────────────────────────────────────────────────────────────────────
+Economic Layer        Markets · Payments · Insurance · Treasury · Assets
+─────────────────────────────────────────────────────────────────────────────
+Intelligence Layer    Agents · Memory · Reasoning · Planning · Search
+─────────────────────────────────────────────────────────────────────────────
+Governance Layer      Policy · Identity · Capabilities · Jurisdiction · Trust
+─────────────────────────────────────────────────────────────────────────────
+Fabric                Federation · Scheduling · Networking · Continuity
+─────────────────────────────────────────────────────────────────────────────
+Kernel                Runtime · Storage · Security · Events · Provenance
 ```
 
 ## Quick Start (5 minutes)

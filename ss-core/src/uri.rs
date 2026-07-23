@@ -169,6 +169,54 @@ pub enum UriScheme {
     Project,
     /// Workflow routing: `flow://router/route`
     Flow,
+    // ── Digital Twin Objects (RFC-0074) ──
+    /// Natural person twin: `person://alice`
+    Person,
+    /// Corporate entity: `company://acme-corp`
+    Company,
+    /// Financial institution: `bank://ecb`
+    Bank,
+    /// Healthcare institution: `hospital://charite`
+    Hospital,
+    /// Investment portfolio: `portfolio://pension-fund`
+    Portfolio,
+    /// Investment fund: `fund://sovereign-wealth`
+    Fund,
+    /// Debt instrument: `bond://de-bund-2035`
+    Bond,
+    /// Equity security: `stock://AAPL`
+    Stock,
+    /// Manufacturing facility: `factory://berlin-plant`
+    Factory,
+    /// Autonomous vehicle: `vehicle://truck-001`
+    Vehicle,
+    /// Smart city: `city://prague`
+    City,
+    // ── Digital Economy Objects (RFC-0073) ──
+    /// Digital economy: `economy://eu/digital-euro`
+    Economy,
+    /// Tokenized asset: `asset://tokenized/berlin-01`
+    Asset,
+    /// Payment instruction: `payment://swift/pacs008`
+    Payment,
+    /// Treasury account: `treasury://acme/main-usd`
+    Treasury,
+    /// Financial market: `market://nyse/equities`
+    Market,
+    /// Risk model: `risk://portfolio/var`
+    Risk,
+    /// Insurance policy: `insurance://policy/auto-fleet`
+    Insurance,
+    /// Settlement record: `settlement://dvp/trade-88`
+    Settlement,
+    /// Exchange venue: `exchange://binance/btc-usd`
+    Exchange,
+    /// Taxable event: `tax://de/vat/evt-001`
+    Tax,
+    /// Derivative contract: `derivative://swap/irs-42`
+    Derivative,
+    /// Ledger account: `account://acme/gl/1000`
+    Account,
 }
 
 impl UriScheme {
@@ -253,6 +301,29 @@ impl UriScheme {
             Self::Release => "release",
             Self::Project => "project",
             Self::Flow => "flow",
+            Self::Person => "person",
+            Self::Company => "company",
+            Self::Bank => "bank",
+            Self::Hospital => "hospital",
+            Self::Portfolio => "portfolio",
+            Self::Fund => "fund",
+            Self::Bond => "bond",
+            Self::Stock => "stock",
+            Self::Factory => "factory",
+            Self::Vehicle => "vehicle",
+            Self::City => "city",
+            Self::Economy => "economy",
+            Self::Asset => "asset",
+            Self::Payment => "payment",
+            Self::Treasury => "treasury",
+            Self::Market => "market",
+            Self::Risk => "risk",
+            Self::Insurance => "insurance",
+            Self::Settlement => "settlement",
+            Self::Exchange => "exchange",
+            Self::Tax => "tax",
+            Self::Derivative => "derivative",
+            Self::Account => "account",
         }
     }
 }
@@ -341,6 +412,29 @@ impl FromStr for UriScheme {
             "release" => Ok(Self::Release),
             "project" => Ok(Self::Project),
             "flow" => Ok(Self::Flow),
+            "person" => Ok(Self::Person),
+            "company" => Ok(Self::Company),
+            "bank" => Ok(Self::Bank),
+            "hospital" => Ok(Self::Hospital),
+            "portfolio" => Ok(Self::Portfolio),
+            "fund" => Ok(Self::Fund),
+            "bond" => Ok(Self::Bond),
+            "stock" => Ok(Self::Stock),
+            "factory" => Ok(Self::Factory),
+            "vehicle" => Ok(Self::Vehicle),
+            "city" => Ok(Self::City),
+            "economy" => Ok(Self::Economy),
+            "asset" => Ok(Self::Asset),
+            "payment" => Ok(Self::Payment),
+            "treasury" => Ok(Self::Treasury),
+            "market" => Ok(Self::Market),
+            "risk" => Ok(Self::Risk),
+            "insurance" => Ok(Self::Insurance),
+            "settlement" => Ok(Self::Settlement),
+            "exchange" => Ok(Self::Exchange),
+            "tax" => Ok(Self::Tax),
+            "derivative" => Ok(Self::Derivative),
+            "account" => Ok(Self::Account),
             _ => Err(Error::InvalidUri(format!("unknown scheme: {s}"))),
         }
     }
@@ -882,6 +976,29 @@ mod tests {
             ("release", UriScheme::Release),
             ("project", UriScheme::Project),
             ("flow", UriScheme::Flow),
+            ("person", UriScheme::Person),
+            ("company", UriScheme::Company),
+            ("bank", UriScheme::Bank),
+            ("hospital", UriScheme::Hospital),
+            ("portfolio", UriScheme::Portfolio),
+            ("fund", UriScheme::Fund),
+            ("bond", UriScheme::Bond),
+            ("stock", UriScheme::Stock),
+            ("factory", UriScheme::Factory),
+            ("vehicle", UriScheme::Vehicle),
+            ("city", UriScheme::City),
+            ("economy", UriScheme::Economy),
+            ("asset", UriScheme::Asset),
+            ("payment", UriScheme::Payment),
+            ("treasury", UriScheme::Treasury),
+            ("market", UriScheme::Market),
+            ("risk", UriScheme::Risk),
+            ("insurance", UriScheme::Insurance),
+            ("settlement", UriScheme::Settlement),
+            ("exchange", UriScheme::Exchange),
+            ("tax", UriScheme::Tax),
+            ("derivative", UriScheme::Derivative),
+            ("account", UriScheme::Account),
         ];
         for (s, expected) in &schemes {
             let parsed: UriScheme = s.parse().unwrap();

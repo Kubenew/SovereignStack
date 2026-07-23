@@ -181,6 +181,40 @@ storage://<allocation-id>              # Persistent storage
 energy://<allocation-id>               # Power consumption budget
 ```
 
+### Digital Economy Objects (RFC-0073)
+
+```
+economy://<domain>/<system>            # Digital economy
+asset://tokenized/<id>                 # Tokenized real-world asset
+payment://<rail>/<id>                  # Payment instruction
+treasury://<entity>/<account>          # Treasury account
+market://<venue>/<class>               # Financial market
+risk://<scope>/<model>                 # Risk model
+insurance://policy/<type>              # Insurance policy
+settlement://<method>/<id>             # Settlement record
+exchange://<venue>/<pair>              # Exchange venue
+tax://<jurisdiction>/<type>/<id>       # Taxable event
+derivative://<type>/<id>               # Derivative contract
+account://<entity>/<ledger>/<id>       # Ledger account
+```
+
+### Digital Twin Objects (RFC-0074)
+
+```
+person://<id>                          # Natural person digital twin
+company://<entity>                     # Corporate entity
+bank://<institution>                   # Financial institution
+hospital://<name>                      # Healthcare institution
+portfolio://<owner>/<strategy>         # Investment portfolio
+fund://<name>                          # Investment fund
+bond://<issuer>/<maturity>             # Debt instrument
+stock://<ticker>                       # Equity security
+factory://<location>/<name>            # Manufacturing facility
+vehicle://<fleet>/<id>                 # Autonomous vehicle
+city://<name>                          # Smart city
+robot://<device-id>                    # Physical device (existing)
+```
+
 ## Resolution Rules
 
 1. Local resolution preferred (Offline First)
