@@ -1,91 +1,127 @@
 """
-Autonomous Trading Agent for the Sovereign Mesh.
-Communicates via HTTP to the Mock Ledger and streams audits to the Mesh Aggregator.
+Autonomous Agentic Swarm for the Sovereign Mesh.
+Orchestrates Risk, Compliance, and Execution agents to debate and settle cross-chain trades.
 """
 import logging
 import requests
 import json
 import os
 import time
+import hashlib
+from examples.financial_adapter.zk_verifier import ProofVerifier
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("TradingAgent")
+logger = logging.getLogger("SwarmOrchestrator")
 
 LEDGER_URL = os.getenv("LEDGER_URL", "http://localhost:8545")
 AUDIT_URL = os.getenv("AUDIT_URL", "http://localhost:9091")
 
-class SovereignTradingAgent:
+class CRDTBulletinBoard:
+    """Simulates a shared CRDT state where swarm agents communicate."""
     def __init__(self):
-        logger.info(f"Initialized SovereignTradingAgent pointing to Ledger: {LEDGER_URL}")
+        self.state = {}
 
-    def evaluate_risk_and_hedge(self):
-        """
-        Agent reasoning loop
-        """
+    def post(self, key: str, data: dict):
+        self.state[key] = data
+
+    def read(self, key: str) -> dict:
+        return self.state.get(key, None)
+
+class RiskAgent:
+    """Analyzes markets and proposes trades."""
+    def evaluate_markets(self, board: CRDTBulletinBoard):
         try:
             resp = requests.get(f"{LEDGER_URL}/api/v1/balances")
             balances = resp.json()
-            logger.info(f"Agent perceived state: {balances}")
+            logger.info(f"[RiskAgent] Perceived state: {balances}")
         except Exception as e:
-            logger.error(f"Failed to read from ledger: {e}")
+            logger.error(f"[RiskAgent] Failed to read ledger: {e}")
             return
-        
-        if balances.get("tokenized_usdc", 0) > 500000:
-            logger.info("Reasoning: Excess liquidity detected. Initiating hedge strategy.")
             
-            tx_req = {
-                "asset": "tokenized_tsla_bonds",
+        # Example logic: Hedge EVM risk on Solana
+        if balances.get("eth_usdc", 0) > 500000:
+            logger.info("[RiskAgent] Arbitrage/Hedge opportunity detected. Proposing Solana swap.")
+            proposal = {
+                "asset": "sol_usdc",
                 "amount": 50.0,
-                "action": "BUY"
+                "action": "BUY",
+                "chain": "solana"
             }
             try:
-                prop_resp = requests.post(f"{LEDGER_URL}/api/v1/propose", json=tx_req)
+                prop_resp = requests.post(f"{LEDGER_URL}/api/v1/propose", json=proposal)
                 tx_proposal = prop_resp.json()
+                board.post("pending_trade", tx_proposal)
+                logger.info("[RiskAgent] Trade posted to bulletin board for compliance review.")
             except Exception as e:
-                logger.error(f"Failed to propose transaction: {e}")
-                return
+                logger.error(f"[RiskAgent] Proposal failed: {e}")
 
-            signed_tx = self._enforce_policy(tx_proposal)
+class ComplianceAgent:
+    """Enforces jurisdiction rules and generates ZK proofs."""
+    def audit_trade(self, board: CRDTBulletinBoard):
+        trade = board.read("pending_trade")
+        if not trade:
+            return
             
-            if signed_tx:
-                try:
-                    settle_resp = requests.post(f"{LEDGER_URL}/api/v1/settle", json=signed_tx)
-                    logger.info(f"Settlement response: {settle_resp.json()}")
-                    self._log_audit(signed_tx)
-                except Exception as e:
-                    logger.error(f"Failed to settle transaction: {e}")
+        logger.info(f"[ComplianceAgent] Reviewing trade {trade['tx_id']} against STRICT_L3 policies...")
+        
+        # Simulate successful audit
+        trade["policy_approved"] = True
+        trade["audit_hash"] = hashlib.sha256(trade['tx_id'].encode()).hexdigest()
+        
+        # Phase 7: Generate ZK Proof
+        logger.info("[ComplianceAgent] Generating ZK-SNARK alignment proof...")
+        trade["zk_proof"] = ProofVerifier.generate_simulated_proof(trade["audit_hash"])
+        
+        board.post("approved_trade", trade)
+        board.post("pending_trade", None) # clear
 
-    def _enforce_policy(self, tx_proposal: dict) -> dict:
-        """
-        Simulates the ss-policy engine evaluating the transaction against STRICT_L3 rules.
-        """
-        logger.info("ss-policy: Auditing proposed transaction against jurisdiction rules...")
-        tx_proposal["policy_approved"] = True
-        tx_proposal["audit_hash"] = "0xABC123"
-        logger.info("ss-policy: Transaction approved and signed.")
-        return tx_proposal
-
-    def _log_audit(self, signed_tx: dict):
-        """
-        Streams the audit event to the mesh audit-aggregator.
-        """
+class ExecutionAgent:
+    """Finalizes execution with the ledger."""
+    def execute(self, board: CRDTBulletinBoard):
+        trade = board.read("approved_trade")
+        if not trade:
+            return
+            
+        logger.info("[ExecutionAgent] Consensus reached. Broadcasting payload to ledger.")
         try:
-            # We wrap the transaction in an audit event
-            event = {
-                "event_type": "FINANCIAL_SETTLEMENT",
-                "jurisdiction": os.getenv("SS_JURISDICTION", "local"),
-                "details": signed_tx
-            }
-            # Fire and forget mock audit logging
-            # The actual aggregator might expect a different schema, but we'll POST for demo
-            requests.post(f"{AUDIT_URL}/audit", json=event)
-            logger.info("Audit logged to mesh aggregator successfully.")
+            settle_resp = requests.post(f"{LEDGER_URL}/api/v1/settle", json=trade)
+            if settle_resp.status_code == 200:
+                logger.info(f"[ExecutionAgent] Settlement confirmed: {settle_resp.json()}")
+                self._stream_audit(trade)
+            else:
+                logger.error(f"[ExecutionAgent] Settlement rejected: {settle_resp.text}")
         except Exception as e:
-            # Not failing the agent if audit fails in demo, but logged
-            logger.warning(f"Could not reach audit aggregator (mocking success for standalone runs): {e}")
+            logger.error(f"[ExecutionAgent] Execution failed: {e}")
+            
+        board.post("approved_trade", None) # clear
+
+    def _stream_audit(self, trade: dict):
+        try:
+            event = {
+                "event_type": "SWARM_SETTLEMENT",
+                "jurisdiction": os.getenv("SS_JURISDICTION", "local"),
+                "details": trade
+            }
+            requests.post(f"{AUDIT_URL}/audit", json=event)
+        except Exception:
+            pass
+
+class SovereignSwarm:
+    def __init__(self):
+        self.board = CRDTBulletinBoard()
+        self.risk = RiskAgent()
+        self.compliance = ComplianceAgent()
+        self.execution = ExecutionAgent()
+        
+    def run_cycle(self):
+        logger.info("--- Swarm Cycle Start ---")
+        self.risk.evaluate_markets(self.board)
+        self.compliance.audit_trade(self.board)
+        self.execution.execute(self.board)
+        logger.info("--- Swarm Cycle End ---\n")
 
 if __name__ == "__main__":
-    agent = SovereignTradingAgent()
+    swarm = SovereignSwarm()
     while True:
-        agent.evaluate_risk_and_hedge()
-        time.sleep(30)
+        swarm.run_cycle()
+        time.sleep(15)
