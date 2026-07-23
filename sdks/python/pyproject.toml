@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "sovereignstack"
+version = "0.1.0"
+description = "SovereignStack Python SDK — client library for sovereign intelligence objects"
+readme = "README.md"
+license = {text = "Apache-2.0 OR MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "SovereignStack Contributors"},
+]
+keywords = ["sovereign", "ai", "digital-economy", "digital-twin", "protocol"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://github.com/Kubenew/SovereignStack"
+
+[tool.setuptools.packages.find]
+include = ["sovereignstack*"]
