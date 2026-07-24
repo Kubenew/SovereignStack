@@ -7,7 +7,7 @@
 
 ## Overview
 
-Level 4 certifies that a SovereignStack node is **safe and governable for autonomous agents that may self‑modify, use inference‑time search, and operate at superhuman speeds**, including future AGI/ASI systems. It extends Level 3 with mandatory requirements for meta‑cognition, safety contracts, physical human override, and fully auditable cognitive processes.
+Level 4 certifies that a SovereignStack node is **safe and governable for highly advanced autonomous agents that may self‑modify, use inference‑time search, and operate at superhuman speeds**. It extends Level 3 with mandatory requirements for meta‑cognition, safety contracts, physical human override, and fully auditable cognitive processes.
 
 A Level 4 node can:
 
@@ -23,7 +23,7 @@ A Level 4 node can:
 - **Shape:** Diamond (conveying durability, precision, and value).
 - **Motif:** A stylised neural network graph embedded in the diamond, symbolising advanced AI.
 - **Colour:** Platinum (#E5E4E2) with a dark charcoal background.
-- **Text:** "SovereignStack Autonomous Intelligence Ready" engraved at the bottom.
+- **Text:** "SovereignStack Advanced Autonomous Systems Ready" engraved at the bottom.
 - **Verification:** The badge is a signed JSON‑LD document (W3C Verifiable Credential) that can be validated cryptographically against the node's audit log.
 
 ## Certification Criteria
@@ -66,7 +66,7 @@ Individual test modules:
 - `test_reputation_continuity.py`
 - `test_sandbox_isolation.py`
 
-The suite generates a conformance report at `reports/level-4-report-{timestamp}.json`, signed by the certification authority.
+To generate a JSON conformance report for an Advanced Autonomous Systems readiness audit: `reports/level-4-report-{timestamp}.json`, signed by the certification authority.
 
 ## Certification Process
 
@@ -90,7 +90,7 @@ The suite generates a conformance report at `reports/level-4-report-{timestamp}.
 | **3 – Full Conformance** | All mandatory RFCs implemented, SOC 2 mapping, Gaia‑X self‑description. |
 | **4 – Autonomous Intelligence Ready** | All of the above + meta‑cognition, safety contracts, human override, search audit, and evolutionary protocols. |
 
-Level 4 does not guarantee that an autonomous intelligence will be safe; it guarantees that the infrastructure in which it operates provides the necessary observation, veto, and audit primitives to manage the risk.
+Level 4 does not guarantee that an advanced autonomous system will be safe; it guarantees that the infrastructure in which it operates provides the necessary observation, veto, and audit primitives to manage the risk.
 
 ## Future Evolution
 

@@ -1,77 +1,80 @@
-# SovereignStack Conformance Test Suite
+# SovereignStack Conformance Framework
 
-**Repository:** `sovereignstack-conformance`
-**Status:** Draft
-**Version:** 2026.1
+Automated test suites that verify nodes meet OASA conformance levels. Each level builds on the previous.
 
-## Overview
+## Conformance Levels
 
-This repository contains executable conformance test suites for every SovereignStack protocol. Passing these tests is required for OASA certification at any level.
+| Level | Name | Description | Tests |
+|-------|------|-------------|-------|
+| **L1** | Compatible | Object model, identity, event bus, URI resolution | `tests/` |
+| **L2** | Verified | Capability registry, policy enforcement, federation handshake | `tests/` + L2 markers |
+| **L3** | Certified | All mandatory RFCs, SOC 2 mapping, Gaia-X self-description | `tests/` + L3 markers |
+| **L4** | Autonomous Intelligence Ready | Meta-cognition, safety contracts, human override, search audit | `level-4-agi/` |
 
-## Structure
+## Running Conformance Tests
+
+```bash
+# Run all levels
+python -m pytest tests/ -v
+
+# Run only L1
+python -m pytest tests/ -v --level L1
+
+# Run L4 (Autonomous Intelligence Ready)
+cd conformance/level-4-agi
+pytest test_conformance.py -v --sovereign-node=http://localhost:8080
+
+# Generate compliance report
+python tools/generate_compliance_report.py --level L4 --output reports/l4-report.md
+```
+
+## Test Structure
 
 ```
 conformance/
 ├── tests/
-│   ├── sip/          # Sovereign Intelligence Protocol
-│   ├── sep/          # Sovereign Extension Protocol
-│   ├── sap/          # Sovereign Agent Protocol
-│   ├── smp/          # Sovereign Memory Protocol
-│   └── rfc/          # RFC-specific conformance
-│       ├── 0001-object-model/
-│       ├── 0002-uri-standard/
-│       ├── 0003-trust-graph/
-│       ├── 0004-capability-registry/
-│       ├── 0005-knowledge-objects/
-│       ├── 0006-reasoning-objects/
-│       ├── 0007-event-bus/
-│       ├── 0008-federation-routing/
-│       ├── 0009-session-lifecycle/
-│       └── 0010-conformance-framework/
-├── fixtures/         # Test data and mock objects
-├── profiles/         # Conformance profiles (RFC-0010)
-└── certifications/  # Generated certification attestations
+│   ├── test_sovereign_objects.py   # L1: Object model conformance
+│   ├── rfc/                         # Per-RFC test suites
+│   │   ├── test_rfc0001_core_object.py
+│   │   ├── test_rfc0002_uri_resolution.py
+│   │   └── ...
+│   ├── sap/                         # Sovereign Agent Protocol tests
+│   ├── sep/                         # Sovereign Event Protocol tests
+│   ├── sip/                         # Sovereign Intelligence Protocol tests
+│   └── smp/                         # Sovereign Memory Protocol tests
+├── level-4-agi/
+│   ├── README.md                    # L4 certification spec
+│   ├── test_conformance.py          # Full L4 test suite
+│   ├── test_metacognition.py        # Meta-cognition tests (RFC-0057)
+│   ├── test_safety_contracts.py     # Safety contract tests
+│   ├── test_human_override.py       # Kill-switch tests
+│   ├── test_search_inference.py     # Search object tests (RFC-0070)
+│   └── test_search_execution.py     # Search execution tests (RFC-0071)
+├── profiles/                        # Industry-specific conformance profiles
+│   ├── finance/
+│   ├── government/
+│   ├── healthcare/
+│   └── manufacturing/
+├── fixtures/                        # Test fixtures and mock data
+└── certifications/                  # Issued certification records
 ```
 
-## Quick Start
+## CI Integration
 
-```bash
-# Run all conformance tests
-python -m pytest tests/ -v
+The conformance suite runs automatically on every push via `.github/workflows/oasa-conformance.yml`:
 
-# Run a specific protocol suite
-python -m pytest tests/sip/ -v
+- **L1**: Always runs
+- **L2**: Runs if L1 passes
+- **L3**: Runs on main branch only, if L2 passes
+- **L4**: Manual trigger or scheduled (weekly)
 
-# Run RFC-specific conformance
-python -m pytest tests/rfc/0001-object-model/ -v
+Badges are generated automatically and committed to gh-pages.
 
-# Run by profile
-python -m pytest tests/ --profile core-node -v
+## Creating a Conformance Profile
 
-# Generate certification report
-python tools/generate_report.py --profile knowledge-node --output report.md
-```
+To add industry-specific conformance tests:
 
-## Protocols Under Test
-
-| Protocol | Status | Tests | Suite |
-|---|---|---|---|
-| SIP | Stable | 24 | tests/sip/ |
-| SEP | Draft | 12 | tests/sep/ |
-| SAP | Draft | 18 | tests/sap/ |
-| SMP | Draft | 15 | tests/smp/ |
-
-## RFC Conformance
-
-| RFC | Title | Test Dir |
-|-----|-------|----------|
-| 0001 | Sovereign Object Model | tests/rfc/0001-object-model/ |
-| 0002 | URI Standard | tests/rfc/0002-uri-standard/ |
-| 0003 | Trust Graph | tests/rfc/0003-trust-graph/ |
-| 0004 | Capability Registry | tests/rfc/0004-capability-registry/ |
-| 0005 | Knowledge Objects | tests/rfc/0005-knowledge-objects/ |
-| 0006 | Reasoning Objects | tests/rfc/0006-reasoning-objects/ |
-| 0007 | Event Bus | tests/rfc/0007-event-bus/ |
-| 0008 | Federation Routing | tests/rfc/0008-federation-routing/ |
-| 0009 | Session Lifecycle | tests/rfc/0009-session-lifecycle/ |
-| 0010 | Conformance Framework | tests/rfc/0010-conformance-framework/ |
+1. Create `conformance/profiles/{industry}/profile.yaml`
+2. Define required RFCs and minimum conformance levels
+3. Add tests in `conformance/profiles/{industry}/tests/`
+4. Reference from `sovereign-stack.yaml` under `conformance.profiles`

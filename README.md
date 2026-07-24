@@ -10,9 +10,8 @@
   <img src="badges/oasa-l3-strict.svg" alt="L3 Strict-Sovereign" height="40">
 </p>
 <p align="center">
-  <strong>47 RFCs</strong> (0001–0074) · <strong>77 URI schemes</strong> · <strong>19 protocols</strong>
+  <strong>47 RFCs</strong> · <strong>77 URI schemes</strong> · <strong>19 protocols</strong> · <strong>6 Industry Profiles</strong>
 </p>
-
 <p align="center">
   <a href="/README.md">🇬🇧 English</a> ·
   <a href="docs/i18n/de/README.md">🇩🇪 Deutsch</a> ·
@@ -36,25 +35,102 @@
   <a href="docs/i18n/uk/README.md">🇺🇦 Українська</a>
 </p>
 
-## Community & Events
+---
 
-- Building Open Standards for Sovereign AI Systems:
-  Provenance, Governance, and Interoperability
+## What is SovereignStack?
 
-> **The Operating System for Autonomous Digital Economies** — An open protocol stack for sovereign intelligence, digital twins, and programmable finance.
+**SovereignStack is an open operating system and protocol stack for autonomous digital systems.** It combines identity, governance, provenance, policy, distributed execution, and programmable economic objects into a unified architecture for trustworthy, interoperable, and sovereign AI-powered infrastructure.
 
-[![Architecture Diagram](docs/architecture/diagrams/architecture-stack.svg)](docs/architecture/00-overview.md)
-
-SovereignStack is an operating system and protocol stack that treats intelligence, identity, and economic value as networked resources. It is to autonomous digital economies what Linux is to servers, Kubernetes is to containers, and TCP/IP is to networking — a universal substrate for sovereign agents, digital twins, and programmable finance.
+It treats intelligence, identity, and economic value as networked resources — the way Linux treats files, the way TCP/IP treats packets.
 
 ```
-Linux              (1991 — server operating system)
-Kubernetes         (2014 — container orchestration)
-SPIFFE             (2017 — workload identity)
-OpenTelemetry      (2019 — observability)
-TCP/IP             (1974 — network protocol)
-SovereignStack     (2026 — operating system for autonomous digital economies)
+┌────────────────────────────────────────────────────────────────────┐
+│                    WHAT SOVEREIGNSTACK PROVIDES                    │
+├────────────────────────────────────────────────────────────────────┤
+│                                                                    │
+│  Identity Layer       Universal Agent Identity (UAI)              │
+│                       DID resolution, trust, reputation           │
+│                                                                    │
+│  Intelligence Layer   Agents, Memory, Reasoning, Planning         │
+│                       Search inference, meta-cognition             │
+│                                                                    │
+│  Governance Layer     Policy enforcement, jurisdiction             │
+│                       ZK alignment, safety contracts               │
+│                                                                    │
+│  Economic Layer       Payments, markets, treasury, assets          │
+│                       Tokenized finance, settlement                │
+│                                                                    │
+│  Digital Twin Layer   Person, company, bank, factory               │
+│                       Vehicle, city, portfolio                     │
+│                                                                    │
+│  Fabric Layer         Federation, scheduling, networking           │
+│                       Continuity, migration, recovery              │
+│                                                                    │
+│  Provenance Layer     Every action traceable, auditable            │
+│                       Merkle audit trail, evidence chain           │
+│                                                                    │
+└────────────────────────────────────────────────────────────────────┘
 ```
+
+**Key insight:** SovereignStack does not compete with LangChain, CrewAI, or AutoGen. Those are orchestration frameworks. SovereignStack is the **infrastructure layer** they run on — the way Kubernetes does not compete with Docker Compose.
+
+---
+
+> **[Read the Reference Architecture (SIRA.md) →](SIRA.md)**
+
+---
+
+## Repository Structure
+
+To support both standards development and practical adoption, this repository is organized into three main categories:
+
+1. **Standards**
+   - RFCs (`rfcs/`)
+   - URI Standard (`URI_STANDARD.md`)
+   - Object Model (`OBJECT_MODEL.md`)
+   - Protocols & Constitution (`CONSTITUTION.md`)
+2. **Reference Implementations**
+   - Rust crates (Core runtime, `ss-*`)
+   - SDKs (`sdks/`)
+   - Reference Node (`reference-node/`)
+   - Examples (`examples/`)
+   - Nitro runtime (`os/`)
+3. **Profiles**
+   - Finance (`profiles/finance/`)
+   - Healthcare (`profiles/healthcare/`)
+   - Government, Manufacturing, Defense
+
+---
+
+## Quick Start (5 minutes)
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/Kubenew/SovereignStack.git
+cd SovereignStack
+
+# 2. Build the Rust workspace
+cargo build --release
+
+# 3. Launch playground (Docker Compose)
+docker compose -f playground/docker-compose.yml up -d
+
+# 4. Verify nodes are running
+curl http://localhost:8080/health
+
+# 5. Run conformance tests
+cargo test --workspace
+python -m pytest tests/conformance/ -v
+
+# 6. Check the audit trail
+tail -f /var/log/sovereignstack/audit.log
+```
+
+**That's it.** You now have a running SovereignStack node with identity, capabilities, event bus, and provenance logging.
+
+See [playground/](playground/) for Docker Compose setup, [SCALING-AGI.md](SCALING-AGI.md) for production deployment, and [examples/federation/](examples/federation/) for multi-node federation.
+
+---
 
 ### Six-Layer Architecture
 
@@ -72,28 +148,16 @@ Fabric                Federation · Scheduling · Networking · Continuity
 Kernel                Runtime · Storage · Security · Events · Provenance
 ```
 
-## Quick Start (5 minutes)
+### Where SovereignStack fits
 
-```bash
-# 1. Clone and launch the playground
-git clone https://github.com/Kubenew/SovereignStack.git
-cd SovereignStack
-docker compose up -d
-
-# 2. Verify the nodes are talking
-curl http://localhost:8080/health
-
-# 3. Run a conformance check
-python tools/sovereign_stack.py validate sovereign-stack.yaml
-
-# 4. Start an agent session
-python scripts/swarm_orchestrator_dashboard.py
-
-# 5. Check the Merkle audit trail
-tail -f /var/log/sovereignstack/audit.log
 ```
-
-See [playground/](playground/) for Docker Compose setup and [SCALING-AGI.md](SCALING-AGI.md) for production deployment.
+Linux              (1991 — server operating system)
+Kubernetes         (2014 — container orchestration)
+SPIFFE             (2017 — workload identity)
+OpenTelemetry      (2019 — observability)
+TCP/IP             (1974 — network protocol)
+SovereignStack     (2026 — operating system for autonomous digital economies)
+```
 
 ## Design Principles
 
@@ -242,6 +306,7 @@ SovereignStack/
 │   ├── fin_identity  # KYC/AML/sanctions
 │   └── fin_compliance # Regulatory compliance engine
 ├── ss-sip/           # Sovereign Intelligence Protocol (Stub)
+├── ss-contracts/     # Safety contracts & human override (Stub)
 ├── reference-node/   # Minimal reference node binary
 ├── profiles/         # Industry profiles
 │   ├── finance/      # Sovereign Finance Profile (SFIN)
@@ -258,8 +323,13 @@ SovereignStack/
 │   ├── protocol-mappings/     # ISO 20022, OIDC, SPIFFE, OTel
 │   └── reference-architectures/ # Banking, insurance, gov, healthcare, mfg
 ├── tests/            # Conformance test suite
-├── examples/         # Reference implementations
-└── playground/       # Try-it-now deployment
+├── examples/
+│   ├── adapters/
+│   │   ├── ollama/       # Ollama inference adapter
+│   │   └── vllm/         # vLLM inference adapter
+│   ├── federation/       # Multi-node federation (3 jurisdictions)
+│   └── financial_adapter/ # Financial system adapter
+├── playground/           # Try-it-now deployment
 ```
 
 ## Standards Ecosystem
@@ -277,6 +347,9 @@ SovereignStack is governed by a formal standards framework:
 | [CERTIFICATION.md](CERTIFICATION.md) | Badge levels, colors, shapes, materials |
 | [PROTOCOL_REGISTRY.md](PROTOCOL_REGISTRY.md) | 18 protocols with lifecycle management |
 | [examples/federation/](examples/federation/) | Multi-node federation example (3 jurisdictions) |
+| [examples/adapters/](examples/adapters/) | Ollama + vLLM inference adapters |
+| [conformance/](conformance/) | Conformance test suites (L1-L4) |
+| [conformance/level-4-agi/](conformance/level-4-agi/) | L4 Autonomous Intelligence Ready spec |
 | [REFERENCE_IMPLEMENTATIONS.md](REFERENCE_IMPLEMENTATIONS.md) | 13 core subsystems + 3 language bindings |
 | [ROADMAP-2035.md](ROADMAP-2035.md) | 10-year vision through Sovereign Intelligence Internet |
 | [SIRA.md](SIRA.md) | Sovereign Intelligence Reference Architecture (4-quadrant object model) |
@@ -334,9 +407,26 @@ SovereignStack is translated into 18 languages. The project follows the Debian m
 | [RFC-0051](rfcs/RFC-0051-model-failover-protocol.md) | Model Failover Protocol | Draft |
 | [RFC-0052](rfcs/RFC-0052-ai-continuity-manifest.md) | AI Continuity Manifest | Draft |
 | [RFC-0053](rfcs/RFC-0053-sovereign-recovery-profiles.md) | Sovereign Recovery Profiles | Draft |
+| [RFC-0045](rfcs/RFC-0045-meta-cognition-self-model.md) | Meta-Cognition Self-Model | Draft |
+| [RFC-0046](rfcs/RFC-0046-safety-contracts.md) | Safety Contracts | Draft |
+| [RFC-0047](rfcs/RFC-0047-human-override-protocol.md) | Human Override Protocol | Draft |
+| [RFC-0048](rfcs/RFC-0048-search-inference-auditing.md) | Search Inference Auditing | Draft |
+| [RFC-0049](rfcs/RFC-0049-evolutionary-protocols.md) | Evolutionary Protocols | Draft |
+| [RFC-0050](rfcs/RFC-0050-ai-continuity-disaster-recovery.md) | AI Continuity & Disaster Recovery | Draft |
+| [RFC-0051](rfcs/RFC-0051-model-failover-protocol.md) | Model Failover Protocol | Draft |
+| [RFC-0052](rfcs/RFC-0052-ai-continuity-manifest.md) | AI Continuity Manifest | Draft |
+| [RFC-0053](rfcs/RFC-0053-sovereign-recovery-profiles.md) | Sovereign Recovery Profiles | Draft |
 | [RFC-0054](rfcs/RFC-0054-compliance-framework.md) | Compliance Framework (OASA CCM) | Draft |
 | [RFC-0055](rfcs/RFC-0055-windows-build-system.md) | Windows Build System | Draft |
+| [RFC-0056](rfcs/RFC-0056-search-objects.md) | Search Objects (Graph-Based) | Draft |
+| [RFC-0057](rfcs/RFC-0057-meta-cognition-protocol.md) | Meta-Cognition Protocol | Draft |
+| [RFC-0058](rfcs/RFC-0058-dynamic-negotiation.md) | Dynamic Protocol Negotiation | Draft |
 | [RFC-0060](rfcs/RFC-0060-digital-twin-entity-model.md) | Digital Twin Entity Model | Draft |
+| [RFC-0070](rfcs/RFC-0070-search-objects-graph.md) | Search Objects (Graph Model) | Draft |
+| [RFC-0071](rfcs/RFC-0071-search-execution-protocol.md) | Search Execution Protocol | Draft |
+| [RFC-0072](rfcs/RFC-0072-cognitive-development-workflow.md) | Cognitive Development Workflow | Draft |
+| [RFC-0073](rfcs/RFC-0073-digital-economy-objects.md) | Digital Economy Objects | Draft |
+| [RFC-0074](rfcs/RFC-0074-digital-twin-objects.md) | Digital Twin Objects | Draft |
 
 
 ## Quickstart
@@ -346,21 +436,51 @@ SovereignStack is translated into 18 languages. The project follows the Debian m
 git clone https://github.com/Kubenew/SovereignStack.git
 cd SovereignStack
 
-# Windows: build .exe binaries (see BUILD_WINDOWS.md for full MSI guide)
+# Build (Linux/macOS)
+cargo build --release
+
+# Build (Windows — see BUILD_WINDOWS.md for MSI guide)
 cargo build --release --bin ss-node --bin ss-cli
 
 # Launch playground (Docker Compose)
 docker compose -f playground/docker-compose.yml up -d
 
-# Or build from source
-cargo build --workspace
-```
-
-### Test
-
-```bash
+# Run conformance tests
 cargo test --workspace
+python -m pytest tests/conformance/ -v
+
+# Multi-node federation (3 jurisdictions)
+docker compose -f examples/federation/docker-compose.federation.yml up -d
+
+# Inference adapters
+cd examples/adapters/ollama && python adapter.py   # Ollama
+cd examples/adapters/vllm   && python adapter.py   # vLLM
 ```
+
+## v0.4.0 — Reference & Conformance
+
+The reference implementation with conformance testing, multi-node federation, and inference adapters.
+
+**What's new:**
+
+- **Conformance suite**: Automated L1-L4 testing with CI integration (GitHub Actions)
+- **Multi-node federation**: 3-jurisdiction example (EU/US/Asia) with CRDT sync
+- **Inference adapters**: Ollama and vLLM bridges with audit logging
+- **L4 certification**: "Autonomous Intelligence Ready" — meta-cognition, safety contracts, human override, search audit
+- **RFCs 0045-0074**: Meta-cognition, safety contracts, search objects, digital economy, digital twins
+- **77 URI schemes**: Complete addressing for agents, twins, finance, and cognitive processes
+- **Digital economy primitives**: Payments, markets, treasury, derivatives, insurance, settlement
+
+**Quick links:**
+
+| Resource | Description |
+|----------|-------------|
+| [SIRA.md](SIRA.md) | Reference Architecture |
+| [conformance/](conformance/) | Conformance test suites (L1-L4) |
+| [examples/federation/](examples/federation/) | Multi-node federation |
+| [examples/adapters/](examples/adapters/) | Ollama + vLLM adapters |
+| [level-4-agi/](conformance/level-4-agi/) | L4 certification spec |
+| [rfcs/](rfcs/) | 47 protocol specifications |
 
 ## Compliance & Certifications
 

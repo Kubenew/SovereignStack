@@ -71,18 +71,33 @@
 | ✅ | Certification Program | Certified Node, Runtime, Federation |
 | ✅ | Enterprise Platform | Support contracts, managed updates, deployment audits |
 
-## 2028.1 — Sovereign Finance & Industry Profiles
+## Executable Milestones
 
+The roadmap has shifted focus toward executable milestones and reference implementations, demonstrating the maturity of the specifications.
+
+### v0.5.0
 | Status | Feature | Description |
 |---|---|---|
-| 🚧 | Sovereign Finance Profile (SFIN) | Standards for payments, treasury, tokenized assets, settlements, financial AI workflows |
-| 🚧 | ss-economy Expansion | 12 sub-modules: payments, settlement, treasury, assets, markets, insurance, risk, derivatives, accounting, tax, identity, compliance |
-| 🚧 | Digital Twin Entity Model (RFC-0060) | 10 entity URI schemes (`person://`, `company://`, `bank://`, etc.) with 7-facet state model |
-| 📅 | Reference Node v2 | Runnable demo combining kernel, identity, policy, provenance, and economy modules |
-| 📅 | Protocol Mappings | Integration guides for ISO 20022, OpenID Connect, SPIFFE/SPIRE, OpenTelemetry, financial messaging |
-| 📅 | Reference Architectures | Deployment diagrams and examples for banking, insurance, government, healthcare, manufacturing |
-| 📅 | Industry Profiles | Dedicated profiles for finance, government, healthcare, manufacturing, robotics, defense |
-| 🔮 | Conformance & Certification | Measurable SFIN compliance levels leveraging OASA CCM |
+| 🚧 | Reference Node | Runnable demo combining kernel, identity, policy, and provenance |
+| 📅 | Policy Engine | Implementation of OPA-backed governance rules |
+| 📅 | Provenance Engine | Cryptographic event log and Merkle audit trails |
+| 📅 | Human Override Implementation | Reference integration of `human://` and `override://` |
+| 📅 | TEE Integration | Secure enclave evaluation for zero-knowledge proofs |
+
+### v0.6.0
+| Status | Feature | Description |
+|---|---|---|
+| 📅 | Multi-node Federation | Sovereign mesh operation and context handover |
+| 📅 | Finance Profile | Implement standards for payments, treasury, tokenized assets |
+| 📅 | Digital Twin SDK | Tools to manage `person://` and organizational digital twins |
+| 📅 | Kubernetes Operator | Native resource management for autonomous infrastructure |
+
+### v0.7.0
+| Status | Feature | Description |
+|---|---|---|
+| 🔮 | Interoperability Demonstrations | Cross-framework orchestration |
+| 🔮 | Third-party Conformance Tests | Automated validation by external certification labs |
+| 🔮 | Cross-vendor Implementations | Open standards adoption by external ecosystem partners |
 
 ## 2026 Kubernetes Enhancements
 

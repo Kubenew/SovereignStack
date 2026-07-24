@@ -46,21 +46,27 @@ Every entity belongs to exactly one of four quadrants. This provides implementer
 ┌─────────────────────────────┬─────────────────────────────┐
 │       COGNITIVE             │       OPERATIONAL           │
 │                             │                             │
-│  mind://                    │  workflow://                 │
-│  reason://                  │  session://                  │
-│  goal://                    │  agent://                    │
-│  belief://                  │  artifact://                 │
-│  knowledge://               │  checkpoint://               │
-│                             │  scheduler://                │
+│  mind://                    │  workflow://                │
+│  reason://                  │  session://                 │
+│  goal://                    │  agent://                   │
+│  belief://                  │  artifact://                │
+│  knowledge://               │  checkpoint://              │
+│  search://                  │  scheduler://               │
+│  meta://                    │                             │
+│  context://                 │                             │
 ├─────────────────────────────┼─────────────────────────────┤
 │       GOVERNANCE            │       FEDERATION            │
 │                             │                             │
-│  policy://                  │  node://                     │
-│  capability://              │  fabric://                   │
-│  provenance://              │  routing://                  │
-│  evidence://                │  gateway://                  │
-│  constitution://            │  topology://                 │
-│                             │  federation://               │
+│  policy://                  │  node://                    │
+│  capability://              │  fabric://                  │
+│  provenance://              │  routing://                 │
+│  evidence://                │  gateway://                 │
+│  constitution://            │  topology://                │
+│  human://                   │  federation://              │
+│  override://                │                             │
+│  safety://                  │                             │
+│  safeguard://               │                             │
+│  lease://                   │                             │
 └─────────────────────────────┴─────────────────────────────┘
 ```
 
@@ -75,6 +81,9 @@ Every entity belongs to exactly one of four quadrants. This provides implementer
 | Goal | `goal://` | Active objective with completion criteria |
 | Belief | `belief://` | Held proposition with confidence |
 | Knowledge | `knowledge://` | Long-term, versioned facts |
+| Search | `search://` | Auditable MCTS/beam search graph |
+| Meta | `meta://` | Self-model and improvement logging |
+| Context | `context://` | Serialised cognitive state for handover |
 
 ### Operational Objects
 
@@ -94,6 +103,12 @@ Every entity belongs to exactly one of four quadrants. This provides implementer
 | Capability | `capability://` | Permission token |
 | Provenance | `provenance://` | Causal creation chain |
 | Evidence | `evidence://` | Verifiable audit evidence |
+| Constitution| `constitution://`| System-wide immutable laws |
+| Human | `human://` | Biometric authority & identity |
+| Override | `override://` | Hardware-backed active intervention |
+| Safety | `safety://` | Formal safety contracts |
+| Safeguard | `safeguard://` | Policy enforcement safeguards |
+| Lease | `lease://` | Temporary autonomy operational grant |
 
 ### Federation Objects
 

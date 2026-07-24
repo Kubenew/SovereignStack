@@ -3,7 +3,11 @@
 //! SovereignStack Reasoning Objects and Caching.
 //!
 //! Implements verifiable reasoning graph nodes and semantic caching
+//! Implements verifiable reasoning graph nodes and semantic caching
 //! as part of the Cognitive Mesh Architecture (RFC-0060).
+
+pub mod search;
+pub mod engine;
 
 use ss_core::uri::SovereignUri;
 use std::collections::HashMap;
