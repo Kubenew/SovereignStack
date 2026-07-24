@@ -56,17 +56,18 @@ cd conformance/level-4-agi
 python -m pytest --sovereign-node=profile-level4 --audit-log=/var/log/sovereignstack/audit.log -v
 ```
 
-Individual test modules:
+Test categories (all in `test_conformance.py`):
 
-- `test_search_inference.py` – Search Objects (RFC-0070) conformance
-- `test_search_execution.py` – Search Execution Protocol (RFC-0071) conformance
-- `test_metacognition.py` – Meta-Cognition (RFC-0057) conformance
-- `test_safety_contracts.py`
-- `test_human_override.py`
-- `test_reputation_continuity.py`
-- `test_sandbox_isolation.py`
+- `TestMetaCognition` – Meta-Cognition (RFC-0057) — self-model, improvement log
+- `TestSafetyContracts` – Safety contracts — validation, veto
+- `TestHumanOverride` – Kill-switch — response time, context handover
+- `TestSearchInferenceAuditing` – Search objects — creation, logging, replay
+- `TestEvolutionaryProtocols` – Protocol negotiation, governance voting
+- `TestBoundedAutonomyLeases` – Lease creation, expiry, renewal
+- `TestReputationContinuity` – Transition certificates, reputation inheritance
+- `TestSandboxedExperimentZones` – Sandbox isolation, kill switch
 
-To generate a JSON conformance report for an Advanced Autonomous Systems readiness audit: `reports/level-4-report-{timestamp}.json`, signed by the certification authority.
+The suite generates a conformance report at `reports/level-4-report-{timestamp}.json`, signed by the certification authority.
 
 ## Certification Process
 

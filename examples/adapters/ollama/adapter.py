@@ -242,6 +242,7 @@ def main():
     parser.add_argument("--jurisdiction", default="us")
     parser.add_argument("--audit-log", default="/var/log/sovereignstack/audit.log")
     parser.add_argument("--log-requests", action="store_true", default=True)
+    parser.add_argument("--no-log-requests", dest="log_requests", action="store_false")
     args = parser.parse_args()
 
     _config["ollama_host"] = args.ollama_host

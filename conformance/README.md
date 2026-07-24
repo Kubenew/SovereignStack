@@ -44,17 +44,12 @@ conformance/
 │   └── smp/                         # Sovereign Memory Protocol tests
 ├── level-4-agi/
 │   ├── README.md                    # L4 certification spec
-│   ├── test_conformance.py          # Full L4 test suite
-│   ├── test_metacognition.py        # Meta-cognition tests (RFC-0057)
-│   ├── test_safety_contracts.py     # Safety contract tests
-│   ├── test_human_override.py       # Kill-switch tests
-│   ├── test_search_inference.py     # Search object tests (RFC-0070)
-│   └── test_search_execution.py     # Search execution tests (RFC-0071)
+│   ├── conftest.py                  # Pytest fixtures (--sovereign-node)
+│   └── test_conformance.py          # Full L4 test suite (24 tests)
 ├── profiles/                        # Industry-specific conformance profiles
-│   ├── finance/
-│   ├── government/
-│   ├── healthcare/
-│   └── manufacturing/
+│   ├── core-node.yaml
+│   ├── agent-node.yaml
+│   └── ...
 ├── fixtures/                        # Test fixtures and mock data
 └── certifications/                  # Issued certification records
 ```

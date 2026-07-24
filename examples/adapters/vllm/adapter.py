@@ -181,15 +181,18 @@ async def chat_completions(request: Request):
 
             if stream:
                 async def stream_with_audit():
-                    full_content = ""
+                    content_chunks = []
                     async for chunk in resp.aiter_bytes():
+                        content_chunks.append(chunk)
                         yield chunk
                     elapsed = time.time() - start_time
+                    full_content = b"".join(content_chunks).decode("utf-8", errors="replace")
                     _write_audit(_audit_entry("inference_complete", {
                         "request_id": request_id,
                         "model": model_name,
                         "capability": f"capability://vllm/{model_name}",
                         "model_uri": f"model://vllm/{model_name}",
+                        "content_hash": _hash_content(full_content),
                         "elapsed_ms": int(elapsed * 1000),
                         "stream": True,
                     }))

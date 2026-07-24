@@ -407,26 +407,10 @@ SovereignStack is translated into 18 languages. The project follows the Debian m
 | [RFC-0051](rfcs/RFC-0051-model-failover-protocol.md) | Model Failover Protocol | Draft |
 | [RFC-0052](rfcs/RFC-0052-ai-continuity-manifest.md) | AI Continuity Manifest | Draft |
 | [RFC-0053](rfcs/RFC-0053-sovereign-recovery-profiles.md) | Sovereign Recovery Profiles | Draft |
-| [RFC-0045](rfcs/RFC-0045-meta-cognition-self-model.md) | Meta-Cognition Self-Model | Draft |
-| [RFC-0046](rfcs/RFC-0046-safety-contracts.md) | Safety Contracts | Draft |
-| [RFC-0047](rfcs/RFC-0047-human-override-protocol.md) | Human Override Protocol | Draft |
-| [RFC-0048](rfcs/RFC-0048-search-inference-auditing.md) | Search Inference Auditing | Draft |
-| [RFC-0049](rfcs/RFC-0049-evolutionary-protocols.md) | Evolutionary Protocols | Draft |
-| [RFC-0050](rfcs/RFC-0050-ai-continuity-disaster-recovery.md) | AI Continuity & Disaster Recovery | Draft |
-| [RFC-0051](rfcs/RFC-0051-model-failover-protocol.md) | Model Failover Protocol | Draft |
-| [RFC-0052](rfcs/RFC-0052-ai-continuity-manifest.md) | AI Continuity Manifest | Draft |
-| [RFC-0053](rfcs/RFC-0053-sovereign-recovery-profiles.md) | Sovereign Recovery Profiles | Draft |
-| [RFC-0054](rfcs/RFC-0054-compliance-framework.md) | Compliance Framework (OASA CCM) | Draft |
-| [RFC-0055](rfcs/RFC-0055-windows-build-system.md) | Windows Build System | Draft |
-| [RFC-0056](rfcs/RFC-0056-search-objects.md) | Search Objects (Graph-Based) | Draft |
-| [RFC-0057](rfcs/RFC-0057-meta-cognition-protocol.md) | Meta-Cognition Protocol | Draft |
-| [RFC-0058](rfcs/RFC-0058-dynamic-negotiation.md) | Dynamic Protocol Negotiation | Draft |
+| [RFC-0056](rfcs/RFC-0056-search-inference.md) | Search Inference | Draft |
+| [RFC-0057](rfcs/RFC-0057-metacognition.md) | Meta-Cognition | Draft |
 | [RFC-0060](rfcs/RFC-0060-digital-twin-entity-model.md) | Digital Twin Entity Model | Draft |
-| [RFC-0070](rfcs/RFC-0070-search-objects-graph.md) | Search Objects (Graph Model) | Draft |
-| [RFC-0071](rfcs/RFC-0071-search-execution-protocol.md) | Search Execution Protocol | Draft |
-| [RFC-0072](rfcs/RFC-0072-cognitive-development-workflow.md) | Cognitive Development Workflow | Draft |
-| [RFC-0073](rfcs/RFC-0073-digital-economy-objects.md) | Digital Economy Objects | Draft |
-| [RFC-0074](rfcs/RFC-0074-digital-twin-objects.md) | Digital Twin Objects | Draft |
+| [RFC-0061](rfcs/RFC-0061-human-override.md) | Human Override Protocol | Draft |
 
 
 ## Quickstart
