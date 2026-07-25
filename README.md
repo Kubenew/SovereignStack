@@ -38,7 +38,6 @@
 
 ## Community & Events
 
-- CFP submitted to Open Source Summit Europe 2026
 - Building Open Standards for Sovereign AI Systems:
   Provenance, Governance, and Interoperability
 
