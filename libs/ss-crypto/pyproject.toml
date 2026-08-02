@@ -1,0 +1,23 @@
+[project]
+name = "ss-crypto"
+version = "0.1.0"
+description = "SovereignStack Ed25519 signing, hashing, and signed envelopes"
+license = "Apache-2.0"
+requires-python = ">=3.12"
+dependencies = [
+    "ss-core",
+    "PyNaCl>=1.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+]
+
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["ss_crypto*"]

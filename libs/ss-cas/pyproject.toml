@@ -1,0 +1,23 @@
+[project]
+name = "ss-cas"
+version = "0.1.0"
+description = "SovereignStack Content-Addressed Storage and Merkle tree"
+license = "Apache-2.0"
+requires-python = ">=3.12"
+dependencies = [
+    "ss-core",
+    "ss-crypto",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+]
+
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["ss_cas*"]
