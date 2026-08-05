@@ -43,6 +43,12 @@ impl UriResolverImpl {
     }
 }
 
+impl Default for UriResolverImpl {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl UriResolver for UriResolverImpl {
     fn resolve(&self, uri: &SovereignUri) -> Result<ResolutionResult, ResolutionError> {
         self.resolve_local(uri)

@@ -23,18 +23,21 @@ impl std::fmt::Debug for KeyPair {
 
 impl KeyPair {
     /// Generate a new random key pair.
+    #[must_use]
     pub fn generate() -> Self {
         let signing_key = SigningKey::generate(&mut OsRng);
         Self { signing_key }
     }
 
     /// Create from an existing signing key bytes (32 bytes).
+    #[must_use]
     pub fn from_bytes(bytes: &[u8; 32]) -> Self {
         let signing_key = SigningKey::from_bytes(bytes);
         Self { signing_key }
     }
 
     /// Returns the public key.
+    #[must_use]
     pub fn public_key(&self) -> PublicKey {
         PublicKey(self.signing_key.verifying_key())
     }

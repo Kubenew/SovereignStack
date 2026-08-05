@@ -2,7 +2,7 @@ import hashlib
 import json
 import os
 import logging
-import threading
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -163,9 +163,9 @@ class MerkleTree:
         return cls()
 
 
-# Global singleton
+# Global singleton with async-safe locking
 _merkle_tree: MerkleTree | None = None
-_merkle_lock = threading.Lock()
+_merkle_lock = asyncio.Lock()
 
 
 def get_merkle_tree() -> MerkleTree:
@@ -175,8 +175,14 @@ def get_merkle_tree() -> MerkleTree:
     return _merkle_tree
 
 
-def append_event(event: dict) -> str:
-    with _merkle_lock:
+async def append_event(event: dict) -> str:
+    """Append an event to the Merkle tree with async-safe locking.
+    
+    The tree mutation is performed under an asyncio.Lock to prevent
+    concurrent appends from corrupting the tree structure. The disk
+    write inside _save() is synchronous but fast (single JSON dump).
+    """
+    async with _merkle_lock:
         tree = get_merkle_tree()
         return tree.append(event)
 

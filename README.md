@@ -100,6 +100,44 @@ To support both standards development and practical adoption, this repository is
    - Healthcare (`profiles/healthcare/`)
    - Government, Manufacturing, Defense
 
+```
+SovereignStack/
+├── ss-kernel/        # Core kernel (identity, resolver, eventbus, registry, capability, policy)
+├── ss-core/          # Shared types, URI parsing, errors
+├── ss-crypto/        # Ed25519 signing, hashing
+├── ss-identity/      # Universal Agent Identity
+├── ss-capability/    # Capability declaration & matching
+├── ss-eventbus/      # Event sourcing infrastructure
+├── ss-cas/           # Content-addressed storage
+├── ss-federation/    # Sovereign routing & discovery
+├── ss-runtime/       # Multi-model execution runtime
+├── ss-memory/        # Tiered memory subsystem (Stub)
+├── ss-sessiond/      # Session lifecycle daemon
+├── ss-scheduler/     # Compute placement (Stub)
+├── ss-swarm/         # Multi-agent coordination (Stub)
+├── ss-reason/        # Reasoning object store (Stub)
+├── ss-kas/           # Knowledge addressing system (Stub)
+├── ss-sig/           # Sovereign identity graph (Stub)
+├── ss-trust/         # Trust framework (Stub)
+├── ss-reputation/    # Reputation scoring (Stub)
+├── ss-policy/        # Governance & jurisdiction (Stub)
+├── ss-provenance/    # Computational lineage (Stub)
+├── ss-jurisdiction/  # Jurisdiction compliance engine
+├── ss-twin/          # Digital twin framework (IoT/robotics)
+├── ss-device/        # Reality interface layer (Stub)
+├── ss-economy/       # Financial economy primitives
+├── ss-sip/           # Sovereign Intelligence Protocol (Stub)
+├── ss-contracts/     # Safety contracts & human override (Stub)
+├── reference-node/   # Minimal reference node binary
+├── profiles/         # Industry profiles
+├── conformance/      # Conformance test suites & profiles
+├── rfcs/             # Protocol specifications (RFC-0001–0060)
+├── docs/             # Architecture, protocol mappings, reference architectures
+├── tests/            # Conformance test suite
+├── examples/         # Adapters, federation, etc.
+└── playground/       # Try-it-now deployment
+```
+
 ---
 
 ## Quick Start (5 minutes)
@@ -109,8 +147,11 @@ To support both standards development and practical adoption, this repository is
 git clone https://github.com/Kubenew/SovereignStack.git
 cd SovereignStack
 
-# 2. Build the Rust workspace
+# 2. Build the Rust workspace (Linux/macOS)
 cargo build --release
+
+# 2a. Build (Windows — see BUILD_WINDOWS.md for MSI guide)
+cargo build --release --bin ss-node --bin ss-cli
 
 # 3. Launch playground (Docker Compose)
 docker compose -f playground/docker-compose.yml up -d
@@ -124,6 +165,13 @@ python -m pytest tests/conformance/ -v
 
 # 6. Check the audit trail
 tail -f /var/log/sovereignstack/audit.log
+
+# 7. Multi-node federation (3 jurisdictions)
+docker compose -f examples/federation/docker-compose.federation.yml up -d
+
+# 8. Inference adapters
+cd examples/adapters/ollama && python adapter.py   # Ollama
+cd examples/adapters/vllm   && python adapter.py   # vLLM
 ```
 
 **That's it.** You now have a running SovereignStack node with identity, capabilities, event bus, and provenance logging.
@@ -265,72 +313,7 @@ Alongside the core Rust primitives, SovereignStack implements a suite of Python-
 - **Predictive Scheduler**: Autonomous operational controller employing exponential smoothing models to predict compute load and proactively scale resources.
 - **Weight Federation**: Secure registration and sharding of model weights across distributed nodes for collaborative inference.
 
-## Repository Structure
 
-```
-SovereignStack/
-├── ss-kernel/        # Core kernel (identity, resolver, eventbus, registry, capability, policy)
-├── ss-core/          # Shared types, URI parsing, errors
-├── ss-crypto/        # Ed25519 signing, hashing
-├── ss-identity/      # Universal Agent Identity
-├── ss-capability/    # Capability declaration & matching
-├── ss-eventbus/      # Event sourcing infrastructure
-├── ss-cas/           # Content-addressed storage
-├── ss-federation/    # Sovereign routing & discovery
-├── ss-runtime/       # Multi-model execution runtime
-├── ss-memory/        # Tiered memory subsystem (Stub)
-├── ss-sessiond/      # Session lifecycle daemon
-├── ss-scheduler/     # Compute placement (Stub)
-├── ss-swarm/         # Multi-agent coordination (Stub)
-├── ss-reason/        # Reasoning object store (Stub)
-├── ss-kas/           # Knowledge addressing system (Stub)
-├── ss-sig/           # Sovereign identity graph (Stub)
-├── ss-trust/         # Trust framework (Stub)
-├── ss-reputation/    # Reputation scoring (Stub)
-├── ss-policy/        # Governance & jurisdiction (Stub)
-├── ss-provenance/    # Computational lineage (Stub)
-├── ss-jurisdiction/  # Jurisdiction compliance engine
-├── ss-twin/          # Digital twin framework (IoT/robotics)
-├── ss-device/        # Reality interface layer (Stub)
-├── ss-economy/       # Financial economy primitives
-│   ├── payments      # Payment processing
-│   ├── settlement    # Trade & payment settlement
-│   ├── treasury      # Treasury & liquidity management
-│   ├── assets        # Tokenized asset registry
-│   ├── markets       # Order books, trading, market data
-│   ├── insurance     # Policies, claims, underwriting
-│   ├── risk          # Risk models, VaR, stress testing
-│   ├── derivatives   # Options, futures, swaps
-│   ├── accounting    # Double-entry ledger
-│   ├── tax           # Tax computation & jurisdiction
-│   ├── fin_identity  # KYC/AML/sanctions
-│   └── fin_compliance # Regulatory compliance engine
-├── ss-sip/           # Sovereign Intelligence Protocol (Stub)
-├── ss-contracts/     # Safety contracts & human override (Stub)
-├── reference-node/   # Minimal reference node binary
-├── profiles/         # Industry profiles
-│   ├── finance/      # Sovereign Finance Profile (SFIN)
-│   ├── government/   # Government & public sector
-│   ├── healthcare/   # Healthcare & life sciences
-│   ├── manufacturing/# Manufacturing & supply chain
-│   ├── robotics/     # Robotics & autonomous systems
-│   └── defense/      # Defense & national security
-├── conformance/      # Conformance test suites & profiles
-├── rfcs/             # Protocol specifications (RFC-0001–0060)
-├── docs/
-│   ├── architecture/ # 10-page architecture breakdown
-│   ├── architecture/diagrams/ # SVG architecture diagrams
-│   ├── protocol-mappings/     # ISO 20022, OIDC, SPIFFE, OTel
-│   └── reference-architectures/ # Banking, insurance, gov, healthcare, mfg
-├── tests/            # Conformance test suite
-├── examples/
-│   ├── adapters/
-│   │   ├── ollama/       # Ollama inference adapter
-│   │   └── vllm/         # vLLM inference adapter
-│   ├── federation/       # Multi-node federation (3 jurisdictions)
-│   └── financial_adapter/ # Financial system adapter
-├── playground/           # Try-it-now deployment
-```
 
 ## Standards Ecosystem
 
@@ -413,33 +396,7 @@ SovereignStack is translated into 18 languages. The project follows the Debian m
 | [RFC-0061](rfcs/RFC-0061-human-override.md) | Human Override Protocol | Draft |
 
 
-## Quickstart
 
-```bash
-# Clone & enter
-git clone https://github.com/Kubenew/SovereignStack.git
-cd SovereignStack
-
-# Build (Linux/macOS)
-cargo build --release
-
-# Build (Windows — see BUILD_WINDOWS.md for MSI guide)
-cargo build --release --bin ss-node --bin ss-cli
-
-# Launch playground (Docker Compose)
-docker compose -f playground/docker-compose.yml up -d
-
-# Run conformance tests
-cargo test --workspace
-python -m pytest tests/conformance/ -v
-
-# Multi-node federation (3 jurisdictions)
-docker compose -f examples/federation/docker-compose.federation.yml up -d
-
-# Inference adapters
-cd examples/adapters/ollama && python adapter.py   # Ollama
-cd examples/adapters/vllm   && python adapter.py   # vLLM
-```
 
 ## v0.4.0 — Reference & Conformance
 

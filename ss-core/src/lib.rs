@@ -28,6 +28,6 @@ pub mod error;
 pub mod types;
 
 pub use uri::{SovereignUri, UriScheme};
-pub use timestamp::Timestamp;
+pub use timestamp::{Timestamp, TemporalWindow};
 pub use error::{Error, Result};
-pub use types::*;
+pub use types::{ObjectId, ObjectMeta};

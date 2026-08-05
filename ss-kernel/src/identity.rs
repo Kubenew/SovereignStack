@@ -47,17 +47,31 @@ impl IdentityServiceImpl {
     }
 }
 
+impl Default for IdentityServiceImpl {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl IdentityService for IdentityServiceImpl {
     fn generate(&self, uri: &SovereignUri) -> Result<IdentityDocument, IdentityError> {
-        // Placeholder: key generation would use ed25519-dalek
+        let kp = ss_crypto::keys::KeyPair::generate();
+        let pk_hex = kp.public_key().to_hex();
+        let created_at = Timestamp::now();
+        
+        let payload = format!("{}|{}", uri, created_at.unix_secs());
+        use ed25519_dalek::Signer;
+        let sig = kp.signing_key().sign(payload.as_bytes());
+        let sig_hex = hex::encode(sig.to_bytes());
+
         let doc = IdentityDocument {
             uri: uri.clone(),
-            public_key: "ed25519:placeholder".into(),
+            public_key: pk_hex,
             algorithm: "Ed25519".into(),
-            created_at: Timestamp::now(),
+            created_at,
             expires_at: None,
             metadata: std::collections::HashMap::new(),
-            signature: "sig:placeholder".into(),
+            signature: sig_hex,
         };
         self.store.insert(uri.to_string(), doc.clone());
         Ok(doc)
@@ -73,10 +87,7 @@ impl IdentityService for IdentityServiceImpl {
             }
         }
         
-        // Placeholder fallback for tests
-        if doc.public_key == "ed25519:placeholder" && doc.signature == "sig:placeholder" {
-            return Ok(true);
-        }
+        // (Placeholder fallback removed for security)
 
         if doc.algorithm != "Ed25519" {
             return Err(IdentityError::InvalidSignature);

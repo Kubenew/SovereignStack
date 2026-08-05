@@ -9,7 +9,7 @@ import json
 import re
 import time
 from datetime import datetime, timezone
-from collections import defaultdict
+from collections import defaultdict, deque
 from dotenv import load_dotenv
 import jwt
 from jwt import PyJWKClient, InvalidTokenError
@@ -83,7 +83,8 @@ def _get_jwks_client() -> PyJWKClient:
 # Rate limiting
 RATE_LIMIT_REQUESTS = int(os.getenv("RATE_LIMIT_REQUESTS", "60"))
 RATE_LIMIT_WINDOW = int(os.getenv("RATE_LIMIT_WINDOW", "60"))
-request_counts = defaultdict(list)
+MAX_TRACKED_IPS = int(os.getenv("RATE_LIMIT_MAX_IPS", "10000"))
+request_counts: dict[str, deque] = {}
 rate_limit_lock = asyncio.Lock()
 
 class ChatCompletionRequest(BaseModel):
@@ -100,10 +101,19 @@ class ChatCompletionRequest(BaseModel):
 async def check_rate_limit(client_ip: str) -> bool:
     now = time.time()
     async with rate_limit_lock:
-        request_counts[client_ip] = [ts for ts in request_counts[client_ip] if now - ts < RATE_LIMIT_WINDOW]
-        if len(request_counts[client_ip]) >= RATE_LIMIT_REQUESTS:
+        if client_ip not in request_counts:
+            if len(request_counts) >= MAX_TRACKED_IPS:
+                # Evict oldest-seen IP to prevent unbounded memory growth
+                oldest_ip = min(request_counts, key=lambda ip: request_counts[ip][-1] if request_counts[ip] else 0)
+                del request_counts[oldest_ip]
+            request_counts[client_ip] = deque(maxlen=RATE_LIMIT_REQUESTS)
+        dq = request_counts[client_ip]
+        # Remove expired timestamps from the front
+        while dq and now - dq[0] >= RATE_LIMIT_WINDOW:
+            dq.popleft()
+        if len(dq) >= RATE_LIMIT_REQUESTS:
             return False
-        request_counts[client_ip].append(now)
+        dq.append(now)
         return True
 
 async def audit(event: dict):
@@ -111,7 +121,7 @@ async def audit(event: dict):
     os.makedirs(os.path.dirname(AUDIT_PATH), exist_ok=True)
     async with aiofiles.open(AUDIT_PATH, "a", encoding="utf-8") as f:
         await f.write(json.dumps(event) + "\n")
-    append_event(event)
+    await append_event(event)
 
 def run_opa_policy_check(prompt: str) -> tuple[bool, str]:
     if re.search(r"\d{3}-\d{2}-\d{4}", prompt):
@@ -176,8 +186,9 @@ async def fetch_rag_context(user_prompt: str) -> str:
         r = await client.post(f"{MEMORY_URL}/query", json={"query": user_prompt}, headers=headers)
         if r.status_code == 200:
             return r.json().get("context", "")
+        logger.warning("RAG context query returned status %d", r.status_code)
     except Exception:
-        pass
+        logger.exception("Failed to fetch RAG context from %s", MEMORY_URL)
     return ""
 
 async def execute_inference(payload: ChatCompletionRequest, messages: list, user_prompt: str, context: str) -> tuple[bool, str]:
@@ -189,16 +200,18 @@ async def execute_inference(payload: ChatCompletionRequest, messages: list, user
             r = await client.post(f"{compute_url}/v1/chat/completions", json=vllm_payload)
             if r.status_code == 200:
                 return False, r.json()["choices"][0]["message"]["content"]
+            logger.error("vLLM inference returned status %d for model %s", r.status_code, payload.model)
         except Exception:
-            pass
+            logger.exception("vLLM inference failed for model %s at %s", payload.model, compute_url)
         return True, ""
     else:
         try:
             r = await client.post(f"{compute_url}/completion", json={"model": payload.model, "prompt": user_prompt, "context": context})
             if r.status_code == 200:
                 return False, r.json().get("response", "")
+            logger.error("Inference backend returned status %d for model %s", r.status_code, payload.model)
         except Exception:
-            pass
+            logger.exception("Inference failed for model %s at %s", payload.model, compute_url)
         return True, ""
 
 @app.post("/v1/chat/completions")

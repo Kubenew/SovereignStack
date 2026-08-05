@@ -42,6 +42,12 @@ impl ObjectRegistryImpl {
     }
 }
 
+impl Default for ObjectRegistryImpl {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ObjectRegistry for ObjectRegistryImpl {
     fn store(&self, entry: ObjectEntry) {
         let uri_str = entry.uri.to_string();

@@ -67,6 +67,12 @@ impl PolicyEngineImpl {
     }
 }
 
+impl Default for PolicyEngineImpl {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PolicyEngine for PolicyEngineImpl {
     fn add_policy(&self, policy: Policy) {
         self.policies.insert(policy.uri.to_string(), policy);

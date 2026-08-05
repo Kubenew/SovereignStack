@@ -38,10 +38,13 @@ impl EventBusImpl {
 impl EventBus for EventBusImpl {
     fn publish(&self, event: Event) {
         let etype = event.event_type.clone();
-        self.history
+        let mut events = self.history
             .entry(etype.clone())
-            .or_default()
-            .push(event.clone());
+            .or_default();
+        events.push(event.clone());
+        if events.len() > self.capacity {
+            events.remove(0);
+        }
         if let Some(tx) = self.txs.get(&etype) {
             let _ = tx.send(event);
         }

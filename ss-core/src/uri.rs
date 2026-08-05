@@ -475,6 +475,7 @@ pub struct SovereignUri {
 
 impl SovereignUri {
     /// Parse a string into a SovereignUri.
+    #[must_use]
     pub fn parse(input: &str) -> Result<Self> {
         // Split scheme from rest
         let (scheme_str, rest) = input

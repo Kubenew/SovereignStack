@@ -34,7 +34,7 @@ members = [
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0 OR MIT"
-repository = "https://github.com/sovereignstack/sovereignstack"
+repository = "https://github.com/Kubenew/SovereignStack"
 
 [workspace.dependencies]
 # Shared workspace dependencies
@@ -52,7 +52,12 @@ chrono = { version = "0.4", features = ["serde"] }
 rand = "0.8"
 async-trait = "0.1"
 bytes = "1"
+dashmap = "6"
+axum = "0.8"
+clap = { version = "4", features = ["derive"] }
+tower-http = { version = "0.6", features = ["cors"] }
 
 # Internal crates
 ss-core = { path = "ss-core" }
 ss-crypto = { path = "ss-crypto" }
+ss-kernel = { path = "ss-kernel" }

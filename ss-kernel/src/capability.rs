@@ -42,6 +42,13 @@ impl CapabilityEnforcerImpl {
             use_counts: Arc::new(dashmap::DashMap::new()),
         }
     }
+}
+
+impl Default for CapabilityEnforcerImpl {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
     fn find_and_check(&self, caller: &SovereignUri, permission: &str, target: &SovereignUri, consume: bool) -> bool {
         for entry in self.capabilities.iter() {
