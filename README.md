@@ -394,6 +394,10 @@ SovereignStack is translated into 18 languages. The project follows the Debian m
 | [RFC-0057](rfcs/RFC-0057-metacognition.md) | Meta-Cognition | Draft |
 | [RFC-0060](rfcs/RFC-0060-digital-twin-entity-model.md) | Digital Twin Entity Model | Draft |
 | [RFC-0061](rfcs/RFC-0061-human-override.md) | Human Override Protocol | Draft |
+| [RFC-0075](rfcs/RFC-0075-policy-conflict-resolution.md) | Policy Composition, Jurisdiction & Conflict Resolution | Draft |
+| [RFC-0076](rfcs/RFC-0076-oasa-continuous-assurance-engine.md) | OASA Continuous Assurance Engine (CAE) | Draft |
+| [RFC-0077](rfcs/RFC-0077-oasa-specialized-audit-profiles.md) | OASA Specialized Audit Profiles | Draft |
+| [RFC-0078](rfcs/RFC-0078-oasa-standards-foundation-governance.md) | OASA Standards Foundation Governance | Draft |
 
 
 
@@ -408,7 +412,7 @@ The reference implementation with conformance testing, multi-node federation, an
 - **Multi-node federation**: 3-jurisdiction example (EU/US/Asia) with CRDT sync
 - **Inference adapters**: Ollama and vLLM bridges with audit logging
 - **L4 certification**: "Autonomous Intelligence Ready" — meta-cognition, safety contracts, human override, search audit
-- **RFCs 0045-0074**: Meta-cognition, safety contracts, search objects, digital economy, digital twins
+- **RFCs 0045-0078**: Meta-cognition, safety contracts, search objects, digital economy, digital twins, continuous assurance, conflict resolution
 - **77 URI schemes**: Complete addressing for agents, twins, finance, and cognitive processes
 - **Digital economy primitives**: Payments, markets, treasury, derivatives, insurance, settlement
 
