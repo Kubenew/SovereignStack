@@ -4,4 +4,5 @@
 pub mod proof_verifier;
 pub mod circuit_breaker;
 pub mod zk_alignment;
+pub mod conflict_resolution;
 pub mod metrics;
