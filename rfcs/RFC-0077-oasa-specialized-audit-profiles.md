@@ -54,6 +54,8 @@ Key controls:
 
 **Anchor:** MiCA (Title IV — Asset-Referenced Tokens; Title III — E-Money Tokens)
 
+Machine-checkable control catalog: [`profiles/stablecoin/oasa-stable-controls.yaml`](../profiles/stablecoin/oasa-stable-controls.yaml)
+
 Key controls:
 
 - **Reserve sufficiency** — continuous proof that reserve assets cover outstanding tokens (MiCA Art. 36–39). Where legacy compliance is monthly, OASA provides **daily-resolved, continuously attested** evidence.
@@ -68,6 +70,8 @@ Commercial note: monthly attestation → continuous attestation is the single mo
 
 **Anchor:** Central bank mandates; settlement finality; monetary law
 
+Machine-checkable control catalog: [`profiles/cbdc/oasa-cbdc-controls.yaml`](../profiles/cbdc/oasa-cbdc-controls.yaml)
+
 Key controls:
 
 - **Tiered governance** — the central bank retains hierarchical control; delegated capabilities are constrained and revocable (RFC-0026).
@@ -79,6 +83,8 @@ Key controls:
 ### 5. OASA-AI-FIN — AI-Driven Financial Decisioning
 
 **Anchor:** EU AI Act, ISO 42001, DORA
+
+Machine-checkable control catalog: [`profiles/ai-fin/oasa-ai-fin-controls.yaml`](../profiles/ai-fin/oasa-ai-fin-controls.yaml)
 
 Key controls:
 

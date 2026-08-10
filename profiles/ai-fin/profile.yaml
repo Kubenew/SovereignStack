@@ -1,0 +1,37 @@
+name: Sovereign AI-Finance Profile (SAIF)
+version: "1.0.0"
+domain: AI-Driven Financial Decisioning
+description: Blueprint for OASA-AI-FIN authorization-boundary, model-lineage, and risk-management assurance for autonomous financial decisioning under the EU AI Act and ISO 42001.
+
+uri_extensions:
+  - decision://
+  - model://
+  - envelope://
+  - drift://
+
+policies:
+  - risk_management: "High-risk AI decisioning has a risk-management system evidenced continuously."
+  - authorization_boundary: "Every autonomous financial decision is bounded by an evidence-recorded authorization envelope."
+  - safe_halt: "Actions outside the authorization boundary halt and escalate; never guess."
+  - model_lineage: "Every decision traces to a signed model version."
+  - incident_reporting: "Serious incidents are reported within statutory windows, backed by evidence."
+
+compliance_mappings:
+  - EU_AI_Act_Art9: "Mapped via oasa-ai-fin-controls.yaml (AIF-RMS)"
+  - EU_AI_Act_Art72: "Mapped via oasa-ai-fin-controls.yaml (AIF-PMM)"
+  - EU_AI_Act_Art73: "Mapped via oasa-ai-fin-controls.yaml (AIF-IRP)"
+  - ISO_42001: "Mapped via oasa-ai-fin-controls.yaml (AIF-RMS/AIF-MDL)"
+  - RFC-0040: "Mapped via oasa-ai-fin-controls.yaml (AIF-MDL)"
+
+reference_agents:
+  - agent://decision-auditor
+  - agent://model-registry
+  - agent://drift-monitor
+
+apis:
+  - name: Decision Audit
+    protocol: SIP
+    description: "Retrieve signed evidence trail for any autonomous financial decision."
+  - name: Model Lineage
+    protocol: SIP
+    description: "Trace a decision to its signed model version and provenance."

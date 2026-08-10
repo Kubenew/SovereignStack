@@ -1,0 +1,96 @@
+name: OASA-CBDC Control Catalog
+profile: OASA-CBDC
+version: "1.0.0"
+standard: RFC-0077
+engine: RFC-0076
+anchor:
+  - Central bank mandates
+  - Settlement finality
+  - Monetary law
+cadence_default: continuous
+control_sections:
+  - id: CBDC-GOV
+    title: Tiered Governance
+    controls:
+      - id: CBDC-GOV-01
+        requirement: The central bank retains hierarchical control over all delegated capabilities.
+        evidence_type: delegation
+        source: RFC-0026
+        threshold: "delegation.hierarchy_control == central_bank"
+        cadence: continuous
+      - id: CBDC-GOV-02
+        requirement: Delegated capabilities are constrained and revocable at all times.
+        evidence_type: delegation
+        source: RFC-0026
+        threshold: "delegation.revocable == true"
+        cadence: continuous
+      - id: CBDC-GOV-03
+        requirement: All delegation changes are auditable events.
+        evidence_type: delegation
+        source: RFC-0026
+        threshold: "delegation.change.evidenced == true"
+        cadence: event
+
+  - id: CBDC-SET
+    title: Settlement Finality
+    controls:
+      - id: CBDC-SET-01
+        requirement: Settlement is atomic, final, and irreversible per the mandate.
+        evidence_type: settlement
+        source: Settlement finality law
+        threshold: "settlement.final == true"
+        cadence: continuous
+      - id: CBDC-SET-02
+        requirement: Finality is evidenced for every settled transaction.
+        evidence_type: settlement
+        source: RFC-0076
+        threshold: "settlement.evidence.signed == true"
+        cadence: continuous
+
+  - id: CBDC-MON
+    title: Monetary Integrity
+    controls:
+      - id: CBDC-MON-01
+        requirement: Issuance and redemption flows are policy-authorized with constitutional hard-supremacy.
+        evidence_type: authorization
+        source: RFC-0075 (Hard Supremacy)
+        threshold: "constitutional_invariant.passed == true"
+        cadence: continuous
+      - id: CBDC-MON-02
+        requirement: Money supply changes reconcile with the ledger continuously.
+        evidence_type: data_integrity
+        source: RFC-0018
+        threshold: "supply_reconciliation == 0"
+        cadence: continuous
+
+  - id: CBDC-RES
+    title: Offline & Resilience
+    controls:
+      - id: CBDC-RES-01
+        requirement: Availability and resilience match the continuity profile.
+        evidence_type: availability
+        source: Central bank continuity mandate
+        threshold: "availability >= continuity_profile.target"
+        cadence: continuous
+      - id: CBDC-RES-02
+        requirement: Offline capability is tested at required cadence.
+        evidence_type: availability
+        source: Central bank continuity mandate
+        threshold: "last_offline_test < 12 months"
+        cadence: monthly
+
+  - id: CBDC-WHR
+    title: Wholesale / Retail Split
+    controls:
+      - id: CBDC-WHR-01
+        requirement: Wholesale settlement rails and retail digital cash have separate control catalogs.
+        evidence_type: governance
+        source: RFC-0077
+        threshold: "wholesale.catalog != retail.catalog"
+        cadence: continuous
+      - id: CBDC-WHR-02
+        requirement: Policy isolation between wholesale and retail flows is enforced.
+        evidence_type: authorization
+        source: RFC-0075
+        threshold: "cross_flow.access == denied"
+        cadence: continuous

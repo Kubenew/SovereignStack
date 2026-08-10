@@ -1,0 +1,35 @@
+name: Sovereign Stablecoin Profile (SSTB)
+version: "1.0.0"
+domain: Stablecoin Issuance
+description: Blueprint for OASA-STABLE continuous reserve and redemption assurance for MiCA-regulated stablecoin issuers.
+
+uri_extensions:
+  - reserve://
+  - token://
+  - mint://
+  - burn://
+  - redemption://
+
+policies:
+  - reserve_sufficiency: "Reserve assets must cover outstanding tokens at all times."
+  - reserve_segregation: "Reserves must be held in custody separate from issuer operations."
+  - redemption_right: "Redemption requests must be honored at legal-tender value within mandated periods."
+  - conflict_hierarchy: "Resolve redemption/payment conflicts per RFC-0075, never ad hoc."
+
+compliance_mappings:
+  - MiCA_Title_IV: "Mapped via oasa-stable-controls.yaml (STB-RES/STB-SEG/STB-CUS)"
+  - MiCA_Title_III: "Mapped via oasa-stable-controls.yaml (STB-RED)"
+  - RFC-0075: "Mapped via oasa-stable-controls.yaml (STB-CON)"
+
+reference_agents:
+  - agent://reserve-manager
+  - agent://redemption-engine
+  - agent://custody-verifier
+
+apis:
+  - name: Reserve Attestation
+    protocol: SIP
+    description: "Export continuously attested reserve coverage evidence."
+  - name: Redemption Status
+    protocol: SIP
+    description: "Query redemption request status and mandated-period compliance."

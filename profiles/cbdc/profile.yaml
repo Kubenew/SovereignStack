@@ -1,0 +1,35 @@
+name: Sovereign CBDC Profile (SCBDC)
+version: "1.0.0"
+domain: Central Bank Digital Currency
+description: Blueprint for OASA-CBDC tiered-governance, settlement-finality, and monetary-integrity assurance for central bank digital currency operations.
+
+uri_extensions:
+  - cbdc://
+  - wholesale://
+  - retail://
+  - issuance://
+  - redemption://
+
+policies:
+  - central_bank_supremacy: "The central bank retains hierarchical control; delegated capabilities are constrained and revocable."
+  - settlement_finality: "Settlement is atomic, final, and irreversible per the mandate."
+  - monetary_integrity: "Issuance and redemption are policy-authorized with constitutional hard-supremacy."
+  - wholesale_retail_isolation: "Wholesale rails and retail digital cash have separate control catalogs and policy isolation."
+
+compliance_mappings:
+  - Central_Bank_Mandate: "Mapped via oasa-cbdc-controls.yaml (CBDC-GOV)"
+  - Settlement_Finality: "Mapped via oasa-cbdc-controls.yaml (CBDC-SET)"
+  - Monetary_Law: "Mapped via oasa-cbdc-controls.yaml (CBDC-MON)"
+
+reference_agents:
+  - agent://settlement-authority
+  - agent://issuance-controller
+  - agent://resilience-monitor
+
+apis:
+  - name: Finality Proof
+    protocol: SIP
+    description: "Verify settlement finality evidence for any transaction."
+  - name: Issuance Audit
+    protocol: SIP
+    description: "Export continuously attested issuance/redemption reconciliation."

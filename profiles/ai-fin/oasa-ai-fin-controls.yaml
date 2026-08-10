@@ -1,0 +1,90 @@
+name: OASA-AI-FIN Control Catalog
+profile: OASA-AI-FIN
+version: "1.0.0"
+standard: RFC-0077
+engine: RFC-0076
+anchor:
+  - EU AI Act
+  - ISO 42001
+  - DORA
+cadence_default: continuous
+control_sections:
+  - id: AIF-RMS
+    title: Risk Management System (EU AI Act Art. 9)
+    controls:
+      - id: AIF-RMS-01
+        requirement: High-risk AI decisioning has a risk-management system evidenced continuously.
+        evidence_type: risk_assessment
+        source: EU AI Act Art.9
+        threshold: "risk_management.active == true"
+        cadence: continuous
+      - id: AIF-RMS-02
+        requirement: Risk assessments are re-run when models or data change.
+        evidence_type: risk_assessment
+        source: EU AI Act Art.9
+        threshold: "last_risk_review_after_change == true"
+        cadence: event
+
+  - id: AIF-AAB
+    title: Agent Authorization Boundary
+    controls:
+      - id: AIF-AAB-01
+        requirement: Every autonomous financial decision is bounded by an evidence-recorded authorization envelope.
+        evidence_type: execution
+        source: RFC-0075
+        threshold: "authorization_boundary.present == true"
+        cadence: continuous
+      - id: AIF-AAB-02
+        requirement: Actions outside the boundary halt and escalate (safe-halt).
+        evidence_type: execution
+        source: RFC-0075
+        threshold: "boundary_violations.halted == true"
+        cadence: continuous
+
+  - id: AIF-PMM
+    title: Post-Market Monitoring (EU AI Act Art. 72)
+    controls:
+      - id: AIF-PMM-01
+        requirement: Drift and behavior change are detected and logged.
+        evidence_type: monitoring
+        source: EU AI Act Art.72
+        threshold: "drift_detected.logged == true"
+        cadence: continuous
+      - id: AIF-PMM-02
+        requirement: Monitoring findings feed back into the risk-management system.
+        evidence_type: monitoring
+        source: EU AI Act Art.72
+        threshold: "feedback_loop.closed == true"
+        cadence: continuous
+
+  - id: AIF-MDL
+    title: Model Lineage (RFC-0040)
+    controls:
+      - id: AIF-MDL-01
+        requirement: Every decision traces to a signed model version.
+        evidence_type: model_lineage
+        source: RFC-0040
+        threshold: "decision.model_signed == true"
+        cadence: continuous
+      - id: AIF-MDL-02
+        requirement: Model provenance is immutable and audit-verifiable.
+        evidence_type: model_lineage
+        source: RFC-0040
+        threshold: "model.provenance.immutable == true"
+        cadence: continuous
+
+  - id: AIF-IRP
+    title: Incident Reporting (EU AI Act Art. 73, DORA)
+    controls:
+      - id: AIF-IRP-01
+        requirement: Serious incidents are reported within statutory windows.
+        evidence_type: incident_response
+        source: EU AI Act Art.73
+        threshold: "reporting_latency <= statutory_window"
+        cadence: event
+      - id: AIF-IRP-02
+        requirement: Incidents are backed by immutable evidence records.
+        evidence_type: incident_response
+        source: DORA Art.17-19
+        threshold: "incident.evidence.signed == true"
+        cadence: event

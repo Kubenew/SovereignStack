@@ -1,0 +1,95 @@
+name: OASA-STABLE Control Catalog
+profile: OASA-STABLE
+version: "1.0.0"
+standard: RFC-0077
+engine: RFC-0076
+anchor:
+  - MiCA Title IV (Asset-Referenced Tokens)
+  - MiCA Title III (E-Money Tokens)
+cadence_default: continuous
+control_sections:
+  - id: STB-RES
+    title: Reserve Management (MiCA Art. 36-39)
+    controls:
+      - id: STB-RES-01
+        requirement: Reserve assets cover outstanding tokens at all times.
+        evidence_type: reserve_sufficiency
+        source: MiCA Art.36-39
+        threshold: "reserve.value >= tokens.outstanding"
+        cadence: daily
+      - id: STB-RES-02
+        requirement: Reserve coverage is continuously attested, not only at legacy monthly cadence.
+        evidence_type: reserve_sufficiency
+        source: MiCA Art.36-39
+        threshold: "attestation_latency < 24h"
+        cadence: continuous
+      - id: STB-RES-03
+        requirement: Reserve valuation inputs are signed and provenance-tracked.
+        evidence_type: reserve_sufficiency
+        source: MiCA Art.36-39
+        threshold: "valuation.sources_signed == true"
+        cadence: daily
+
+  - id: STB-SEG
+    title: Reserve Segregation & Custody
+    controls:
+      - id: STB-SEG-01
+        requirement: Reserves are held in custody separate from issuer operations.
+        evidence_type: custody
+        source: MiCA Art.36-39
+        threshold: "segregation.proof.valid == true"
+        cadence: daily
+      - id: STB-SEG-02
+        requirement: Asset movement is recorded with signed custody evidence.
+        evidence_type: custody
+        source: RFC-0076
+        threshold: "movement.signed == true"
+        cadence: event
+
+  - id: STB-RED
+    title: Redemption Right (MiCA Art. 46)
+    controls:
+      - id: STB-RED-01
+        requirement: Redemption requests are honored at legal-tender value within mandated periods.
+        evidence_type: redemption
+        source: MiCA Art.46
+        threshold: "redemption.latency <= statutory_period"
+        cadence: continuous
+      - id: STB-RED-02
+        requirement: Every redemption is policy-authorized and evidence-recorded.
+        evidence_type: redemption
+        source: RFC-0075
+        threshold: "authorized == true"
+        cadence: continuous
+
+  - id: STB-CON
+    title: Conflict Resolution (RFC-0075)
+    controls:
+      - id: STB-CON-01
+        requirement: Redemption/payment conflicts are resolved per RFC-0075 hierarchy, not ad hoc.
+        evidence_type: conflict
+        source: RFC-0075
+        threshold: "conflict.resolution_hierarchy == valid"
+        cadence: continuous
+      - id: STB-CON-02
+        requirement: Unresolved conflicts halt issuance/redemption and escalate to human override.
+        evidence_type: conflict
+        source: RFC-0075
+        threshold: "no unresolved conflict remains open > 24h"
+        cadence: continuous
+
+  - id: STB-CUS
+    title: Custody Integrity
+    controls:
+      - id: STB-CUS-01
+        requirement: Custody location and asset holdings are evidenced and current.
+        evidence_type: custody
+        source: MiCA Art.36-39
+        threshold: "custody.location.verified == true"
+        cadence: daily
+      - id: STB-CUS-02
+        requirement: Reserve attestation exports are signed and auditor-verifiable.
+        evidence_type: custody
+        source: RFC-0076
+        threshold: "attestation.signature.valid == true"
+        cadence: daily
