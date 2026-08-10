@@ -262,4 +262,4 @@ Implementations supporting Digital Twin Objects MUST:
 - [RFC-0011: Identity & DID Resolution](RFC-0011-identity-did-resolution.md)
 - [RFC-0028: Digital Twin Synchronization](RFC-0028-digital-twin-sync.md)
 - [RFC-0029: Intelligence Economy Primitives](RFC-0029-intelligence-economy.md)
-- [RFC-0054: Compliance Framework](RFC-0054-compliance-framework.md)
+- [Compliance Framework](../docs/compliance/index.md)

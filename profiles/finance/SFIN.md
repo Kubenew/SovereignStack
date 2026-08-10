@@ -3,6 +3,7 @@
 **Version:** 1.0
 **Status:** Draft
 **Depends on:** RFC-0073 (Digital Economy Objects), RFC-0074 (Digital Twin Objects)
+**Continuous Assurance:** [RFC-0077 OASA-FIN](../../rfcs/RFC-0077-oasa-specialized-audit-profiles.md), control catalog [`oasa-fin-controls.yaml`](oasa-fin-controls.yaml)
 
 ## Overview
 

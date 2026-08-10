@@ -40,6 +40,8 @@ A profile MUST be versioned, and a mapping change MUST be an auditable event (pe
 
 **Anchor:** MiFID II, PSD2, DORA
 
+Machine-checkable control catalog: [`profiles/finance/oasa-fin-controls.yaml`](../profiles/finance/oasa-fin-controls.yaml)
+
 Key controls:
 
 - **Transactional authorization** — every payment/execution is policy-authorized (RFC-0075) and evidence-recorded.
