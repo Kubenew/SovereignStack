@@ -1,0 +1,21 @@
+policy_id: policy://morpheus/resource-limits
+version: "1.0.0"
+description: "Tenant-level resource quotas enforced before provisioning"
+cadence: continuous
+conflict_policy: safe-halt
+rules:
+  - id: RSC-CPU-QUOTA
+    target: quota.cpu_remaining
+    op: ge
+    value: 8
+    message: "CPU quota exhausted for tenant"
+  - id: RSC-MEM-QUOTA
+    target: quota.memory_gb_remaining
+    op: ge
+    value: 32
+    message: "Memory quota exhausted for tenant"
+  - id: RSC-MAX-INSTANCES
+    target: quota.running_vms
+    op: lt
+    value: 20
+    message: "Running VM instance limit reached for tenant"

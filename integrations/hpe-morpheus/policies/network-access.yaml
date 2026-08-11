@@ -1,0 +1,18 @@
+policy_id: policy://morpheus/network-access
+version: "1.0.0"
+description: "Approved networks for governed VM placement"
+cadence: continuous
+conflict_policy: safe-halt
+rules:
+  - id: NET-APPROVED
+    target: spec.network
+    op: in
+    value: [prod-vlan-42, dev-vlan-10, staging-vlan-20]
+    message: "Network is not in the approved list"
+  - id: NET-PROD-ISOLATION
+    target: spec.environment
+    op: in
+    value: [production]
+    note: "Production workloads must not be placed on non-production networks"
+    when:
+      network_prefix: prod

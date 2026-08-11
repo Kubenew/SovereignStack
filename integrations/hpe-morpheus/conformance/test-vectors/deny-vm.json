@@ -1,0 +1,22 @@
+{
+  "id": "MORPH-PROVISION-VM-DENY",
+  "description": "Oversized VM on an unapproved network that must be DENIED",
+  "input": {
+    "action": "provision-vm",
+    "agent_uri": "agent://ml-platform",
+    "capability": "capability://compute/provision",
+    "spec": {
+      "cpu": 64,
+      "memory_gb": 512,
+      "network": "unapproved-network",
+      "image": "ubuntu-22.04-lts",
+      "environment": "production"
+    }
+  },
+  "expected": {
+    "decision": "DENY",
+    "reason": "POLICY_VIOLATION",
+    "morpheus_called": false,
+    "evidence_generated": true
+  }
+}

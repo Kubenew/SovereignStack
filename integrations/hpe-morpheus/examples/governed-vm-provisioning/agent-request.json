@@ -1,0 +1,15 @@
+{
+  "schema": "sovereignstack/morpheus-gov-request/1.0",
+  "action": "provision-vm",
+  "agent_uri": "agent://ml-platform",
+  "capability": "capability://compute/provision",
+  "nonce": "7f3b9a0c-4d21-4c0e-9b2a-1d2e3f4a5b6c",
+  "spec": {
+    "cpu": 8,
+    "memory_gb": 32,
+    "network": "prod-vlan-42",
+    "image": "ubuntu-22.04-lts",
+    "environment": "production"
+  },
+  "environment": "production"
+}

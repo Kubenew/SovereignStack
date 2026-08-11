@@ -1,0 +1,26 @@
+policy_id: policy://morpheus/vm-provisioning
+version: "1.0.0"
+description: "VM provisioning constraints for governed Morpheus deployments"
+cadence: continuous
+conflict_policy: safe-halt  # RFC-0075: unresolved conflict => deny + escalate, never guess
+rules:
+  - id: VM-CPU-MAX
+    target: spec.cpu
+    op: le
+    value: 16
+    message: "CPU exceeds maximum of 16 vCPUs"
+  - id: VM-MEM-MAX
+    target: spec.memory_gb
+    op: le
+    value: 64
+    message: "Memory exceeds maximum of 64 GB"
+  - id: VM-IMAGE-APPROVED
+    target: spec.image
+    op: in
+    value: [ubuntu-22.04-lts, ubuntu-24.04-lts, rhel-9]
+    message: "Image is not in the approved list"
+  - id: VM-ENV-APPROVED
+    target: spec.environment
+    op: in
+    value: [production, staging]
+    message: "Environment is not in the approved list"

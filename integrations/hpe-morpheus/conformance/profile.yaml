@@ -1,0 +1,71 @@
+profile: oasa-profile://morpheus-core/v0.1
+name: "OASA Morpheus Core Certification"
+version: "0.1.0"
+description: "Machine-verifiable conformance for SovereignStack-governed HPE Morpheus infrastructure"
+standard: RFC-0077
+engine: RFC-0076
+anchor:
+  - HPE Morpheus REST API (>= 6.0)
+  - SovereignStack core contract (identity -> capability -> policy -> provenance -> evidence)
+conformance_level: L3
+requires_morpheus: ">=6.0"
+requires_sovereignstack: ">=0.6.0"
+positioning: "OASA Profile for HPE Morpheus (not 'HPE Certified' until an official relationship exists)"
+
+controls:
+  MOR-001:
+    name: "Identity Binding"
+    description: "Morpheus users/service accounts mapped to SovereignStack agent identities"
+    evidence: "identity://morpheus-user -> agent://sovereignstack-agent"
+    test: conformance/tests/test_identity_binding.py
+  MOR-002:
+    name: "Agent Authorization"
+    description: "Agent must have valid delegated authority before Morpheus API calls"
+    evidence: "human://authority -> agent://delegated"
+    test: conformance/tests/test_agent_authorization.py
+  MOR-003:
+    name: "Capability Enforcement"
+    description: "Morpheus roles mapped to SovereignStack capabilities; capability check before API call"
+    evidence: "capability://compute/provision verified before POST /api/vms"
+    test: conformance/tests/test_capability_enforcement.py
+  MOR-004:
+    name: "Policy Evaluation"
+    description: "SovereignStack policies evaluated before Morpheus action execution"
+    evidence: "policy://morpheus/* evaluated; decision ALLOW/DENY recorded"
+    test: conformance/tests/test_policy_evaluation.py
+  MOR-005:
+    name: "API Action Provenance"
+    description: "Every governed Morpheus API action produces a provenance record"
+    evidence: "provenance://morpheus/action/{action-id}"
+    test: conformance/tests/test_provenance_chain.py
+  MOR-006:
+    name: "Event Integrity"
+    description: "Morpheus webhook events cryptographically signed and chained"
+    evidence: "Merkle chain verification of event sequence"
+    test: conformance/tests/test_event_integrity.py
+  MOR-007:
+    name: "Tamper Detection"
+    description: "Modified evidence detected via chain break"
+    evidence: "tampered entry produces verification failure"
+    test: conformance/tests/test_tamper_detection.py
+  MOR-008:
+    name: "Evidence Generation"
+    description: "Complete evidence package generated for any governed operation"
+    evidence: "evidence://morpheus/{operation}/{id}"
+    test: conformance/tests/test_evidence_package.py
+  MOR-009:
+    name: "Evidence Verification"
+    description: "Third party can independently verify evidence package"
+    evidence: "verify returns VERIFIED without access to Morpheus"
+    test: conformance/tests/test_evidence_verification.py
+  MOR-010:
+    name: "Audit Export"
+    description: "Evidence exportable in auditor-ready format"
+    evidence: "assurance-package://morpheus/{date-range}"
+    test: conformance/tests/test_audit_export.py
+
+security:
+  - "Replay attack resistance (nonce reuse rejected)"
+  - "Signature substitution resistance"
+  - "Event modification detection"
+  - "Capability escalation resistance"

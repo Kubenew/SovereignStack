@@ -1,0 +1,21 @@
+{
+  "id": "MORPH-PROVISION-VM-ALLOW",
+  "description": "Governed VM provisioning request that must be ALLOWED",
+  "input": {
+    "action": "provision-vm",
+    "agent_uri": "agent://ml-platform",
+    "capability": "capability://compute/provision",
+    "spec": {
+      "cpu": 8,
+      "memory_gb": 32,
+      "network": "prod-vlan-42",
+      "image": "ubuntu-22.04-lts",
+      "environment": "production"
+    }
+  },
+  "expected": {
+    "decision": "ALLOW",
+    "morpheus_called": true,
+    "evidence_generated": true
+  }
+}

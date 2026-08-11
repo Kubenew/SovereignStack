@@ -1,0 +1,20 @@
+{
+  "schema": "sovereignstack/morpheus-gov-decision/1.0",
+  "decision": "ALLOW",
+  "agent_uri": "agent://ml-platform",
+  "capability": "capability://compute/provision",
+  "checks": [
+    {"check": "identity", "result": "PASS", "detail": "agent://ml-platform signature verified"},
+    {"check": "capability", "result": "PASS", "detail": "capability://compute/provision granted to agent://ml-platform"},
+    {"check": "policy://morpheus/vm-provisioning", "result": "ALLOW", "detail": "cpu<=16, memory_gb<=64, image approved, environment approved"},
+    {"check": "policy://morpheus/network-access", "result": "ALLOW", "detail": "network prod-vlan-42 in approved list"},
+    {"check": "policy://morpheus/resource-limits", "result": "ALLOW", "detail": "cpu=8 <= 16, memory_gb=32 <= 64"}
+  ],
+  "morpheus": {
+    "called": true,
+    "endpoint": "POST /api/vms",
+    "vm_id": "vm-847291"
+  },
+  "evidence": "evidence://morpheus/provisioning/vm-847291",
+  "chain": "chain://morpheus/ml-platform/vm-847291"
+}

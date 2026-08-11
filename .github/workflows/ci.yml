@@ -39,6 +39,8 @@ jobs:
         run: pytest --collect-only tests/conformance/ libs/
       - name: Run core tests
         run: pytest tests/conformance/ libs/ -v --tb=short --ignore=tests/conformance/finance
+      - name: Run HPE Morpheus integration conformance
+        run: pytest integrations/hpe-morpheus/conformance/tests/ -v --tb=short
 
   # ── Python Experimental: MAY FAIL ──
   python-experimental:

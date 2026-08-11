@@ -1,0 +1,26 @@
+{
+  "id": "MORPH-TAMPER-DETECTION",
+  "description": "Post-hoc modification of a recorded evidence entry must break chain verification",
+  "input": {
+    "action": "provision-vm",
+    "agent_uri": "agent://ml-platform",
+    "capability": "capability://compute/provision",
+    "spec": {
+      "cpu": 8,
+      "memory_gb": 32,
+      "network": "prod-vlan-42",
+      "image": "ubuntu-22.04-lts",
+      "environment": "production"
+    }
+  },
+  "attack": {
+    "modify": "memory_gb",
+    "from": 32,
+    "to": 512
+  },
+  "expected": {
+    "verified": false,
+    "detected_at": "entry 3",
+    "alert": "INTEGRITY VIOLATION"
+  }
+}
