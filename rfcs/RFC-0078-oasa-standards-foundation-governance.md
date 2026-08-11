@@ -1,6 +1,6 @@
 # RFC-0078: OASA Standards Foundation Governance
 
-**Status:** Draft | **Type:** Process | **Created:** 2026-08-07 | **Depends On:** RFC-0010  
+**Status:** Proposed | **Type:** Process | **Created:** 2026-08-07 | **Depends On:** RFC-0010  
 **Related:** [GOVERNANCE](../GOVERNANCE.md), [CONSTITUTION](../CONSTITUTION.md), [STANDARDS](../STANDARDS.md)
 
 ## Abstract

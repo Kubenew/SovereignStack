@@ -1,0 +1,18 @@
+{
+  "id": "EVID-001",
+  "version": "0.5.0",
+  "description": "Evidence package generation and verification",
+  "canonicalization": "JCS (RFC 8785)",
+  "cryptographic_algorithm": "Ed25519",
+  "hash_algorithm": "SHA-256",
+  "inputs": {
+    "generated_by": "node://audit-01",
+    "target_object": "knowledge://sha256:abc123",
+    "conformance_profile": "core-0.1"
+  },
+  "expected_outputs": {
+    "package_id_prefix": "evidence-",
+    "chain_present": true
+  },
+  "failure_conditions": []
+}

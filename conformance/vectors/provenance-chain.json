@@ -1,0 +1,40 @@
+{
+  "id": "PROV-001",
+  "version": "0.5.0",
+  "description": "Provenance chain creation and verification",
+  "canonicalization": "JCS (RFC 8785)",
+  "cryptographic_algorithm": "Ed25519",
+  "hash_algorithm": "SHA-256",
+  "inputs": {
+    "entries": [
+      {
+        "action": "Created",
+        "actor_uri": "agent://alice",
+        "object_uri": "knowledge://sha256:abc123",
+        "timestamp": 1786435200,
+        "payload": {"data": "initial"},
+        "signing_key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+      },
+      {
+        "action": "Modified",
+        "actor_uri": "agent://bob",
+        "object_uri": "knowledge://sha256:abc123",
+        "timestamp": 1786435201,
+        "payload": {"data": "updated"},
+        "signing_key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+      }
+    ]
+  },
+  "expected_outputs": {
+    "chain_length": 2,
+    "chain_valid": true,
+    "root_hash_matches_last": true
+  },
+  "failure_conditions": [
+    {
+      "name": "tampered_parent_hash",
+      "mutation": "modify entry[1].parent_hash",
+      "expected_error": "ProvenanceError::BrokenLink"
+    }
+  ]
+}

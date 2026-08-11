@@ -1,6 +1,6 @@
 # RFC-0075: Policy Composition, Jurisdiction & Conflict Resolution
 
-**Status:** Draft | **Type:** Standard | **Created:** 2026-08-07 | **Depends On:** RFC-0020, RFC-0021, RFC-0047, RFC-0060  
+**Status:** Active | **Type:** Standard | **Created:** 2026-08-07 | **Depends On:** RFC-0020, RFC-0021, RFC-0047, RFC-0060  
 **Related:** [SIRA](../SIRA.md), [TRUST_MODEL](../TRUST_MODEL.md)
 
 ## Abstract

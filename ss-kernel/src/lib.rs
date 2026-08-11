@@ -10,6 +10,7 @@ pub mod eventbus;
 pub mod registry;
 pub mod capability;
 pub mod policy;
+pub mod provenance;
 
 /// Top-level kernel interface. All subsystems build on top of this.
 pub trait Kernel: Send + Sync {
@@ -19,6 +20,7 @@ pub trait Kernel: Send + Sync {
     fn registry(&self) -> &dyn registry::ObjectRegistry;
     fn capabilities(&self) -> &dyn capability::CapabilityEnforcer;
     fn policy(&self) -> &dyn policy::PolicyEngine;
+    fn provenance(&self) -> &dyn provenance::ProvenanceService;
 }
 
 /// Errors that can occur at the kernel level.

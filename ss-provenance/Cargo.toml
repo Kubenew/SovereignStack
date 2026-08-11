@@ -3,5 +3,16 @@ name = "ss-provenance"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "SovereignStack Provenance — tamper-evident chains and verifiable evidence packages"
 
 [dependencies]
+ss-core = { path = "../ss-core" }
+ss-crypto = { path = "../ss-crypto" }
+ed25519-dalek = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+chrono = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+uuid = { workspace = true }

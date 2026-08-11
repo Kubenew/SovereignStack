@@ -1,0 +1,25 @@
+{
+  "id": "OBJ-001",
+  "version": "0.5.0",
+  "description": "Object signing and verification",
+  "canonicalization": "JCS (RFC 8785)",
+  "cryptographic_algorithm": "Ed25519",
+  "hash_algorithm": "SHA-256",
+  "inputs": {
+    "object_uri": "knowledge://sha256:abc123def456",
+    "creator_uri": "agent://alice",
+    "payload": {"fact": "gravity accelerates at 9.81 m/s^2"},
+    "signing_key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+  },
+  "expected_outputs": {
+    "object_hash": "e6a0dcb370bc39e1a8fa6a8be2c3f87532298c56c2f90a50f162400e47da3444",
+    "signature": "mock_signature_for_object_payload_verify_against_dalek"
+  },
+  "failure_conditions": [
+    {
+      "name": "payload_tampered",
+      "mutation": "change 9.81 to 9.82",
+      "expected_error": "VerificationError::HashMismatch"
+    }
+  ]
+}

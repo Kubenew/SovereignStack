@@ -1,0 +1,39 @@
+claims:
+  - id: CLAIM-IDENT-001
+    component: ss-identity
+    claim: "Identities are created with Ed25519 keypairs"
+    evidence:
+      - vector: test_identity_creation_vector
+
+  - id: CLAIM-PROV-001
+    component: ss-provenance
+    claim: "Provenance chains are tamper-evident"
+    evidence:
+      - vector: test_provenance_chain_vector
+      - security: test_provenance_tampering
+
+  - id: CLAIM-PROV-002
+    component: ss-provenance
+    claim: "Evidence packages are independently verifiable"
+    evidence:
+      - vector: test_evidence_generation_vector
+
+  - id: CLAIM-CAP-001
+    component: ss-capability
+    claim: "Capabilities can be granted and evaluated based on constraints"
+    evidence:
+      - vector: test_capability_grant_vector
+      - security: test_capability_escalation
+
+  - id: CLAIM-POL-001
+    component: ss-policy
+    claim: "Policy engine denies by default if no matching rule is found"
+    evidence:
+      - vector: test_policy_evaluation_vector
+
+  - id: CLAIM-OBJ-001
+    component: ss-core
+    claim: "Objects can be signed and verified cryptographically"
+    evidence:
+      - vector: test_object_signing_vector
+      - security: test_invalid_signature

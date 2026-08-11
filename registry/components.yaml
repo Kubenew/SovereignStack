@@ -1,0 +1,343 @@
+# =============================================================================
+# SovereignStack Component Registry — Single Source of Truth
+# =============================================================================
+# This file is the authoritative record of what exists, what is a stub,
+# and what each component's maturity level is.
+#
+# Status values:
+#   implemented  — Has working code with inline tests
+#   partial      — Has code but incomplete or untested
+#   stub         — Placeholder only (≤10 lines of real code)
+#   empty        — Directory exists but contains no code
+#
+# Maturity values:
+#   core         — Required for Core Contract (v0.5)
+#   core-support — Supports core but not on critical path
+#   experimental — Research/exploration, not required for release
+#   deprecated   — Scheduled for removal or merge
+#
+# v0.5 Actions:
+#   verify       — Confirm existing implementation satisfies Core Contract
+#   implement    — Must be built for v0.5
+#   keep         — No changes needed
+#   freeze       — Do not modify during v0.5 sprint
+# =============================================================================
+
+version: "0.5.0-dev"
+generated: "2026-08-11"
+
+# ─── CORE COMPONENTS ────────────────────────────────────────────────────────
+
+components:
+  ss-core:
+    status: implemented
+    maturity: core
+    files: 5
+    lines: 2356
+    has_inline_tests: true
+    test_modules: [uri, timestamp, types]
+    v05_action: verify
+    claims:
+      - id: CORE-URI-001
+        description: "URI parsing, validation, and scheme registry"
+      - id: CORE-TYPE-001
+        description: "ObjectId and ObjectMeta types"
+      - id: CORE-TIME-001
+        description: "Timestamp and TemporalWindow types"
+
+  ss-crypto:
+    status: implemented
+    maturity: core
+    files: 4
+    lines: 308
+    has_inline_tests: true
+    test_modules: [keys, hash, signature]
+    v05_action: verify
+    claims:
+      - id: CRYPTO-KEY-001
+        description: "Ed25519 keypair generation"
+      - id: CRYPTO-HASH-001
+        description: "SHA-256 content hashing"
+      - id: CRYPTO-SIG-001
+        description: "Ed25519 sign and verify"
+
+  ss-identity:
+    status: implemented
+    maturity: core
+    files: 4
+    lines: 833
+    has_inline_tests: true
+    test_modules: [identity, registry, trust]
+    v05_action: verify
+    claims:
+      - id: IDENT-CREATE-001
+        description: "Identity creation with Ed25519 keypair"
+      - id: IDENT-VERIFY-001
+        description: "Identity signature verification"
+      - id: IDENT-REG-001
+        description: "Identity registry with lookup"
+
+  ss-capability:
+    status: implemented
+    maturity: core
+    files: 4
+    lines: 738
+    has_inline_tests: true
+    test_modules: [descriptor, query, registry]
+    v05_action: verify
+    claims:
+      - id: CAP-REG-001
+        description: "Capability registration and query"
+      - id: CAP-MATCH-001
+        description: "Capability matching with accuracy/cost/latency"
+
+  ss-eventbus:
+    status: implemented
+    maturity: core
+    files: 3
+    lines: 245
+    has_inline_tests: true
+    test_modules: [event, stream]
+    v05_action: verify
+    claims:
+      - id: EVENT-PUB-001
+        description: "Event publish with broadcast"
+      - id: EVENT-SUB-001
+        description: "Event subscription by type"
+      - id: EVENT-REPLAY-001
+        description: "Event replay from timestamp"
+
+  ss-policy:
+    status: partial
+    maturity: core
+    files: 6
+    lines: 1046
+    has_inline_tests: true
+    test_modules: [proof_verifier, circuit_breaker, zk_alignment, metrics, conflict_resolution]
+    v05_action: verify
+    notes: "lib.rs is module index only. Modules have substance. conflict_resolution is 423+ lines."
+    claims:
+      - id: POL-EVAL-001
+        description: "Policy rule evaluation with jurisdiction matching"
+      - id: POL-CONFLICT-001
+        description: "Policy conflict resolution (RFC-0075)"
+
+  ss-kernel:
+    status: implemented
+    maturity: core
+    files: 7
+    lines: 643
+    has_inline_tests: false
+    v05_action: implement
+    notes: "Kernel trait + 6 service impls. Needs provenance service added."
+    claims:
+      - id: KERN-TRAIT-001
+        description: "Kernel trait with 6 core services"
+      - id: KERN-IDENT-001
+        description: "IdentityServiceImpl with Ed25519 generation and verification"
+      - id: KERN-CAP-001
+        description: "CapabilityEnforcerImpl with grant/revoke/check/consume"
+      - id: KERN-POL-001
+        description: "PolicyEngineImpl with jurisdiction-aware rule matching"
+      - id: KERN-EVENT-001
+        description: "EventBusImpl with publish/subscribe/replay"
+
+  ss-provenance:
+    status: stub                    # ← CRITICAL: 2 lines of code
+    maturity: core
+    files: 1
+    lines: 2
+    has_inline_tests: false
+    v05_action: implement           # ← BLOCKING: Must be built for v0.5
+    claims: []                      # No claims — nothing is implemented
+    notes: "Contains only '//! Stub crate for SovereignStack.' — MUST BE IMPLEMENTED"
+
+  ss-runtime:
+    status: partial
+    maturity: core-support
+    files: 3
+    lines: 153
+    has_inline_tests: false
+    v05_action: verify
+    claims: []
+
+  reference-node:
+    status: implemented
+    maturity: core
+    files: 1
+    lines: 539
+    has_inline_tests: false
+    v05_action: implement
+    notes: "Single main.rs with 10 RFC endpoints. Needs provenance routes added."
+    claims:
+      - id: NODE-API-001
+        description: "HTTP API for RFCs 0001-0010"
+
+# ─── CORE-SUPPORT (needed but not critical path) ────────────────────────────
+
+  ss-cli:
+    status: partial
+    maturity: core-support
+    files: 1
+    lines: 128
+    v05_action: freeze
+
+  ss-cas:
+    status: partial
+    maturity: core-support
+    files: 3
+    lines: 146
+    has_inline_tests: true
+    v05_action: freeze
+
+# ─── EXPERIMENTAL (do not modify during v0.5) ──────────────────────────────
+
+  ss-economy:
+    status: partial
+    maturity: experimental
+    files: 13
+    lines: 1395
+    v05_action: freeze
+
+  ss-swarm:
+    status: partial
+    maturity: experimental
+    files: 4
+    lines: 364
+    has_inline_tests: true
+    v05_action: freeze
+
+  ss-scheduler:
+    status: partial
+    maturity: experimental
+    files: 1
+    lines: 48
+    v05_action: freeze
+
+  ss-reason:
+    status: partial
+    maturity: experimental
+    files: 3
+    lines: 245
+    has_inline_tests: true
+    v05_action: freeze
+
+  ss-federation:
+    status: partial
+    maturity: experimental
+    files: 5
+    lines: 171
+    v05_action: freeze
+
+  ss-memory:
+    status: stub
+    maturity: experimental
+    files: 3
+    lines: 82
+    v05_action: freeze
+
+  ss-sessiond:
+    status: partial
+    maturity: experimental
+    files: 3
+    lines: 193
+    v05_action: freeze
+
+  ss-twin:
+    status: partial
+    maturity: experimental
+    files: 3
+    lines: 126
+    v05_action: freeze
+
+  ss-jurisdiction:
+    status: partial
+    maturity: experimental
+    files: 1
+    lines: 61
+    has_inline_tests: true
+    v05_action: freeze
+
+  ss-device:
+    status: stub
+    maturity: experimental
+    lines: 2
+    v05_action: freeze
+
+  ss-kas:
+    status: stub
+    maturity: experimental
+    lines: 2
+    v05_action: freeze
+
+  ss-sig:
+    status: stub
+    maturity: experimental
+    lines: 2
+    v05_action: freeze
+
+  ss-sip:
+    status: stub
+    maturity: experimental
+    lines: 2
+    v05_action: freeze
+
+  ss-trust:
+    status: stub
+    maturity: experimental
+    lines: 2
+    v05_action: freeze
+
+  ss-reputation:
+    status: stub
+    maturity: experimental
+    lines: 2
+    v05_action: freeze
+
+# ─── NON-CARGO COMPONENTS ──────────────────────────────────────────────────
+
+  ss-evidence:
+    status: empty
+    maturity: core
+    notes: "Directory exists but contains no files. Evidence generation will be part of ss-provenance."
+    v05_action: implement
+
+  ss-discovery:
+    status: empty
+    maturity: experimental
+    notes: "Contains only README.md placeholder."
+    v05_action: freeze
+
+# ─── PYTHON COMPONENTS ──────────────────────────────────────────────────────
+
+  libs-ss-core:
+    status: partial
+    maturity: core-support
+    language: python
+    files: 6
+    lines: 437
+    v05_action: freeze
+
+  libs-ss-crypto:
+    status: partial
+    maturity: core-support
+    language: python
+    files: 6
+    lines: 383
+    v05_action: freeze
+
+  libs-ss-cas:
+    status: partial
+    maturity: core-support
+    language: python
+    files: 6
+    lines: 620
+    v05_action: freeze
+
+  oasa-gateway:
+    status: partial
+    maturity: experimental
+    language: python
+    files: 8
+    lines: 756
+    v05_action: freeze

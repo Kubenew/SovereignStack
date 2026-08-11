@@ -7,6 +7,7 @@ description = "SovereignStack Kernel — core system services: identity, URI res
 [dependencies]
 ss-crypto = { path = "../ss-crypto" }
 ss-core = { path = "../ss-core" }
+ss-provenance = { path = "../ss-provenance" }
 ed25519-dalek = { workspace = true }
 sha2 = { workspace = true }
 serde = { workspace = true }

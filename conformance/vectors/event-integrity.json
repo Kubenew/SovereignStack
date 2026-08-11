@@ -1,0 +1,27 @@
+{
+  "id": "EVT-001",
+  "version": "0.5.0",
+  "description": "Event publish and integrity check",
+  "canonicalization": "JCS (RFC 8785)",
+  "cryptographic_algorithm": "Ed25519",
+  "hash_algorithm": "SHA-256",
+  "inputs": {
+    "event_id": "event://uuid-9999",
+    "event_type": "SessionCreated",
+    "source": "agent://alice",
+    "payload": {"session_id": "session-1234"},
+    "timestamp": 1786435200,
+    "signing_key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+  },
+  "expected_outputs": {
+    "hash_valid": true,
+    "signature_valid": true
+  },
+  "failure_conditions": [
+    {
+      "name": "payload_tampered",
+      "mutation": "change session-1234 to session-5678 after signing",
+      "expected_error": "EventError::InvalidSignature"
+    }
+  ]
+}

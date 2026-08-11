@@ -1,0 +1,41 @@
+{
+  "id": "POL-001",
+  "version": "0.5.0",
+  "description": "Policy evaluation and enforcement",
+  "canonicalization": "JCS (RFC 8785)",
+  "cryptographic_algorithm": "Ed25519",
+  "hash_algorithm": "SHA-256",
+  "inputs": {
+    "policy_uri": "policy://jurisdiction-eu",
+    "rules": [
+      {
+        "effect": "Allow",
+        "action": "read",
+        "resource": "*"
+      }
+    ],
+    "evaluations": [
+      {
+        "action": "read",
+        "resource": "knowledge://domain/physics",
+        "context": {
+          "caller": "agent://alice",
+          "jurisdiction": "EU"
+        }
+      },
+      {
+        "action": "write",
+        "resource": "knowledge://domain/physics",
+        "context": {
+          "caller": "agent://alice",
+          "jurisdiction": "EU"
+        }
+      }
+    ]
+  },
+  "expected_outputs": [
+    { "allowed": true, "reason": "policy policy://jurisdiction-eu rule matched action read" },
+    { "allowed": false, "reason": "no matching policy, default deny" }
+  ],
+  "failure_conditions": []
+}

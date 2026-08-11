@@ -1,0 +1,24 @@
+{
+  "id": "IDENT-001",
+  "version": "0.5.0",
+  "description": "Identity creation with Ed25519 keypair",
+  "canonicalization": "JCS (RFC 8785)",
+  "cryptographic_algorithm": "Ed25519",
+  "hash_algorithm": "SHA-256",
+  "inputs": {
+    "uri": "agent://alice",
+    "timestamp": 1786435200,
+    "seed_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+  },
+  "expected_outputs": {
+    "public_key": "ed25519:6c5ed24b619cb9890fbc982a394ec59c869fb1d87e07d0f1eb7a003ecab70bba",
+    "signature": "349969e71eb74360e51cb2a640960d7042a98eefce6bc0ef9cff333dbd32db858e3ce6859dd6cff3c965e64e52277c07923769911fa10901e92dcfecde687c02"
+  },
+  "failure_conditions": [
+    {
+      "name": "invalid_signature",
+      "mutation": "flip last byte of signature",
+      "expected_error": "IdentityError::InvalidSignature"
+    }
+  ]
+}

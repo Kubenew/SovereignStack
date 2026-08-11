@@ -1,0 +1,31 @@
+profile: core-0.1
+version: "0.5.0"
+description: "Minimum requirements for a SovereignStack-compatible node"
+
+requirements:
+  identity:
+    - create_identity
+    - verify_identity
+    - resolve_identity_uri
+  object_model:
+    - create_object
+    - sign_object
+    - verify_object_signature
+    - resolve_object_uri
+  capability:
+    - register_capability
+    - grant_capability
+    - verify_capability
+    - revoke_capability
+  policy:
+    - evaluate_policy
+    - enforce_policy_decision
+  event:
+    - publish_event
+    - subscribe_to_events
+    - verify_event_integrity
+  provenance:
+    - record_provenance_entry
+    - build_provenance_chain
+    - verify_chain_integrity
+    - generate_evidence_package

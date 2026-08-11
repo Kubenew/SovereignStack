@@ -18,6 +18,7 @@ use ss_kernel::{
     eventbus::EventBusImpl,
     identity::IdentityServiceImpl,
     policy::PolicyEngineImpl,
+    provenance::ProvenanceServiceImpl,
     registry::ObjectRegistryImpl,
     resolver::UriResolverImpl,
 };
@@ -53,6 +54,7 @@ struct ReferenceKernel {
     registry: Arc<ObjectRegistryImpl>,
     capabilities: Arc<CapabilityEnforcerImpl>,
     policy: Arc<PolicyEngineImpl>,
+    provenance: Arc<ProvenanceServiceImpl>,
 }
 
 impl Kernel for ReferenceKernel {
@@ -62,6 +64,7 @@ impl Kernel for ReferenceKernel {
     fn registry(&self) -> &dyn ss_kernel::registry::ObjectRegistry { self.registry.as_ref() }
     fn capabilities(&self) -> &dyn ss_kernel::capability::CapabilityEnforcer { self.capabilities.as_ref() }
     fn policy(&self) -> &dyn ss_kernel::policy::PolicyEngine { self.policy.as_ref() }
+    fn provenance(&self) -> &dyn ss_kernel::provenance::ProvenanceService { self.provenance.as_ref() }
 }
 
 // ── App State ───────────────────────────────────────────────────────────────
@@ -506,6 +509,57 @@ async fn conformance_requirements_l1() -> Json<Vec<serde_json::Value>> {
     ])
 }
 
+// ── Routes: Provenance ──────────────────────────────────────────────────────
+
+async fn provenance_record(State(s): State<AppState>, Json(payload): Json<serde_json::Value>) -> Json<serde_json::Value> {
+    if let Ok(entry) = serde_json::from_value::<ss_kernel::provenance::ProvenanceEntry>(payload) {
+        match s.kernel.provenance().record(entry) {
+            Ok(_) => Json(serde_json::json!({"status": "recorded"})),
+            Err(e) => Json(serde_json::json!({"error": e.to_string()})),
+        }
+    } else {
+        Json(serde_json::json!({"error": "invalid payload"}))
+    }
+}
+
+async fn provenance_chain(Query(params): Query<HashMap<String, String>>, State(s): State<AppState>) -> Json<serde_json::Value> {
+    if let Some(uri_str) = params.get("target") {
+        if let Ok(uri) = ss_core::SovereignUri::parse(uri_str) {
+            if let Some(chain) = s.kernel.provenance().get_chain(&uri) {
+                return Json(serde_json::to_value(chain).unwrap_or_else(|_| serde_json::json!({"error": "serialization error"})));
+            }
+        }
+    }
+    Json(serde_json::json!({"chain": []}))
+}
+
+async fn provenance_verify(Json(payload): Json<serde_json::Value>, State(s): State<AppState>) -> Json<serde_json::Value> {
+    if let Some(uri_str) = payload.get("target").and_then(|v| v.as_str()) {
+        if let Ok(uri) = ss_core::SovereignUri::parse(uri_str) {
+            match s.kernel.provenance().verify_chain(&uri) {
+                Ok(valid) => return Json(serde_json::json!({"valid": valid})),
+                Err(e) => return Json(serde_json::json!({"error": e.to_string()})),
+            }
+        }
+    }
+    Json(serde_json::json!({"error": "invalid target"}))
+}
+
+async fn provenance_evidence(Json(payload): Json<serde_json::Value>, State(s): State<AppState>) -> Json<serde_json::Value> {
+    if let (Some(target_str), Some(profile)) = (
+        payload.get("target").and_then(|v| v.as_str()),
+        payload.get("profile").and_then(|v| v.as_str())
+    ) {
+        if let Ok(target_uri) = ss_core::SovereignUri::parse(target_str) {
+            match s.kernel.provenance().generate_evidence(&target_uri, s.node_uri.clone(), profile.to_string()) {
+                Ok(evidence) => return Json(serde_json::to_value(evidence).unwrap_or_else(|_| serde_json::json!({"error": "serialization error"}))),
+                Err(e) => return Json(serde_json::json!({"error": e.to_string()})),
+            }
+        }
+    }
+    Json(serde_json::json!({"error": "invalid input"}))
+}
+
 // ── Router ──────────────────────────────────────────────────────────────────
 
 fn router(state: AppState) -> Router {
@@ -569,6 +623,11 @@ fn router(state: AppState) -> Router {
         .route("/conformance/certify", post(conformance_certify))
         .route("/conformance/coverage", get(conformance_coverage))
         .route("/conformance/requirements/L1", get(conformance_requirements_l1))
+        // Provenance
+        .route("/provenance/record", post(provenance_record))
+        .route("/provenance/chain", get(provenance_chain))
+        .route("/provenance/verify", post(provenance_verify))
+        .route("/provenance/evidence", post(provenance_evidence))
         // SIP
         .route("/sip/v1/ping", get(|| async { "pong" }))
         .layer(CorsLayer::permissive())
@@ -587,13 +646,15 @@ async fn main() -> Result<(), anyhow::Error> {
     let node_id = format!("node://{}-{}", args.name.as_deref().unwrap_or("ss-node"), uuid::Uuid::new_v4().to_string().split('-').next().unwrap());
     let node_uri = SovereignUri::parse(&node_id).map_err(|e| anyhow::anyhow!("URI parse: {}", e))?;
 
+    let identity_svc = Arc::new(IdentityServiceImpl::new());
     let kernel = Arc::new(ReferenceKernel {
-        identity: Arc::new(IdentityServiceImpl::new()),
+        identity: identity_svc.clone(),
         resolver: Arc::new(UriResolverImpl::new()),
         event_bus: Arc::new(EventBusImpl::new(1024)),
         registry: Arc::new(ObjectRegistryImpl::new()),
         capabilities: Arc::new(CapabilityEnforcerImpl::new()),
         policy: Arc::new(PolicyEngineImpl::new()),
+        provenance: Arc::new(ProvenanceServiceImpl::new(identity_svc)),
     });
 
     let state = AppState {

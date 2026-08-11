@@ -1,9 +1,14 @@
+> **STATUS: Vision / Research**
+> This document describes long-term aspirations. It does not represent
+> current implementation status. See the core/ directory and
+> registry/components.yaml for what exists today.
+
 # SCALING-AGI.md — Scaling SovereignStack for Frontier & AGI-Ready Deployments
 
 **Version:** 0.1  
 **Status:** Living Document  
 **Date:** July 2026  
-**See also:** [SIRA.md](SIRA.md) (reference architecture), [deploy/azure-local/](deploy/azure-local/) (production profile)
+**See also:** [SIRA.md](SIRA.md) (reference architecture), [../deploy/azure-local/](../deploy/azure-local/) (production profile)
 
 ## Overview
 

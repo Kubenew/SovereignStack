@@ -1,10 +1,15 @@
+> **STATUS: Vision / Research**
+> This document describes long-term aspirations. It does not represent
+> current implementation status. See the core/ directory and
+> registry/components.yaml for what exists today.
+
 # Sovereign Intelligence Reference Architecture (SIRA)
 
 **Version:** 1.0  
 **Status:** Living Document  
 **Maintained by:** OASA Technical Steering Committee  
 **Last Updated:** July 2026  
-**See also:** [SCALING-AGI.md](SCALING-AGI.md) (production deployment), [RFC-0060](rfcs/RFC-0060-cognitive-mesh-architecture.md) (mesh implementation)
+**See also:** [SCALING-AGI.md](SCALING-AGI.md) (production deployment), [RFC-0060](../rfcs/RFC-0060-digital-twin-entity-model.md) (mesh implementation)
 
 ---
 
@@ -386,10 +391,10 @@ Instead of a network of chatbots, this is a network of collaborating cognitive s
 
 ## References
 
-- [OASA Compliance Framework](OASA.md)
-- [Object Model](OBJECT_MODEL.md)
-- [URI Standard](URI_STANDARD.md)
-- [Protocol Registry](PROTOCOL_REGISTRY.md)
-- [Constitution](CONSTITUTION.md)
+- [OASA Compliance Framework](../OASA.md)
+- [Object Model](../OBJECT_MODEL.md)
+- [URI Standard](../URI_STANDARD.md)
+- [Protocol Registry](../PROTOCOL_REGISTRY.md)
+- [Constitution](../CONSTITUTION.md)
 - RFC-0060: Cognitive Mesh Architecture
 - RFC-0061 through RFC-0069: Cognitive Protocol Family

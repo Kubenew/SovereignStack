@@ -1,3 +1,8 @@
+> **STATUS: Vision / Research**
+> This document describes long-term aspirations. It does not represent
+> current implementation status. See the core/ directory and
+> registry/components.yaml for what exists today.
+
 # SovereignStack 2035 Vision
 
 **Mission**: Create the foundational protocol and operating layer for sovereign, autonomous, distributed intelligence — the "Internet for Intelligence".
