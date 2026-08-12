@@ -20,9 +20,9 @@ This document serves as the master tracking index for all deliverables created u
 | :--- | :--- | :--- | :--- |
 | 1 | Architectural Review | (external document — shareable version provided) | Complete |
 | 2 | AGI Future‑Proofing Strategy | `docs/future-proofing-agi.md` | Complete |
-| 3 | RFC‑0056: Search Inference Protocol | `rfcs/rfc-0056-search-inference.md` | Draft |
-| 4 | RFC‑0057: Meta‑Cognition & Self‑Improvement | `rfcs/rfc-0057-metacognition.md` | Draft |
-| 5 | RFC‑0061: Human Override Biometric Protocol | `rfcs/rfc-0061-human-override.md` | Draft |
+| 3 | RFC‑0056: Search Inference Protocol | superseded → `docs/rfc/RFC-0056-zero-knowledge-alignment.md` | Superseded |
+| 4 | RFC‑0057: Meta‑Cognition & Self‑Improvement | superseded → `docs/rfc/RFC-0057-grpc-alignment-streamer.md` | Superseded |
+| 5 | RFC‑0061: Human Override Biometric Protocol | superseded → `rfcs/RFC-0061-cognitive-router-protocol.md` | Superseded |
 | 6 | OBJECT_MODEL.md Patch (new URI schemes) | `docs/OBJECT_MODEL.md` (to be patched) | Complete |
 | 7 | Level 4 Advanced Autonomous Systems Certification Spec | `conformance/level-4-agi/README.md` | Complete |
 | 8 | Level 4 Test Suite Scaffold | `conformance/level-4-agi/test_*.py` | Complete |

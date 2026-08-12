@@ -202,6 +202,6 @@ Sends a random input vector through the full shard chain and prints the output.
 
 - [Services: weight_federation_service.py](/services/weight_federation_service.py)
 - [Tool: federate_weights.py](/tools/federate_weights.py)
-- [Federation Protocol (RFC 0004)](/rfcs/0004-federation-protocol.md)
+- [Federation Routing (RFC-0008)](/rfcs/RFC-0008-federation-routing.md)
 - [Certification Program](/docs/certification/index.md)
 - [Enterprise Platform](/docs/enterprise/index.md)

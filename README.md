@@ -25,7 +25,7 @@ See [registry/components.yaml](registry/components.yaml) for machine-readable, c
 ## Quick Start
 
 ```bash
-git clone https://github.com/SovereignStack/SovereignStack.git
+git clone https://github.com/Kubenew/SovereignStack.git
 cd SovereignStack
 cargo build --release
 ./target/release/ss-node --port 8546
@@ -60,7 +60,7 @@ See [conformance/profiles/core-0.1.yaml](conformance/profiles/core-0.1.yaml) for
 
 ## Status
 
-Build: ![Build](https://github.com/SovereignStack/SovereignStack/actions/workflows/ci.yml/badge.svg)
+Build: ![Build](https://github.com/Kubenew/SovereignStack/actions/workflows/ci.yml/badge.svg)
 
 > **Note**: OASA certification levels (L1/L2/L3) are defined as a *specification*.
 > No implementation has yet been independently certified. See [CONFORMANCE.md](CONFORMANCE.md).

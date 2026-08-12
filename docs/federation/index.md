@@ -2,7 +2,7 @@
 
 The Federation Protocol enables sovereign nodes to form a trust-aware, jurisdictionally-enforced, offline-capable mesh for cross-node synchronization and inference routing.
 
-This document provides an overview of federation concepts. For the wire protocol specification, see [RFC 0004](/rfcs/0004-federation-protocol.md).
+This document provides an overview of federation concepts. For the wire protocol specification, see [RFC-0008: Federation Routing](/rfcs/RFC-0008-federation-routing.md).
 
 ---
 
@@ -41,7 +41,7 @@ EU Node (GDPR)  ←──→  US Node (HIPAA)   ❌ Blocked (default)
 EU Node (GDPR)  ←──→  Global Coordinator 🟡 Metadata only (no audit logs, no vectors)
 ```
 
-Jurisdiction is encoded in the node certificate (see [RFC 0003](/rfcs/0003-node-identity.md)) and enforced at the protocol layer.
+Jurisdiction is encoded in the node certificate (see [RFC-0011: Identity & DID Resolution](/rfcs/RFC-0011-identity-did-resolution.md)) and enforced at the protocol layer.
 
 ---
 
@@ -103,7 +103,7 @@ sovereign federation jurisdiction --region EU --policy GDPR
 
 ## See Also
 
-- [RFC 0003: Node Identity](/rfcs/0003-node-identity.md)
-- [RFC 0004: Federation Protocol](/rfcs/0004-federation-protocol.md)
+- [RFC-0011: Identity & DID Resolution](/rfcs/RFC-0011-identity-did-resolution.md)
+- [RFC-0008: Federation Routing](/rfcs/RFC-0008-federation-routing.md)
 - [Networking Mesh](/docs/networking/index.md)
 - [Deployment Profiles](/docs/deployment/profiles.md)

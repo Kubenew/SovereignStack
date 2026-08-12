@@ -34,4 +34,4 @@ All reference implementations **must** pass the full conformance test suite befo
 
 | Integration | Control Plane | Certification Profile | Status |
 |---|---|---|---|
-| [HPE Morpheus](integrations/hpe-morpheus/) | Morpheus >= 6.0 | OASA-MORPHEUS-CORE-0.1 (L3) | Conformance tested (CI must-pass) |
+| [Morpheus](integrations/morpheus/) | Morpheus >= 6.0 | `oasa-profile://morpheus-core/v0.1` (L3) | Conformance tested (CI must-pass) |

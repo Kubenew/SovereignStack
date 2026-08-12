@@ -198,7 +198,7 @@ curl http://localhost:8080/spiffe
 
 ## See Also
 
-- [RFC 0003: Node Identity](/rfcs/0003-node-identity.md)
+- [RFC-0011: Identity & DID Resolution](/rfcs/RFC-0011-identity-did-resolution.md)
 - [SPIFFE Standard](https://spiffe.io)
 - [SPIRE Documentation](https://spiffe.io/docs/latest/spire-about/)
 - [Services: spiffe_helper.py](/services/spiffe_helper.py)

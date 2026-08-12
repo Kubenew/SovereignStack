@@ -21,7 +21,7 @@ governing decision is ALLOW; denials are recorded as evidence too.
 
 | Integration                     | Target                | Profile                       | Status                    |
 |---------------------------------|-----------------------|-------------------------------|---------------------------|
-| [HPE Morpheus](hpe-morpheus/)   | Morpheus >= 6.0       | OASA-MORPHEUS-CORE-0.1 (L3)   | Conformance tested (CI)   |
+| [Morpheus](morpheus/)             | Morpheus >= 6.0       | `oasa-profile://morpheus-core/v0.1` (L3) | Conformance tested (CI)   |
 
 Each integration directory is self-contained:
 

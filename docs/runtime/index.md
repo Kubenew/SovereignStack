@@ -135,6 +135,6 @@ runtime:
 
 ## See Also
 
-- [RFC 0001: Runtime Specification](/rfcs/0001-runtime-spec.md)
+- [RFC-0003: Session Runtime](/rfcs/RFC-0003-session-runtime.md)
 - [Deployment Profiles](/docs/deployment/profiles.md)
 - [vLLM Documentation](https://docs.vllm.ai)

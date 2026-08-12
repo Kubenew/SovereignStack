@@ -7,11 +7,11 @@ This directory contains formal specifications for SovereignStack subsystems and 
 | Spec | Status | Description |
 |---|---|---|---|
 | [OASA](OASA.md) | Stable | Open Architecture Specification for Autonomous and Sovereign AI |
-| [Runtime](/rfcs/0001-runtime-spec.md) | Draft | Sovereign Runtime execution layer |
-| [Node Identity](/rfcs/0003-node-identity.md) | Draft | Node identity, certificate model, TPM attestation |
-| [Federation Protocol](/rfcs/0004-federation-protocol.md) | Draft | Mesh networking, CRDT sync, jurisdictional gating |
-| [Agent API](/rfcs/0005-agent-api.md) | Draft | Agent lifecycle, scheduling, memory attachment, tool execution |
-| [Memory](/rfcs/0006-memory-spec.md) | Draft | Vector store, KV cache, event log, CRDT sync, encryption |
+| [Session Runtime](/rfcs/RFC-0003-session-runtime.md) | Draft | Sovereign Runtime execution layer |
+| [Identity & DID Resolution](/rfcs/RFC-0011-identity-did-resolution.md) | Draft | Node/agent identity, certificate model, TPM attestation |
+| [Federation Routing](/rfcs/RFC-0008-federation-routing.md) | Draft | Mesh networking, discovery, trust negotiation |
+| [Agent Communication](/rfcs/RFC-0014-agent-communication.md) | Draft | Agent lifecycle, scheduling, memory attachment, tool execution |
+| [Sovereign Memory Protocol](/rfcs/RFC-0017-sovereign-memory-protocol.md) | Draft | Vector store, KV cache, event log, CRDT sync, encryption |
 | [GraphQL API](/docs/api/graphql.md) | Implemented | Dual REST + GraphQL gateway with introspection |
 | [Enterprise Platform](/docs/enterprise/index.md) | Implemented | Support contracts, SLA, managed updates, deployment audits |
 | [Certification Program](/docs/certification/index.md) | Implemented | Certified Node, Runtime, Federation with registry API |

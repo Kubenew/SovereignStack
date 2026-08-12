@@ -156,4 +156,4 @@ compliance:
 - [SPIFFE / SPIRE Integration](/docs/security/spiffe.md)
 - [Deployment Profiles](/docs/deployment/profiles.md)
 - [OASA Conformance Tests](/tests/conformance/)
-- [RFC 0006: Memory Specification](/rfcs/0006-memory-spec.md)
+- [RFC-0017: Sovereign Memory Protocol](/rfcs/RFC-0017-sovereign-memory-protocol.md)

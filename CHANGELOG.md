@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [v0.5.0] — 2026-08-12
+
+### Added
+- **Core Contract Implementation**: Comprehensive integration of Identity, Capability, Policy, Events, Provenance, and Evidence components.
+- **7 Core Services**: Stabilized in `ss-kernel` (Identity, Resolver, EventBus, Registry, Capability, Policy, Provenance).
+- **Core-0.1 Conformance Vectors**: 7 deterministic test vectors for the Core Contract (`identity-creation`, `object-signing`, `capability-grant`, `policy-evaluation`, `event-integrity`, `provenance-chain`, `evidence-generation`).
+- **Morpheus Integration**: Governed-infrastructure demo targeting the `oasa-profile://morpheus-core/v0.1` profile (MOR-001..MOR-010) — identity → capability → policy → provenance → evidence pipeline against a Morpheus control plane, with end-to-end authorization and evidence-verification tests wired into CI as a must-pass gate. Positioned as the verifiable trust layer *above* the control plane (vendor-neutral; Morpheus is the reference).
+- **One-Command Verification**: `verify.sh` now enforces the 7 Core Contract vectors via `tools/ss-conformance.py --profile core-0.1` against the compiled reference node (see `v0.5-Verification-Gate.md`).
+- **Reference Node Verification**: Hardened the reference node to support full conformance validation.
+
+---
+
+## [v0.4.0] — 2026-07-20
+
+### Added
+- **Initial Capability Registry**: Introduced the foundation for capabilities and policies.
+- **Reference Node Skeleton**: Built out the `reference-node` binary (`ss-node`) capable of basic REST endpoints.
+- **Conformance Harness**: Added the initial Python-based conformance harness.
+- **RFC Consolidation**: Standardized the RFC numbering process to prefix all accepted specs with `RFC-XXXX`.
+
+---
+
 ## [v0.3.0] — 2026-06-15
 
 ### Added
