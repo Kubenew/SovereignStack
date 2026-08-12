@@ -1,0 +1,24 @@
+profile:
+  id: morpheus-vm-essentials-0.1
+  platform:
+    vendor: HPE
+    product: Morpheus VM Essentials
+    version: "9.0"
+
+requires:
+  - core/0.1
+
+supports:
+  - discover_workload
+  - authorize_operation
+  - record_operation
+  - verify_evidence
+
+evidence:
+  required:
+    - workload_identity
+    - operation
+    - authorization
+    - provenance_chain
+    - cryptographic_signature
+    - verification_result

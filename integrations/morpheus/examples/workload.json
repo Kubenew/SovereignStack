@@ -1,0 +1,8 @@
+{
+  "id": "vm-12345",
+  "name": "ai-worker-001",
+  "status": "pending",
+  "group": "ai-infrastructure",
+  "labels": ["gpu", "secure-enclave"],
+  "owner": "system-agent-99"
+}

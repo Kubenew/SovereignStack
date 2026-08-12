@@ -1,0 +1,10 @@
+# Morpheus Workload Lifecycle Mapping
+lifecycle:
+  - platform_state: pending
+    core_event: capability.requested
+  - platform_state: provisioned
+    core_event: infrastructure.operation
+  - platform_state: running
+    core_event: agent.active
+  - platform_state: deleted
+    core_event: object.destroyed

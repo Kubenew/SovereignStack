@@ -1,0 +1,8 @@
+# Morpheus Identity Mapping
+mapping:
+  vm_id:
+    uri_scheme: agent
+    prefix: "agent://morpheus/vm-{id}"
+  user_group:
+    uri_scheme: role
+    prefix: "role://morpheus/{group}"

@@ -1,0 +1,20 @@
+{
+  "platform": "hpe-morpheus-vm-essentials",
+  "profile": "morpheus-vm-essentials-9.0",
+  "workload": "vm://morpheus/12345",
+  "operation": "provision",
+  "authorization": "allowed",
+  "provenance": {
+    "chain_valid": true,
+    "entries": 7
+  },
+  "evidence": {
+    "integrity": "valid",
+    "signature": "valid",
+    "policy": "compliant"
+  },
+  "conformance": {
+    "core-0.1": "PASS",
+    "morpheus-0.1": "PASS"
+  }
+}

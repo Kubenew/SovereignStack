@@ -1,0 +1,13 @@
+# Evidence Package Requirements
+evidence:
+  format: "json"
+  signature_algorithm: "ed25519"
+  integrity_hash: "sha256"
+  required_fields:
+    - platform
+    - profile
+    - workload
+    - operation
+    - authorization
+    - provenance
+    - conformance

@@ -1,0 +1,13 @@
+# Provenance Data Mapping
+provenance_schema:
+  event_type: "infrastructure.operation"
+  facts:
+    - field: "ip_address"
+      type: string
+      required: true
+    - field: "cpu"
+      type: int
+      required: true
+    - field: "memory_gb"
+      type: int
+      required: true

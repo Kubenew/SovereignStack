@@ -1,0 +1,8 @@
+{
+  "subject": "agent://morpheus/system-agent-99",
+  "operation": "morpheus:provision",
+  "target": "workload://vm-12345",
+  "capabilities": ["compute.create", "network.attach"],
+  "policy_result": "allow",
+  "timestamp": "2026-08-12T10:00:00Z"
+}

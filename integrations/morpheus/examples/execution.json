@@ -1,0 +1,11 @@
+{
+  "operation_id": "op-9876",
+  "workload_id": "vm-12345",
+  "action": "provisioned",
+  "infrastructure_facts": {
+    "ip_address": "10.0.0.45",
+    "cpu": 8,
+    "memory_gb": 32
+  },
+  "timestamp": "2026-08-12T10:05:00Z"
+}

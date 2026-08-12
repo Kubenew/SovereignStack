@@ -1,0 +1,10 @@
+# Morpheus Authorization Mapping
+operations:
+  - morpheus_api: "/api/instances"
+    method: "POST"
+    capability_required: "compute.create"
+    policy_category: "provisioning"
+  - morpheus_api: "/api/networks"
+    method: "POST"
+    capability_required: "network.attach"
+    policy_category: "networking"
