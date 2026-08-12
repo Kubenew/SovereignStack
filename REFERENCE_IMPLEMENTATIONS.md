@@ -29,3 +29,9 @@
 ## Conformance
 
 All reference implementations **must** pass the full conformance test suite before release.
+
+## Control-Plane Integrations
+
+| Integration | Control Plane | Certification Profile | Status |
+|---|---|---|---|
+| [HPE Morpheus](integrations/hpe-morpheus/) | Morpheus >= 6.0 | OASA-MORPHEUS-CORE-0.1 (L3) | Conformance tested (CI must-pass) |

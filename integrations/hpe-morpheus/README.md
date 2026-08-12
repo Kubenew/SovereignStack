@@ -84,8 +84,8 @@ integrations/hpe-morpheus/
 
 This integration targets the **OASA-MORPHEUS-CORE-0.1** profile
 ([conformance/profile.yaml](conformance/profile.yaml)), a machine-verifiable
-certification covering ten controls (MOR-001..MOR-010). See
-[conformance/README.md](../README.md) in the parent integration set and the
+certification covering ten controls (MOR-001..MOR-010). See the
+[integration set index](../README.md) and the
 [OASA certification framework](../../../CERTIFICATION.md) for level semantics.
 
 ## Positioning Language
