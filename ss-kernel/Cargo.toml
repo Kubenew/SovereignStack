@@ -2,7 +2,7 @@
 name = "ss-kernel"
 version = "0.1.0"
 edition = "2021"
-description = "SovereignStack Kernel — core system services: identity, URI resolution, event bus, object registry, capability enforcement, policy engine"
+description = "SovereignStack Kernel — core system services: identity, URI resolution, event bus, object registry, capability enforcement, policy engine, provenance"
 
 [dependencies]
 ss-crypto = { path = "../ss-crypto" }

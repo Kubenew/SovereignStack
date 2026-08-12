@@ -115,8 +115,24 @@ async fn object_create(State(s): State<AppState>, Json(obj): Json<serde_json::Va
     Json(serde_json::json!({"status": "stored", "uri": id}))
 }
 
-async fn object_verify(Json(_obj): Json<serde_json::Value>) -> Json<serde_json::Value> {
-    Json(serde_json::json!({"valid": true}))
+async fn object_verify(Json(obj): Json<serde_json::Value>) -> Json<serde_json::Value> {
+    // Hash-based verification: recompute content_hash from the object's data fields
+    // and compare against the claimed content_hash.
+    let claimed_hash = obj.get("content_hash").and_then(|v| v.as_str());
+    let data = obj.get("data");
+
+    match (claimed_hash, data) {
+        (Some(claimed), Some(payload)) => {
+            let payload_str = serde_json::to_string(payload).unwrap_or_default();
+            let computed = ss_crypto::hash::ContentHash::compute(payload_str.as_bytes())
+                .as_hex()
+                .to_string();
+            let valid = computed == claimed;
+            Json(serde_json::json!({"valid": valid, "computed_hash": computed, "claimed_hash": claimed}))
+        }
+        (None, _) => Json(serde_json::json!({"valid": false, "error": "missing content_hash field"})),
+        (_, None) => Json(serde_json::json!({"valid": false, "error": "missing data field"})),
+    }
 }
 
 async fn object_query(Query(params): Query<HashMap<String, String>>, State(s): State<AppState>) -> Json<Vec<serde_json::Value>> {
@@ -489,11 +505,17 @@ async fn conformance_profiles() -> Json<Vec<String>> {
 }
 
 async fn conformance_run() -> Json<serde_json::Value> {
-    Json(serde_json::json!({"passed": 42, "failed": 0, "total": 42, "status": "passed"}))
+    Json(serde_json::json!({
+        "status": "not_implemented",
+        "message": "In-node conformance runner is not yet integrated. Use tools/ss-conformance.py --endpoint <node_url> --profile core-0.1 for external verification."
+    }))
 }
 
 async fn conformance_certify() -> Json<serde_json::Value> {
-    Json(serde_json::json!({"status": "certified", "certificate": "cert:v0.3.0:core-node"}))
+    Json(serde_json::json!({
+        "status": "not_available",
+        "message": "Self-certification is not supported. Certification requires passing the external conformance suite and independent verification."
+    }))
 }
 
 async fn conformance_coverage() -> Json<Vec<RfcCoverageItem>> {
@@ -672,7 +694,7 @@ async fn main() -> Result<(), anyhow::Error> {
     };
 
     info!("╔══════════════════════════════════════╗");
-    info!("║  SovereignStack Reference Node v0.3  ║");
+    info!("║  SovereignStack Reference Node v0.5  ║");
     info!("╚══════════════════════════════════════╝");
     info!("Host: {}:{}", args.host, args.port);
     info!("Node URI: {}", &state.node_uri);

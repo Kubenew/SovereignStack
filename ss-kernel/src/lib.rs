@@ -1,8 +1,8 @@
 //! ss-kernel: SovereignStack Kernel — core system services.
 //!
 //! The kernel is the only mandatory component of any SovereignStack node.
-//! It provides six core services: Identity, URI Resolution, Event Bus,
-//! Object Registry, Capability Enforcement, and Policy Engine.
+//! It provides seven core services: Identity, URI Resolution, Event Bus,
+//! Object Registry, Capability Enforcement, Policy Engine, and Provenance.
 
 pub mod identity;
 pub mod resolver;

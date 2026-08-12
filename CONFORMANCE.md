@@ -6,6 +6,22 @@
 
 ---
 
+> **⚠️ Implementation Status**
+>
+> This document defines the OASA Conformance **specification and framework**.
+> It describes the requirements, test methodology, and badge system for
+> certification.
+>
+> **No implementation has yet been independently certified at any level.**
+>
+> The SovereignStack reference node is currently under verification against
+> the `core-0.1` conformance profile. See
+> [registry/components.yaml](registry/components.yaml) for component-level
+> maturity status and [registry/claims.yaml](registry/claims.yaml) for the
+> claim → evidence mapping.
+
+---
+
 ## Overview
 
 The OASA Conformance Test Suite defines a three-tier certification program for sovereign AI infrastructure. It provides automated validation, verifiable compliance proofs, and a recognized badge system — enabling enterprises to select, deploy, and audit OASA-compliant systems with confidence.

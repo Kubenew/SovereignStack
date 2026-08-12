@@ -1,0 +1,11 @@
+# =============================================================================
+# SovereignStack — Experimental Dependencies
+# Extended dependencies for experimental features (GraphQL, Web3, etc.)
+# Includes all core dependencies.
+# =============================================================================
+-r core.txt
+strawberry-graphql==0.316.0
+openai==2.38.0
+spiffe==0.2.9
+# web3 — uncomment when blockchain integration tests are active
+# web3>=7.0.0

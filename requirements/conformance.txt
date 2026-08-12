@@ -1,0 +1,8 @@
+# =============================================================================
+# SovereignStack — Conformance Test Runner Dependencies
+# Minimal set for running the conformance harness against a node.
+# =============================================================================
+httpx==0.28.1
+pyyaml==6.0.3
+jsonschema==4.26.0
+pydantic==2.13.4

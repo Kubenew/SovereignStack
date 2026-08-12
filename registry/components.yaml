@@ -125,14 +125,14 @@ components:
   ss-kernel:
     status: implemented
     maturity: core
-    files: 7
-    lines: 643
+    files: 8
+    lines: 710
     has_inline_tests: false
-    v05_action: implement
-    notes: "Kernel trait + 6 service impls. Needs provenance service added."
+    v05_action: verify
+    notes: "Kernel trait + 7 service impls including ProvenanceService. Provenance integration complete."
     claims:
       - id: KERN-TRAIT-001
-        description: "Kernel trait with 6 core services"
+        description: "Kernel trait with 7 core services (identity, resolver, eventbus, registry, capability, policy, provenance)"
       - id: KERN-IDENT-001
         description: "IdentityServiceImpl with Ed25519 generation and verification"
       - id: KERN-CAP-001
@@ -141,16 +141,26 @@ components:
         description: "PolicyEngineImpl with jurisdiction-aware rule matching"
       - id: KERN-EVENT-001
         description: "EventBusImpl with publish/subscribe/replay"
+      - id: KERN-PROV-001
+        description: "ProvenanceServiceImpl with record/get_chain/verify_chain/generate_evidence"
 
   ss-provenance:
-    status: stub                    # ← CRITICAL: 2 lines of code
+    status: implemented
     maturity: core
-    files: 1
-    lines: 2
+    files: 5
+    lines: 270
     has_inline_tests: false
-    v05_action: implement           # ← BLOCKING: Must be built for v0.5
-    claims: []                      # No claims — nothing is implemented
-    notes: "Contains only '//! Stub crate for SovereignStack.' — MUST BE IMPLEMENTED"
+    v05_action: verify
+    claims:
+      - id: PROV-CHAIN-001
+        description: "Hash-linked provenance chain with append and linkage enforcement"
+      - id: PROV-ENTRY-001
+        description: "Provenance entries with Ed25519 signing, canonical serialization, and content hashing"
+      - id: PROV-EVIDENCE-001
+        description: "Evidence package generation with conformance profile binding"
+      - id: PROV-VERIFY-001
+        description: "Full chain verification: linkage, signature, root hash"
+    notes: "Fully implemented: chain.rs, entry.rs, evidence.rs, verifier.rs. Integrated into ss-kernel and reference-node."
 
   ss-runtime:
     status: partial
@@ -165,10 +175,10 @@ components:
     status: implemented
     maturity: core
     files: 1
-    lines: 539
+    lines: 706
     has_inline_tests: false
-    v05_action: implement
-    notes: "Single main.rs with 10 RFC endpoints. Needs provenance routes added."
+    v05_action: verify
+    notes: "Single main.rs with 10 RFC endpoints + 4 provenance routes (/record, /chain, /verify, /evidence). object_verify uses hash-based verification."
     claims:
       - id: NODE-API-001
         description: "HTTP API for RFCs 0001-0010"
