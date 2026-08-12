@@ -1,0 +1,9 @@
+profile:
+  id: sovereignstack.platform.morpheus
+  version: "0.1"
+
+platform:
+  vendor: HPE
+  product: Morpheus VM Essentials
+  version: "9.0"
+

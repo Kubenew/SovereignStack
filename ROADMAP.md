@@ -73,31 +73,52 @@
 
 ## Executable Milestones
 
-The roadmap has shifted focus toward executable milestones and reference implementations, demonstrating the maturity of the specifications.
+The roadmap has shifted focus toward executable milestones and reference implementations, demonstrating the maturity of the specifications. SovereignStack is positioned as a vendor-neutral governance layer, with HPE Morpheus as its first enterprise reference environment.
 
-### v0.5.0
+### v0.5.0 — Core Contract (Stabilization)
 | Status | Feature | Description |
 |---|---|---|
-| 🚧 | Reference Node | Runnable demo combining kernel, identity, policy, and provenance |
-| 📅 | Policy Engine | Implementation of OPA-backed governance rules |
-| 📅 | Provenance Engine | Cryptographic event log and Merkle audit trails |
-| 📅 | Human Override Implementation | Reference integration of `human://` and `override://` |
-| 📅 | TEE Integration | Secure enclave evaluation for zero-knowledge proofs |
+| ✅ | Identity & Capability | Ed25519 identity generation and capability management |
+| ✅ | Policy & Events | Policy rule matching and event integrity |
+| ✅ | Provenance Engine | Cryptographic event log and tamper-evident chains |
+| ✅ | Evidence | Independently verifiable evidence generation |
+| ✅ | Core Conformance | Deterministic test vectors and claims mapping |
 
-### v0.6.0
+### v0.6.0 — Interoperability
 | Status | Feature | Description |
 |---|---|---|
-| 📅 | Multi-node Federation | Sovereign mesh operation and context handover |
-| 📅 | Finance Profile | Implement standards for payments, treasury, tokenized assets |
-| 📅 | Digital Twin SDK | Tools to manage `person://` and organizational digital twins |
-| 📅 | Kubernetes Operator | Native resource management for autonomous infrastructure |
+| 🚧 | Conformance Runner | Hardened, external conformance test execution |
+| 📅 | External Verifier | Independent verification of evidence packages |
+| 📅 | Versioned Profile | Stable Core 0.1 profile with deterministic vectors |
+| 📅 | Negative Testing | Security and attack vectors added to conformance suite |
 
-### v0.7.0
+### v0.7.0 — HPE Morpheus Integration
 | Status | Feature | Description |
 |---|---|---|
-| 🔮 | Interoperability Demonstrations | Cross-framework orchestration |
-| 🔮 | Third-party Conformance Tests | Automated validation by external certification labs |
-| 🔮 | Cross-vendor Implementations | Open standards adoption by external ecosystem partners |
+| 📅 | Morpheus Adapter | Discovery and infrastructure event ingestion |
+| 📅 | Identity Mapping | Map Morpheus workloads to SovereignStack identity |
+| 📅 | Capability Enforcement | Map Morpheus RBAC/roles to SovereignStack capabilities |
+| 📅 | Policy Gates | Pre-flight policy enforcement for Morpheus provisioning |
+| 📅 | Provenance Export | Cryptographic evidence of Morpheus infrastructure changes |
+
+### v0.8.0 — OASA Assurance
+| Status | Feature | Description |
+|---|---|---|
+| 🔮 | OASA Assurance Profile | Map cryptographic evidence to relevant OASA controls |
+| 🔮 | Automated Assessment | Produce machine-verifiable compliance reports |
+
+### v0.9.0 — External Validation
+| Status | Feature | Description |
+|---|---|---|
+| 🔮 | Independent Conformance | External organizations run the deterministic suite |
+| 🔮 | Reference Implementations | Three independent implementations passing conformance |
+
+### v1.0.0 — SovereignStack Core
+| Status | Feature | Description |
+|---|---|---|
+| 🔮 | Stable Protocol | Immutable v1.0 core protocol specifications |
+| 🔮 | Profiles Framework | Stable framework for extending core with industry profiles |
+| 🔮 | Certification Program | Formal SovereignStack certification program launch |
 
 ## 2026 Kubernetes Enhancements
 
