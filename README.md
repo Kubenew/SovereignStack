@@ -31,7 +31,30 @@ cargo build --release
 ./target/release/ss-node --port 8546
 ```
 
+## Golden Path Demo
+
+Run the Morpheus governed-infrastructure golden path in one command —
+no Morpheus instance required (uses reference fixtures):
+
+```bash
+bash demo/morpheus/run.sh        # Linux/macOS (PowerShell: .\demo\morpheus\run.ps1)
+```
+
+The demo walks the full governance pipeline: **Discover → Authorize → Execute →
+Provenance → Evidence → Independent Verify**, and prints `STATUS: CONFORMANT`
+when the evidence package independently verifies. See
+[`demo/morpheus/`](demo/morpheus/) and [`integrations/morpheus/`](integrations/morpheus/).
+
 ## Verify
+
+Run the one-command verification gate — builds the reference node and enforces
+the 7 Core Contract vectors:
+
+```bash
+bash verify.sh
+```
+
+For step-by-step manual verification (see [`v0.5-Verification-Gate.md`](v0.5-Verification-Gate.md)):
 
 ```bash
 # Rust workspace tests
@@ -56,7 +79,7 @@ The Core Contract is verified against 7 deterministic test vectors:
 | `provenance-chain` | Hash-linked provenance chain creation and tamper detection |
 | `evidence-generation` | Evidence package generation with conformance profile binding |
 
-See [conformance/profiles/core-0.1.yaml](conformance/profiles/core-0.1.yaml) for the formal profile definition.
+See [conformance/profiles/core-node.yaml](conformance/profiles/core-node.yaml) for the formal profile definition.
 
 ## Status
 

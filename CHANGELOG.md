@@ -9,22 +9,53 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ## [v0.5.0] — 2026-08-12
 
 ### Added
-- **Core Contract Implementation**: Comprehensive integration of Identity, Capability, Policy, Events, Provenance, and Evidence components.
-- **7 Core Services**: Stabilized in `ss-kernel` (Identity, Resolver, EventBus, Registry, Capability, Policy, Provenance).
-- **Core-0.1 Conformance Vectors**: 7 deterministic test vectors for the Core Contract (`identity-creation`, `object-signing`, `capability-grant`, `policy-evaluation`, `event-integrity`, `provenance-chain`, `evidence-generation`).
-- **Morpheus Integration**: Governed-infrastructure demo targeting the `oasa-profile://morpheus-core/v0.1` profile (MOR-001..MOR-010) — identity → capability → policy → provenance → evidence pipeline against a Morpheus control plane, with end-to-end authorization and evidence-verification tests wired into CI as a must-pass gate. Positioned as the verifiable trust layer *above* the control plane (vendor-neutral; Morpheus is the reference).
-- **One-Command Verification**: `verify.sh` now enforces the 7 Core Contract vectors via `tools/ss-conformance.py --profile core-0.1` against the compiled reference node (see `v0.5-Verification-Gate.md`).
-- **Reference Node Verification**: Hardened the reference node to support full conformance validation.
+
+#### Core Contract (v0.5 Milestone)
+- Formalized the minimum verifiable protocol: `Identity → Capability → Policy → Action → Provenance → Evidence`
+- 7 deterministic conformance test vectors (`identity-creation`, `object-signing`, `capability-grant`, `policy-evaluation`, `event-integrity`, `provenance-chain`, `evidence-generation`) under profile `core-0.1`
+- Machine-readable component status registry (`registry/components.yaml`) and verifiable claims registry (`registry/claims.yaml`)
+- 7 core services stabilized in `ss-kernel` (Identity, Resolver, EventBus, Registry, Capability, Policy, Provenance)
+- One-command verification gate: `verify.sh` enforces the 7 vectors via `tools/ss-conformance.py --profile core-0.1` against the compiled reference node (see `v0.5-Verification-Gate.md`)
+
+#### HPE Morpheus Integration (Reference Adapter)
+- Slim, specification-first adapter (`integrations/morpheus/`)
+- End-to-end golden path — Discover → Authorize → Execute → Provenance → Evidence → Independent Verify (`demo/morpheus/run.sh`)
+- Conformance profile `oasa-profile://morpheus-core/v0.1` (MOR-001..MOR-010)
+- Authorization + independent evidence-verification tests wired into CI as a must-pass gate
+- Independent evidence verification tool (`tools/verify_evidence.py`)
+- Vendor-neutral adapter contract; Morpheus is the reference, not a dependency
+
+#### Policy & Assurance
+- RFC-0075 — Policy Conflict Resolution engine in `ss-policy`
+- RFC-0076 — OASA Continuous Assurance Engine
+- OASA strategy RFCs (0075–0078)
+- OASA-FIN, OASA-STABLE, OASA-CBDC, OASA-AI-FIN control catalogs and profiles
+
+### Changed
+- README rewritten around the v0.5 Core Contract
+- Integration strategy pivoted to vendor-neutral model (Morpheus as reference adapter, not dependency)
+- Architecture emphasis: CORE → PROFILES → PLATFORM ADAPTERS
+- CI `python-core` now runs `bash verify.sh` as a single must-pass gate
+
+### Notes
+- OASA certification levels (L1/L2/L3) remain specification-only; no independent certification claimed yet
 
 ---
 
 ## [v0.4.0] — 2026-07-20
 
 ### Added
-- **Initial Capability Registry**: Introduced the foundation for capabilities and policies.
+- **Initial Capability Registry**: Foundation for capabilities and policies.
 - **Reference Node Skeleton**: Built out the `reference-node` binary (`ss-node`) capable of basic REST endpoints.
 - **Conformance Harness**: Added the initial Python-based conformance harness.
 - **RFC Consolidation**: Standardized the RFC numbering process to prefix all accepted specs with `RFC-XXXX`.
+- **Governance & Safety**: Level 4 Advanced Autonomous Systems certification tier; human override and hardware-enforceable kill-switch primitives; meta-cognition and safety contracts.
+- **Finance Reference Node**: End-to-end demo and conformance suite; Python SDK components (`ss-core`, `ss-crypto`, `ss-cas`); OASA Gateway; expanded `ss-economy` modules and SFIN profile work.
+- **Standards & Documentation**: RFCs for cognitive mesh, continuity, and digital twin models; provenance implementation and conformance vectors; runtime, security, and CI hardening.
+
+### Changed
+- README onboarding and conformance suite improvements.
+- Stronger focus on executable reference paths over pure specification expansion.
 
 ---
 
