@@ -32,6 +32,16 @@ Major changes follow the RFC lifecycle:
 
 See [RFC-0000](rfcs/0000-rfc-process.md) for complete details.
 
+### RFC Process — Current Priority (v0.5+)
+
+The project prioritizes **implementation maturity and independent reproducibility** of the Core Contract over expansion of the RFC surface.
+
+New RFCs should generally:
+- Be required by an active implementation path, or
+- Close a clear gap in the Core Contract / conformance model
+
+Speculative or broad architectural RFCs are deferred until the Core Contract verification gate (`bash verify.sh`) remains green and the primary reference adapters are stable.
+
 ### Standards Ecosystem
 
 The project now maintains a formal standards framework:
