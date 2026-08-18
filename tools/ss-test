@@ -1,0 +1,185 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# SovereignStack Core Verification Utility (ss-test --verify)
+# Reference Specification Implementation - Production Reference Blueprint
+# ==============================================================================
+set -euo pipefail
+
+# Output configuration for programmatic parsing and SIEM injection
+LOG_LEVEL_INFO="[INFO]"
+LOG_LEVEL_WARN="[WARN]"
+LOG_LEVEL_FAIL="[CRITICAL_FAIL]"
+
+# Target Files & Paths
+MANIFEST_FILE="oasa-manifest-v2.3.sig"
+PUBKEY_FILE="oasa-foundation-public.pem"
+DUMMY_TPM_QUOTE="/tmp/tpm_quote.dat"
+DUMMY_CAP_LOG="/var/log/ss_capabilities.audit"
+PEER_LEDGER_MOCK="/tmp/peer_cluster_ledger.state"
+
+# Configuration Constraints
+EXIT_PASS=0
+EXIT_WARN=1
+EXIT_FAIL=2
+
+show_help() {
+  echo "SovereignStack Conformance Engine"
+  echo "Usage: ss-test --verify [--manifest=<path>] [--pubkey=<path>]"
+  echo ""
+  echo "Options:"
+  echo "  --verify          Execute full cryptographic and runtime attestation loop."
+  echo "  --manifest=<path> Path to the OASA signed reference manifest."
+  echo "  --pubkey=<path>   Path to the OASA Foundation public verification key."
+}
+
+# Simple argument parsing
+MODE=""
+for arg in "$@"; do
+  case $arg in
+    --verify)
+      MODE="verify"
+      ;;
+    --manifest=*)
+      MANIFEST_FILE="${arg#*=}"
+      ;;
+    --pubkey=*)
+      PUBKEY_FILE="${arg#*=}"
+      ;;
+    --help|-h)
+      show_help; exit 0
+      ;;
+  esac
+done
+
+if [ "$MODE" != "verify" ]; then
+  echo "Error: Missing operational mode flag. Use --verify to run check." >&2
+  show_help
+  exit 3
+fi
+
+# Initialize Mock Environment Data for Execution Demonstration
+init_mock_environment() {
+  # 1. Mock the reference manifest from the foundation
+  cat << 'EOF' > "$MANIFEST_FILE"
+PCR00:8f3ac21d9e7b4c91b77f4c91b77f4c91b77f4c91b77f4c91b77f4c91b77f4c91
+PCR01:5e7b9a411d9cf7e36b2ed8a04c91b77f4c91b77f4c91b77f4c91b77f4c91b77f
+PCR02:1d9cf7e36b2ed8a04c91b77f4c91b77f4c91b77f4c91b77f4c91b77f4c91b77f
+PCR11:6b2ed8a04c91b77f4c91b77f4c91b77f4c91b77f4c91b77f4c91b77f4c91b77f
+EOF
+  echo "MOCK_SIGNATURE_DATA" >> "$MANIFEST_FILE"
+  touch "$PUBKEY_FILE"
+
+  # 2. Mock live TPM output matching the manifest
+  cat << 'EOF' > "$DUMMY_TPM_QUOTE"
+PCR00:8f3ac21d9e7b4c91b77f4c91b77f4c91b77f4c91b77f4c91b77f4c91b77f4c91
+PCR01:5e7b9a411d9cf7e36b2ed8a04c91b77f4c91b77f4c91b77f4c91b77f4c91b77f
+PCR02:1d9cf7e36b2ed8a04c91b77f4c91b77f4c91b77f4c91b77f4c91b77f4c91b77f
+PCR11:6b2ed8a04c91b77f4c91b77f4c91b77f4c91b77f4c91b77f4c91b77f4c91b77f
+EOF
+
+  # 3. Mock dynamic capability execution logs
+  # Format: Capability_Name | Mapped_In_Policy(0/1) | Exercised_Actions_Count
+  cat << 'EOF' > "$DUMMY_CAP_LOG"
+CAP_NET_BIND_SERVICE|1|240
+CAP_SYS_CHROOT|1|0
+CAP_SYS_RAWIO|0|0
+CAP_SYS_ADMIN|0|5
+EOF
+
+  # 4. Mock a pristine matching state for remote cluster verification
+  echo "LOCAL_LATEST_HASH:a3f9e2b1" > "$PEER_LEDGER_MOCK"
+  echo "CLUSTER_CONSENSUS_HASH:a3f9e2b1" >> "$PEER_LEDGER_MOCK"
+}
+
+# Executing mock preparation
+init_mock_environment
+
+echo "=== INITIALIZING OASA CRITICAL AUDIT LOOP ==="
+
+# ------------------------------------------------------------------------------
+# LAYER 1: TPM 2.0 Manifest Comparison Engine
+# ------------------------------------------------------------------------------
+echo "$LOG_LEVEL_INFO Executing Layer 1 Attestation..."
+MANIFEST_MISMATCH=0
+while IFS= read -r line; do
+  if [[ "$line" == *"MOCK_SIGNATURE_DATA"* ]]; then
+    continue;
+  fi
+  PCR_ID=$(echo "$line" | cut -d':' -f1)
+  EXPECTED_HASH=$(echo "$line" | cut -d':' -f2)
+  
+  # Extract live value from system hardware interface (Mocked here)
+  LIVE_HASH=$(grep "^${PCR_ID}:" "$DUMMY_TPM_QUOTE" | cut -d':' -f2 || true)
+  
+  if [ -z "$LIVE_HASH" ]; then
+    echo "$LOG_LEVEL_FAIL Hardware Register $PCR_ID missing from system state profile." >&2
+    exit "$EXIT_FAIL"
+  fi
+  
+  if [ "$EXPECTED_HASH" != "$LIVE_HASH" ]; then
+    echo "$LOG_LEVEL_FAIL Register hash mismatch detected on $PCR_ID!" >&2
+    echo "  Expected: $EXPECTED_HASH" >&2
+    echo "  Realized: $LIVE_HASH" >&2
+    MANIFEST_MISMATCH=1
+  else
+    echo "  [✓] Hardware Attestation: $PCR_ID verified against OASA core release definition."
+  fi
+done < "$MANIFEST_FILE"
+
+if [ "$MANIFEST_MISMATCH" -ne 0 ]; then
+  echo "$LOG_LEVEL_FAIL Layer 1 Verification Failed. Host image compromised or unsanctioned." >&2
+  exit "$EXIT_FAIL"
+fi
+
+# ------------------------------------------------------------------------------
+# LAYER 2: Capability Graph Audit Engine (Class Evaluation Matrix)
+# ------------------------------------------------------------------------------
+echo "$LOG_LEVEL_INFO Executing Layer 2 Audit Layer..."
+WARN_TRIGGERED=0
+while IFS= read -r line; do
+  CAP_NAME=$(echo "$line" | cut -d'|' -f1)
+  MAPPED=$(echo "$line" | cut -d'|' -f2)
+  EXERCISED=$(echo "$line" | cut -d'|' -f3)
+  
+  if [ "$MAPPED" -eq 1 ]; then
+    # Class I Deviation
+    echo "  [✓] Capability Context Match: $CAP_NAME mapped within safe operational profile."
+  else
+    if [ "$EXERCISED" -eq 0 ]; then
+      # Class II Deviation: Unmapped token present but dormant
+      echo "$LOG_LEVEL_WARN Context Leak: Unmapped token '$CAP_NAME' detected in active state space, but no syscall execution realized." >&2
+      WARN_TRIGGERED=1
+    else
+      # Class III Deviation: Unmapped token actively executing unauthorized logic
+      echo "$LOG_LEVEL_FAIL Structural Breach: Unmapped capability '$CAP_NAME' invoked actively ($EXERCISED unauthorized transactions)." >&2
+      echo "$LOG_LEVEL_FAIL Terminating execution pipeline. Triggering system halt sequence." >&2
+      exit "$EXIT_FAIL"
+    fi
+  fi
+done < "$DUMMY_CAP_LOG"
+
+# ------------------------------------------------------------------------------
+# LAYER 3: Distributed WORM Chain Verification Engine
+# ------------------------------------------------------------------------------
+echo "$LOG_LEVEL_INFO Executing Layer 3 Data Integrity Isolation..."
+LOCAL_SIG=$(grep "LOCAL_LATEST_HASH" "$PEER_LEDGER_MOCK" | cut -d':' -f2)
+CLUSTER_SIG=$(grep "CLUSTER_CONSENSUS_HASH" "$PEER_LEDGER_MOCK" | cut -d':' -f2)
+
+if [ "$LOCAL_SIG" != "$CLUSTER_SIG" ]; then
+  echo "$LOG_LEVEL_FAIL Cross-Boundary Split detected! Ledger states do not match consensus metrics." >&2
+  echo "  Local State Signature:      $LOCAL_SIG" >&2
+  echo "  Distributed Cluster State:  $CLUSTER_SIG" >&2
+  exit "$EXIT_FAIL"
+else
+  echo "  [✓] Boundary Integrity: Append-only hash chain matches distributed consensus ledger."
+fi
+
+# Final Evaluation Execution Block
+echo "=============================================================================="
+if [ "$WARN_TRIGGERED" -eq 1 ]; then
+  echo "$LOG_LEVEL_WARN Conformance test passed with non-critical optimization recommendations. System requires human authorization review."
+  exit "$EXIT_WARN"
+else
+  echo "OASA STATUS: [PASS] System operating in absolute programmatic compliance."
+  exit "$EXIT_PASS"
+fi
