@@ -1,10 +1,10 @@
 # SovereignStack
 
-**An open protocol and reference implementation for verifiable, policy-governed AI infrastructure.**
+**An open protocol and reference implementation for verifiable, policy-governed AI infrastructure, powered by the Zero-Theater Compliance architecture.**
 
-## Current Milestone: v0.5 — Core Contract
+## Current Milestone: v0.5 — Core Contract & eBPF Tracer
 
-The v0.5 Core Contract defines the minimum verifiable protocol for sovereign AI nodes:
+The v0.5 Core Contract defines the minimum verifiable protocol for sovereign AI nodes, anchored by the strict OASA Foundation Charter:
 
 ```
 Identity → Capability → Policy → Action → Provenance → Evidence
@@ -45,13 +45,20 @@ Provenance → Evidence → Independent Verify**, and prints `STATUS: CONFORMANT
 when the evidence package independently verifies. See
 [`demo/morpheus/`](demo/morpheus/) and [`integrations/morpheus/`](integrations/morpheus/).
 
-## Verify
+## Verify & Stress Test
 
 Run the one-command verification gate — builds the reference node and enforces
 the 7 Core Contract vectors:
 
 ```bash
 bash verify.sh
+```
+
+You can also run the Anti-Theater Compliance harness which tests the eBPF kernel hooks against dormant capability leaks and active unauthorized exploitation:
+
+```bash
+# Run the adversarial stress-test
+bash tools/run-stress-test
 ```
 
 For step-by-step manual verification (see [`v0.5-Verification-Gate.md`](v0.5-Verification-Gate.md)):
@@ -96,6 +103,7 @@ and [ROADMAP.md](ROADMAP.md) for the implementation timeline.
 
 ## Documentation
 
+- [Constitution](CONSTITUTION.md) — The OASA Foundation Charter and 4-Quadrant Governance
 - [Architecture](ARCHITECTURE.md) — System architecture and layer model
 - [Conformance](CONFORMANCE.md) — OASA certification specification
 - [Components](registry/components.yaml) — Component registry with maturity status
