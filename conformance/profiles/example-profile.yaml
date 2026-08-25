@@ -50,7 +50,7 @@ protocols:
 
 | Profile | File |
 |---------|------|
-| Core Node | `core-node.yaml` |
+| Core Node | `core-0.1.yaml` |
 | Federation Node | `federation-node.yaml` |
 | Knowledge Node | `knowledge-node.yaml` |
 | Agent Node | `agent-node.yaml` |

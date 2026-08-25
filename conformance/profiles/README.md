@@ -7,7 +7,7 @@ set of tests an implementation must pass to claim a given conformance level.
 
 | Profile | File | Level | Description |
 |---------|------|-------|-------------|
-| Core Node | `core-node.yaml` | L1 | Minimal kernel services |
+| Core Node | `core-0.1.yaml` | L1 | Minimal kernel services |
 | Federation Node | `federation-node.yaml` | L2 | Core + federation |
 | Knowledge Node | `knowledge-node.yaml` | L2 | Core + knowledge/reasoning |
 | Agent Node | `agent-node.yaml` | L2 | Core + agent execution |
@@ -15,7 +15,7 @@ set of tests an implementation must pass to claim a given conformance level.
 ## Usage
 
 ```bash
-python -m pytest tests/ --profile core-node -v
+python -m pytest tests/ --profile core-0.1 -v
 python tools/generate_report.py --profile knowledge-node --output report.md
 ```
 

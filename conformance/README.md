@@ -47,7 +47,7 @@ conformance/
 │   ├── conftest.py                  # Pytest fixtures (--sovereign-node)
 │   └── test_conformance.py          # Full L4 test suite (24 tests)
 ├── profiles/                        # Industry-specific conformance profiles
-│   ├── core-node.yaml
+│   ├── core-0.1.yaml
 │   ├── agent-node.yaml
 │   └── ...
 ├── fixtures/                        # Test fixtures and mock data

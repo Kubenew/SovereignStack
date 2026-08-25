@@ -23,7 +23,7 @@ def test_conformance_profile_list():
     assert result.returncode == 0
     profiles = json.loads(result.stdout)
     assert isinstance(profiles, list)
-    required = ["core-node", "federation-node", "knowledge-node", "agent-node"]
+    required = ["core-0.1", "federation-node", "knowledge-node", "agent-node"]
     for r in required:
         assert r in profiles
 
@@ -32,7 +32,7 @@ def test_conformance_run_all():
     result = subprocess.run(
         ["curl", "-s", "-X", "POST", f"{BASE}/conformance/run",
          "-H", "Content-Type: application/json",
-         "-d", json.dumps({"profile": "core-node"})],
+         "-d", json.dumps({"profile": "core-0.1"})],
         capture_output=True, text=True, timeout=10
     )
     assert result.returncode == 0
@@ -48,7 +48,7 @@ def test_conformance_certification():
          "-H", "Content-Type: application/json",
          "-d", json.dumps({
              "node_id": "node://test-node",
-             "profile": "core-node",
+             "profile": "core-0.1",
          })],
         capture_output=True, text=True, timeout=10
     )

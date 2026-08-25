@@ -1,10 +1,19 @@
 # HPE Morpheus Integration Contract
 
-**Status:** Proposed Integration  
-**Target:** HPE Morpheus VM Essentials  
+**Target:** HPE Morpheus VM Essentials 9.0  
 **SovereignStack:** v0.6+  
-**Certification:** Independent SovereignStack validation  
-**HPE endorsement:** Not claimed  
+
+## Integration Status
+
+```yaml
+integration_status:
+  specification: proposed
+  fixture_validation: passing
+  live_validation: not_yet_run
+  vendor_validation: not_claimed
+  certification: not_certified
+```
+
 
 ## Overview
 This document defines the specification-first integration contract for establishing HPE Morpheus as the first enterprise reference environment for SovereignStack. SovereignStack serves as the vendor-neutral governance and provenance layer for autonomous infrastructure workloads.
@@ -19,19 +28,32 @@ profile:
 platform:
   vendor: HPE
   product: Morpheus VM Essentials
+  supported_versions:
+    - "9.0"
 
 requirements:
-  identity: required
-  capabilities: required
-  policy: required
-  provenance: required
-  evidence: required
-
-operations:
-  discover_workload: required
-  authorize_operation: required
-  record_operation: required
-  verify_evidence: required
+  discovery:
+    - workload_id
+    - tenant
+    - owner
+    - state
+  authorization:
+    - identity
+    - capability
+    - policy
+    - decision
+  recording:
+    - operation_id
+    - timestamp
+    - actor
+    - workload
+    - action
+    - result
+  evidence:
+    - provenance_root
+    - signatures
+    - policy_decision
+    - verification_status
 ```
 
 ## Core Operations

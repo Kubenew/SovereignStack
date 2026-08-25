@@ -20,9 +20,9 @@ Without conformance testing, standards are aspirational. This framework ensures 
 Profiles define which tests an implementation must pass to claim a given conformance level:
 
 ```yaml
-# profiles/core-node.yaml
+# profiles/core-0.1.yaml
 profile:
-  id: core-node
+  id: core-0.1
   name: Core Node
   version: "1.0"
   description: "Minimal SovereignStack node with kernel services"
@@ -53,7 +53,7 @@ profile:
   id: federation-node
   name: Federation Node
   version: "1.0"
-  extends: core-node
+  extends: core-0.1
   description: "Core node with federation capabilities"
   requires:
     - sip:
@@ -74,7 +74,7 @@ profile:
   id: knowledge-node
   name: Knowledge Node
   version: "1.0"
-  extends: core-node
+  extends: core-0.1
   description: "Core node with knowledge and reasoning services"
   requires:
     - kap:
@@ -98,7 +98,7 @@ profile:
   id: agent-node
   name: Agent Node
   version: "1.0"
-  extends: core-node
+  extends: core-0.1
   description: "Core node optimized for agent execution"
   requires:
     - sap:
@@ -119,7 +119,7 @@ profile:
 
 | Level | Profile | Test Count | Audit Required | Badge |
 |-------|---------|------------|----------------|-------|
-| L1 | core-node | 15 | No | Shield (Silver) |
+| L1 | core-0.1 | 15 | No | Shield (Silver) |
 | L2 | Any extended profile | 30 | Self-certified | Hexagon (Gold) |
 | L3 | All profiles | 60+ | Third-party | Star (Diamond) |
 
@@ -154,7 +154,7 @@ conformance/
 
 ```bash
 # Run all tests for a profile
-python -m pytest tests/ --profile core-node -v
+python -m pytest tests/ --profile core-0.1 -v
 
 # Run specific RFC conformance
 python -m pytest tests/rfc/0001-object-model/ -v

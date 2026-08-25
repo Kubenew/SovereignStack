@@ -14,7 +14,7 @@ Identity → Capability → Policy → Action → Provenance → Evidence
 |-------------|-------|--------|
 | Identity | `ss-identity`, `ss-crypto` | Implemented |
 | Capability | `ss-capability` | Implemented |
-| Policy | `ss-policy` | Implemented |
+| Policy | `ss-policy` | Partial / verification required |
 | Events | `ss-eventbus` | Implemented |
 | Provenance | `ss-provenance` | Implemented |
 | Kernel | `ss-kernel` | Implemented (7 services) |
@@ -31,18 +31,22 @@ cargo build --release
 ./target/release/ss-node --port 8546
 ```
 
-## Golden Path Demo
+## Morpheus Reference Environment
 
-Run the Morpheus governed-infrastructure golden path in one command —
-no Morpheus instance required (uses reference fixtures):
+**Current v0.5**: *Morpheus Reference Environment — specification and fixture-based validation*
+*(v0.7 target: Live Morpheus Integration — validated against a running Morpheus environment)*
+
+SovereignStack v0.5 establishes Morpheus as its first enterprise reference environment and provides a specification-first path from Morpheus-managed workloads to independently verifiable cryptographic evidence.
+
+Run the fixture-based validation in one command — no live Morpheus instance required:
 
 ```bash
 bash demo/morpheus/run.sh        # Linux/macOS (PowerShell: .\demo\morpheus\run.ps1)
 ```
 
-The demo walks the full governance pipeline: **Discover → Authorize → Execute →
+The validation walks the full governance pipeline: **Discover → Authorize → Execute →
 Provenance → Evidence → Independent Verify**, and prints `STATUS: CONFORMANT`
-when the evidence package independently verifies. See
+when the simulated evidence package independently verifies. See
 [`demo/morpheus/`](demo/morpheus/) and [`integrations/morpheus/`](integrations/morpheus/).
 
 ## Verify & Stress Test
@@ -86,7 +90,7 @@ The Core Contract is verified against 7 deterministic test vectors:
 | `provenance-chain` | Hash-linked provenance chain creation and tamper detection |
 | `evidence-generation` | Evidence package generation with conformance profile binding |
 
-See [conformance/profiles/core-node.yaml](conformance/profiles/core-node.yaml) for the formal profile definition.
+See [profiles/core/0.1.yaml](profiles/core/0.1.yaml) for the formal profile definition.
 
 ## Status
 

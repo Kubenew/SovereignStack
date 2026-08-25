@@ -497,11 +497,11 @@ const RFC_TITLES: &[(&str, &str)] = &[
 ];
 
 async fn conformance_level() -> Json<serde_json::Value> {
-    Json(serde_json::json!({"level": "L2", "profiles": ["core-node", "federation-node", "knowledge-node", "agent-node"]}))
+    Json(serde_json::json!({"level": "L2", "profiles": ["core-0.1", "federation-node", "knowledge-node", "agent-node"]}))
 }
 
 async fn conformance_profiles() -> Json<Vec<String>> {
-    Json(vec!["core-node".into(), "federation-node".into(), "knowledge-node".into(), "agent-node".into()])
+    Json(vec!["core-0.1".into(), "federation-node".into(), "knowledge-node".into(), "agent-node".into()])
 }
 
 async fn conformance_run() -> Json<serde_json::Value> {

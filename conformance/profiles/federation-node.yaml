@@ -6,7 +6,7 @@ profile:
   id: federation-node
   name: Federation Node
   version: "1.0"
-  extends: core-node
+  extends: core-0.1
   description: "Core node with federation capabilities"
 
 requires:

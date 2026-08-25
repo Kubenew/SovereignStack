@@ -6,9 +6,9 @@ echo "SovereignStack Morpheus Integration"
 echo "===================================="
 echo ""
 
-echo "1. Connecting to HPE Morpheus VM Essentials..."
+echo "1. Initializing HPE Morpheus Reference Fixtures (Simulated)..."
 sleep 1
-echo "   [OK] Connected."
+echo "   [OK] Fixtures loaded."
 
 echo "2. Discovering workload..."
 sleep 1
@@ -20,10 +20,10 @@ sleep 1
 cat integrations/morpheus/examples/authorization.json
 echo "   [OK] Operation authorized via Policy."
 
-echo "4. Executing provisioning in Morpheus..."
+echo "4. Executing provisioning in Morpheus (Simulated)..."
 sleep 1
 cat integrations/morpheus/examples/execution.json
-echo "   [OK] Morpheus infrastructure facts returned."
+echo "   [OK] Morpheus infrastructure facts returned (Simulated)."
 
 echo "5. Recording cryptographic provenance..."
 sleep 1

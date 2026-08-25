@@ -21,7 +21,7 @@ jobs:
 
   # ── Python Core: MUST PASS ──
   python-core:
-    name: "Python Core (MUST PASS)"
+    name: "SovereignStack Verification Gate (MUST PASS)"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -25,7 +25,7 @@ v0.3.0 marks SovereignStack's transition from a software project into a **standa
 
 ### Conformance
 - **conformance/** — Executable test suites for SIP, SEP, SAP, SMP
-- **4 conformance profiles**: core-node (L1), federation-node (L2), knowledge-node (L2), agent-node (L2)
+- **4 conformance profiles**: core-0.1 (L1), federation-node (L2), knowledge-node (L2), agent-node (L2)
 - **RFC-0010** defines the formal conformance framework with attestation format
 
 ### Governance
