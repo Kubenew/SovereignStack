@@ -31,6 +31,19 @@ claims:
     evidence:
       - vector: test_policy_evaluation_vector
 
+  - id: POL-EVAL-001
+    component: ss-policy
+    claim: "Policy rule evaluation with jurisdiction matching"
+    evidence:
+      - rust: test_pass
+
+  - id: POL-CONFLICT-001
+    component: ss-policy
+    claim: "Policy conflict resolution (RFC-0075)"
+    evidence:
+      - rust: test_authorized_all_permit
+      - rust: test_denied_all_deny
+
   - id: CLAIM-OBJ-001
     component: ss-core
     claim: "Objects can be signed and verified cryptographically"

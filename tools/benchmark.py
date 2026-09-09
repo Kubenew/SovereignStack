@@ -16,7 +16,6 @@ Usage:
 import argparse
 import sys
 import time
-import json
 import subprocess
 import re
 from typing import Dict, Any, List, Optional

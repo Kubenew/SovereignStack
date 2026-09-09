@@ -4,9 +4,8 @@ Tests for SovereignStack Autonomous Operations
 
 import os
 import tempfile
-import time
 import pytest
-from services.autonomous_controller import AutonomousController, RemediationRule
+from services.autonomous_controller import AutonomousController
 from services.predictive_scheduler import ExponentialSmoothingModel, PredictiveScheduler
 
 # ===========================================================================

@@ -1,0 +1,19 @@
+# Auto-detect text files and normalise line endings
+* text=auto
+
+# Force LF for source files (prevents CRLF issues in cross-platform development)
+*.sh text eol=lf
+*.rs text eol=lf
+*.py text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+
+# Denote all files that are truly binary and should not be modified
+*.png binary
+*.jpg binary
+*.ico binary
+*.wasm binary
+*.exe binary

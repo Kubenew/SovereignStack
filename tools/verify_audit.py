@@ -14,7 +14,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from services.merkle_audit import get_merkle_tree, _hash_event, _hash_pair
+from services.merkle_audit import get_merkle_tree
 
 
 def cmd_status():
@@ -48,7 +48,7 @@ def cmd_proof(index: int):
 
 def cmd_verify():
     tree = get_merkle_tree()
-    print(f"Verifying Merkle tree integrity...")
+    print("Verifying Merkle tree integrity...")
     print(f"Events:  {tree.size}")
     print(f"Root:    {tree.root}")
     # Rebuild tree from events

@@ -19,7 +19,6 @@ def test_audit_log_exists():
 def test_compliance_lock_in_request_schema():
     """Verify oasa_compliance_lock is defined in the request schema."""
     schema_path = Path(__file__).resolve().parent.parent.parent / "schemas/oasa-request.schema.json"
-    import json
     with open(schema_path) as f:
         schema = json.load(f)
     props = schema.get("properties", {})
@@ -31,7 +30,6 @@ def test_compliance_lock_in_request_schema():
 def test_audit_tag_in_request_schema():
     """Verify oasa_audit_tag is defined in the request schema."""
     schema_path = Path(__file__).resolve().parent.parent.parent / "schemas/oasa-request.schema.json"
-    import json
     with open(schema_path) as f:
         schema = json.load(f)
     props = schema.get("properties", {})
@@ -53,7 +51,6 @@ def test_merkle_tree_audit_format():
 def test_audit_log_fields_comprehensive():
     """L3: Audit log schema must include all required fields."""
     schema_path = Path(__file__).resolve().parent.parent.parent / "schemas/oasa-request.schema.json"
-    import json
     with open(schema_path) as f:
         schema = json.load(f)
     props = schema.get("properties", {})

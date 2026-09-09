@@ -1,8 +1,6 @@
 import json
-import os
 import subprocess
 import sys
-from pathlib import Path
 
 def test_certification_flow(tmp_path):
     """End-to-end test of the certification issuance and verification CLI tools."""

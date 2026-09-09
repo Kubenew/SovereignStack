@@ -2,8 +2,6 @@
 OASA Conformance Test Suite — Shared Configuration and Fixtures
 """
 
-import os
-import sys
 import json
 import yaml
 import pytest

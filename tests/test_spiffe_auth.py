@@ -1,6 +1,5 @@
 """Tests for SPIFFE authentication module and inter-service auth."""
 
-import pytest
 import os
 from unittest.mock import patch
 from fastapi.testclient import TestClient
@@ -11,7 +10,7 @@ os.environ.setdefault("SPIFFE_ENABLED", "false")
 
 class TestSpiffeAuth:
     def test_spiffe_disabled_returns_none(self):
-        from services.spiffe_auth import require_spiffe_or_skip, spiffe_enabled
+        from services.spiffe_auth import spiffe_enabled
 
         assert spiffe_enabled() is False, "SPIFFE should be disabled in test"
 

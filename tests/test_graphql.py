@@ -7,7 +7,6 @@ os.environ["OASA_ENFORCE_POLICY"] = "DEVELOPMENT"
 os.environ["COMPUTE_URL"] = "http://mock-compute"
 os.environ["INFERENCE_BACKEND"] = "legacy"
 
-import pytest
 from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 from services.gateway_service import app

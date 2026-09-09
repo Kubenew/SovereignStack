@@ -1,4 +1,3 @@
-import json
 
 # Simulation of eBPF LSM probe behavior inside SovereignStack kernel
 class EBPFCapabilityTracerCore:

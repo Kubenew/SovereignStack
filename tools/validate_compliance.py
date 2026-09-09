@@ -22,7 +22,6 @@ from __future__ import annotations
 import argparse
 import io
 import json
-import os
 import socket
 import subprocess
 import sys

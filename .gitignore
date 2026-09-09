@@ -224,3 +224,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# SovereignStack — runtime test artifacts
+data_test/memory/
+reports/

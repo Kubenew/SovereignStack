@@ -2,8 +2,6 @@
 Schema Validation Tests — OASA Conformance L1
 """
 
-import yaml
-import json
 import pytest
 
 def test_sovereign_stack_yaml_exists(stack_config):

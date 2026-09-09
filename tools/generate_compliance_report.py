@@ -9,7 +9,6 @@ import argparse
 import json
 import datetime
 import sys
-import os
 from pathlib import Path
 
 
@@ -70,7 +69,7 @@ def generate_markdown_report(level: str, results: dict, output_path: Path):
         status_icon = {"pass": "✅", "fail": "❌", "skip": "⏭️"}.get(test["status"], "❓")
         report += f"| {i} | {test['name']} | {status_icon} {test['status'].upper()} | {test['category']} |\n"
 
-    report += f"""
+    report += """
 ---
 
 ## Regulatory Compliance Mapping
@@ -154,7 +153,7 @@ def main():
     )
     args = parser.parse_args()
 
-    print(f"\nOASA Compliance Report Generator")
+    print("\nOASA Compliance Report Generator")
     print(f"  Level: {args.level}")
     print(f"  Output: {args.output}")
     print("-" * 40)
@@ -168,7 +167,7 @@ def main():
         generate_json_report(args.level, results, args.output)
 
     print("-" * 40)
-    print(f"  [DONE] Reports generated successfully.")
+    print("  [DONE] Reports generated successfully.")
     print()
 
     return 0 if results["failed"] == 0 else 1

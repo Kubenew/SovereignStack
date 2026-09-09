@@ -8,13 +8,10 @@ Validates the convergence properties of all CRDT types:
 """
 
 import time
-import pytest
 from services.crdt import (
     LWWRegister,
     TombstoneSet,
-    TombstoneEntry,
     AppendOnlyLog,
-    LogEntry,
     CRDTMap,
 )
 

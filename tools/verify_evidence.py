@@ -1,7 +1,5 @@
 import json
 import sys
-import hashlib
-from pathlib import Path
 
 def verify_evidence(filepath: str):
     """

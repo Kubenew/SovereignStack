@@ -108,7 +108,7 @@ components:
         description: "Event replay from timestamp"
 
   ss-policy:
-    status: partial
+    status: implemented
     maturity: core
     files: 6
     lines: 1046

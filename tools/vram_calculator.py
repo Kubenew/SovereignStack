@@ -20,8 +20,6 @@ import argparse
 import sys
 import re
 import subprocess
-import math
-from pathlib import Path
 from typing import Dict, Any, Optional
 
 # Fix Windows console encoding
@@ -273,11 +271,11 @@ def print_calculator_result(res: Dict[str, Any], budget_gb: float, gpu_name: Opt
     print()
 
     if total <= budget_gb:
-        print(f"  VERDICT: \033[92m[PASS] GREEN ZONE\033[0m")
+        print("  VERDICT: \033[92m[PASS] GREEN ZONE\033[0m")
         print(f"           Fits within budget with {margin:.1f} GB headroom.")
-        print(f"           COMPLIANT with OASA strict local-compute budgets.")
+        print("           COMPLIANT with OASA strict local-compute budgets.")
     elif total <= (budget_gb * 1.15):
-        print(f"  VERDICT: \033[93m[WARNING] YELLOW ZONE\033[0m")
+        print("  VERDICT: \033[93m[WARNING] YELLOW ZONE\033[0m")
         print(f"           Tight fit — shortfall of {abs(margin):.1f} GB ({utilization:.0f}% utilization).")
         print()
         print("  RECOMMENDATIONS:")
@@ -289,9 +287,9 @@ def print_calculator_result(res: Dict[str, Any], budget_gb: float, gpu_name: Opt
         if res['quant'] != "INT2":
             print(f"    - Increase quantization density (e.g., {res['quant']} -> INT2)")
     else:
-        print(f"  VERDICT: \033[91m[FAIL] RED ZONE — OUT OF MEMORY RISK\033[0m")
+        print("  VERDICT: \033[91m[FAIL] RED ZONE — OUT OF MEMORY RISK\033[0m")
         print(f"           Shortfall of {abs(margin):.1f} GB ({utilization:.0f}% utilization).")
-        print(f"           Model execution WILL crash without a larger GPU or smaller model.")
+        print("           Model execution WILL crash without a larger GPU or smaller model.")
         print()
         print("  RECOMMENDATIONS:")
         # Calculate what quant would fit

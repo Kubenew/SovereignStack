@@ -1,4 +1,3 @@
-import os
 import sys
 import json
 import yaml
@@ -217,7 +216,7 @@ def test_windows_tpm_probing_failure(mock_run, mock_system):
 
 class TestDeploymentAudit:
     def test_audit_validate_runs(self):
-        from tools.audit_deployment import cmd_validate, cmd_report
+        from tools.audit_deployment import cmd_validate
         args = type("Args", (), {"command": "validate", "output": ""})()
         result = cmd_validate(args)
         assert result in (0, 1)

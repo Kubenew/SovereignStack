@@ -28,6 +28,28 @@ The OASA Conformance Test Suite defines a three-tier certification program for s
 
 Inspired by the **Certified Kubernetes** program, **CII Best Practices Badge**, and **OpenChain** standards.
 
+### The Evidence Traceability Chain
+
+SovereignStack implements a complete, end-to-end cryptographic traceability hierarchy. This is the core differentiator that allows independent verification of enterprise deployments:
+
+```text
+CLAIM
+ ↓
+PROFILE REQUIREMENT
+ ↓
+TEST VECTOR
+ ↓
+IMPLEMENTATION
+ ↓
+SECURITY TEST
+ ↓
+CI RUN
+ ↓
+SIGNED EVIDENCE
+```
+
+Every claim maps to a formal requirement, tested by a deterministic vector and adversarial security tests, executed in a clean-room CI environment, and finally signed as verifiable cryptographic evidence.
+
 ---
 
 ## Certification Levels

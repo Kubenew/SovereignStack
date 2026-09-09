@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Mock ss-test for stress testing
+if [ "$1" == "--verify" ]; then
+    if [ ! -f /tmp/ss_capabilities.audit ]; then
+        exit 0
+    fi
+    if grep -q "CAP_SYS_RAWIO|0|42" /tmp/ss_capabilities.audit; then
+        exit 2
+    fi
+    if grep -q "CAP_SYS_RAWIO|0|0" /tmp/ss_capabilities.audit; then
+        exit 1
+    fi
+    if [ -f /tmp/tpm_quote.dat ] && grep -q "MALICIOUS" /tmp/tpm_quote.dat; then
+        exit 2
+    fi
+    if [ -f /tmp/peer_cluster_ledger.state ] && grep -q "corrupted" /tmp/peer_cluster_ledger.state; then
+        exit 2
+    fi
+    exit 0
+fi
+exit 0

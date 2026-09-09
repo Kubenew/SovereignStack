@@ -94,11 +94,6 @@ def main():
         print(f"Error: Cannot issue certification for a report with {failed} failing tests.")
         return 1
 
-    # Add registry_url if available
-    registry_url = os.getenv("CERTIFICATION_REGISTRY_URL", "")
-    if registry_url:
-        attestation["certification"]["registry_entry"] = f"{registry_url}/certification/registry"
-
     if report.get("level") != args.level:
         print(f"Warning: Report level ({report.get('level')}) does not match requested level ({args.level}).")
 
@@ -127,6 +122,11 @@ def main():
             "details": report.get("results", [])
         }
     }
+
+    # Add registry_url if available
+    registry_url = os.getenv("CERTIFICATION_REGISTRY_URL", "")
+    if registry_url:
+        attestation["certification"]["registry_entry"] = f"{registry_url}/certification/registry"
 
     # Generate canonical JSON string for signing
     canonical_payload = json.dumps(attestation, sort_keys=True, separators=(',', ':')).encode('utf-8')

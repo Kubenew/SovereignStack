@@ -10,11 +10,8 @@ Usage:
 import os
 import sys
 import json
-import uuid
 import base64
 import argparse
-import subprocess
-from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 

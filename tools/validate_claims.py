@@ -31,6 +31,10 @@ def run_pytest():
 
 def run_cargo_test():
     print("Executing Rust tests for claims validation...")
+    import shutil
+    if not shutil.which("cargo"):
+        print("  ⚠️ cargo not found — skipping Rust test validation (install Rust to enable)")
+        return set()
     # cargo test --workspace --quiet
     result = subprocess.run(["cargo", "test", "--workspace", "--quiet"], capture_output=True, text=True)
     

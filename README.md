@@ -1,6 +1,6 @@
 # SovereignStack
 
-**An open protocol and reference implementation for verifiable, policy-governed AI infrastructure, powered by the Zero-Theater Compliance architecture.**
+**SovereignStack is building an open verification layer for AI infrastructure — proving who acted, what they were allowed to do, what happened, and whether the resulting evidence can be independently verified.**
 
 ## Current Milestone: v0.5 — Core Contract & eBPF Tracer
 
@@ -37,6 +37,30 @@ cargo build --release
 *(v0.7 target: Live Morpheus Integration — validated against a running Morpheus environment)*
 
 SovereignStack v0.5 establishes Morpheus as its first enterprise reference environment and provides a specification-first path from Morpheus-managed workloads to independently verifiable cryptographic evidence.
+
+The integration demonstrates the full proof chain:
+
+```text
+SovereignStack Core
+       ↓
+core-0.1
+       ↓
+Morpheus Profile 0.1
+       ↓
+Morpheus Adapter
+       ↓
+Morpheus VM Essentials
+       ↓
+Real VM/workload
+       ↓
+Policy decision
+       ↓
+Cryptographic provenance
+       ↓
+Evidence package
+       ↓
+Independent verification
+```
 
 Run the fixture-based validation in one command — no live Morpheus instance required:
 

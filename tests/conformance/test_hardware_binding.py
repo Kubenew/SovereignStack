@@ -3,7 +3,6 @@ Hardware Security & TPM Binding Tests — OASA Conformance L2/L3
 """
 
 import pytest
-import platform
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 

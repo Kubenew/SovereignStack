@@ -3,8 +3,6 @@ Runtime Shield & Exfiltration Prevention Tests — OASA Conformance L1/L2
 """
 
 import pytest
-import socket
-import subprocess
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 

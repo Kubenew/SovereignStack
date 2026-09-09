@@ -3,14 +3,14 @@
 # Reproducibility: pin base images via digest, hash-pin Python dependencies
 # =============================================================================
 # Stage 1: Build dependencies
-FROM python:3.11.11-slim AS builder
+FROM python:3.12-slim AS builder
 
 WORKDIR /app
 COPY requirements-locked.txt requirements.txt
 RUN pip install --no-cache-dir --user --require-hashes -r requirements-locked.txt
 
 # Stage 2: Production runtime
-FROM python:3.11.11-slim AS runtime
+FROM python:3.12-slim AS runtime
 
 # Security: run as non-root
 RUN groupadd -r sovereign && useradd -r -g sovereign -d /app -s /sbin/nologin sovereign

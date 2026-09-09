@@ -1,7 +1,7 @@
 import pytest
 import base64
 from fastapi.testclient import TestClient
-from services.enclave_attestation import app, _attestation_cache, ATTESTATION_TTL
+from services.enclave_attestation import app, _attestation_cache
 
 client = TestClient(app)
 

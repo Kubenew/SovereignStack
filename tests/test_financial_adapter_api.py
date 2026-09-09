@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 from examples.financial_adapter.ledger_adapter import app
 from examples.financial_adapter.zk_verifier import ProofVerifier

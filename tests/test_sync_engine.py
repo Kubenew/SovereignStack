@@ -9,11 +9,10 @@ Validates the sync protocol from RFC 0004:
   - Replay protection via monotonic sequences
 """
 
-import time
 import os
 import tempfile
 import pytest
-from services.event_log import Event, EventLog, EventSigner
+from services.event_log import EventLog, EventSigner
 from services.sync_engine import SyncEngine, SyncMessage, MessageType
 
 

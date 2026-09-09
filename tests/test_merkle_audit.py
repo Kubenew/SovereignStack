@@ -1,7 +1,6 @@
 """Tests for Merkle tree audit chain."""
 
 import os
-import json
 
 os.environ.setdefault("SPIFFE_ENABLED", "false")
 os.environ.setdefault("OASA_ENFORCE_COMPLIANCE", "STRICT")
@@ -108,7 +107,6 @@ class TestMerkleTree:
         ]
         tree = MerkleTree(events)
         # Serialize and deserialize
-        import io
         data = {"root": tree.root, "size": tree.size, "events": tree.events}
         restored = MerkleTree(events=data["events"])
         assert restored.root == tree.root

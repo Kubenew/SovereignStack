@@ -1,4 +1,3 @@
-import pytest
 from integrations.morpheus.adapter.authorization import AuthorizationAdapter
 
 def test_authorization_positive():

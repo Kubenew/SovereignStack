@@ -89,9 +89,9 @@ def main():
             print(f"  Status: {reg_entry['status']}")
             print(f"  Expired: {reg_entry['expired']}")
             if reg_entry['valid']:
-                print(f"  Registry: VALID (active, not expired)")
+                print("  Registry: VALID (active, not expired)")
             else:
-                print(f"  Registry: INVALID")
+                print("  Registry: INVALID")
                 return 1
             if not args.attestation:
                 return 0

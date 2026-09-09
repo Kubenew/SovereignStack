@@ -1,5 +1,4 @@
 import json
-import pytest
 from fastapi.testclient import TestClient
 
 from services.agent_service import app as agent_app
