@@ -1,31 +1,76 @@
-profile: core-0.1
-version: "0.5.0"
-description: "Minimum requirements for a SovereignStack-compatible node"
+# OASA Core Conformance Profile (Authoritative)
+# Specification: OASA v0.6 Governed Autonomous Action
+profile: oasa-core-0.1
+version: "0.6.0"
+status: authoritative
+description: "Authoritative normative requirements for an OASA v0.6 Core conformant implementation"
+
+golden_path:
+  - discover
+  - authorize
+  - execute
+  - record
+  - verify
 
 requirements:
-  identity:
-    - create_identity
-    - verify_identity
-    - resolve_identity_uri
-  object_model:
-    - create_object
-    - sign_object
-    - verify_object_signature
-    - resolve_object_uri
-  capability:
-    - register_capability
-    - grant_capability
-    - verify_capability
-    - revoke_capability
-  policy:
-    - evaluate_policy
-    - enforce_policy_decision
-  event:
-    - publish_event
-    - subscribe_to_events
-    - verify_event_integrity
-  provenance:
-    - record_provenance_entry
-    - build_provenance_chain
-    - verify_chain_integrity
-    - generate_evidence_package
+  action_envelope:
+    - unique_action_id          # ENV-001
+    - attributable_actor        # ENV-002
+    - explicit_capability       # ENV-003
+    - explicit_target_uri       # ENV-004
+    - canonical_json_digest     # RFC 8785 SHA-256
+    - cryptographic_signature   # Ed25519 or ECDSA
+
+  authorization_lifecycle:
+    - authorization_precedes_execution # AUTH-001
+    - deny_prevents_execution          # AUTH-002 (Anti-Theater Test A: provider call count == 0)
+    - token_expiration                 # AUTH-003
+    - atomic_single_use_token          # AUTH-004 (Server-side atomic consumption, replay returns 409)
+    - capability_escalation_blocked    # AUTH-005
+    - target_immutability              # AUTH-006
+
+  delegation:
+    - delegation_chain_preserved       # DEL-001
+    - invalid_delegation_rejected      # DEL-002
+
+  provenance_and_evidence:
+    - provider_action_id_linked        # PROV-001
+    - evidence_hash_verifies           # EVID-001 (Test B: Verifiable evidence golden path)
+    - tamper_detection_fails           # EVID-002
+
+  security_baseline:
+    - fail_closed                      # Default DENY on unknown action/target/capability
+    - configured_key_verification      # No static global placeholder keys
+    - vendor_neutral_dispatch          # target://scheme routing, core has 0 provider lock-in
+
+normative_tests:
+  - id: AUTH-001
+    name: AuthorizationPrecedesExecution
+  - id: AUTH-002
+    name: TestUnauthorizedActionNeverReachesProvider
+  - id: AUTH-003
+    name: TestAuthorizationTokenExpires
+  - id: AUTH-004
+    name: TestAuthorizationTokenCannotBeReplayed
+  - id: AUTH-005
+    name: TestCapabilityCannotBeEscalated
+  - id: AUTH-006
+    name: TestTargetCannotBeChangedAfterAuthorization
+  - id: ENV-001
+    name: TestActionEnvelopeHasUniqueId
+  - id: ENV-002
+    name: TestActorIsAttributable
+  - id: ENV-003
+    name: TestCapabilityIsExplicit
+  - id: ENV-004
+    name: TestTargetIsExplicit
+  - id: DEL-001
+    name: TestDelegationChainIsPreserved
+  - id: DEL-002
+    name: TestInvalidDelegationIsRejected
+  - id: PROV-001
+    name: TestProviderActionIdIsLinked
+  - id: EVID-001
+    name: TestAuthorizedActionProducesVerifiableEvidence
+  - id: EVID-002
+    name: TestTamperedEvidenceFailsVerification

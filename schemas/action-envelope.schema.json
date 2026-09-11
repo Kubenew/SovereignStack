@@ -1,0 +1,171 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://oasa.dev/schemas/action-envelope.schema.json",
+  "title": "OASA Action Envelope",
+  "description": "Standardized schema for Governed Autonomous Actions in SovereignStack",
+  "type": "object",
+  "required": [
+    "action_id",
+    "actor",
+    "capability",
+    "target",
+    "authorization",
+    "evidence"
+  ],
+  "properties": {
+    "action_id": {
+      "type": "string",
+      "pattern": "^act_[0-9A-Za-z_-]+$",
+      "description": "Globally unique, collision-resistant identifier for the action"
+    },
+    "actor": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Attributable URI or DID of the acting entity"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["agent", "human", "service"]
+        }
+      }
+    },
+    "delegation": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered chain of delegation from root human authority down to acting agent"
+    },
+    "capability": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Explicit capability required to execute this action"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "required": ["uri"],
+      "properties": {
+        "uri": {
+          "type": "string",
+          "pattern": "^[a-z0-9+.-]+://.+$",
+          "description": "Explicit target URI defining the execution scheme (e.g. morpheus://..., k8s://...)"
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "ruleset": {
+          "type": "string"
+        }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "required": ["decision"],
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": ["allow", "deny"]
+        },
+        "token_id": {
+          "type": "string"
+        },
+        "issued_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "properties": {
+        "provider": {
+          "type": "string"
+        },
+        "provider_action_id": {
+          "type": "string"
+        },
+        "executed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "parent_action": {
+          "type": "string"
+        },
+        "session_id": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["hashes"],
+      "properties": {
+        "hashes": {
+          "type": "object",
+          "required": ["request"],
+          "properties": {
+            "request": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "authorization": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "execution": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "provider_audit": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "signature": {
+          "type": "string",
+          "description": "Cryptographic digital signature over canonical envelope payload"
+        },
+        "signer_public_key": {
+          "type": "string",
+          "description": "Hex or base64 encoded public key of the signing authority"
+        }
+      }
+    }
+  }
+}

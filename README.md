@@ -1,140 +1,164 @@
 # SovereignStack
 
-**SovereignStack is building an open verification layer for AI infrastructure — proving who acted, what they were allowed to do, what happened, and whether the resulting evidence can be independently verified.**
+**The open governance and verification layer for autonomous infrastructure.**
 
-## Current Milestone: v0.5 — Core Contract & eBPF Tracer
+> **SovereignStack v0.6 introduces Governed Autonomous Action: a vendor-neutral protocol for authorizing, executing, recording, and independently verifying AI-driven infrastructure operations.**
 
-The v0.5 Core Contract defines the minimum verifiable protocol for sovereign AI nodes, anchored by the strict OASA Foundation Charter:
-
-```
-Identity → Capability → Policy → Action → Provenance → Evidence
-```
-
-| Core Service | Crate | Status |
-|-------------|-------|--------|
-| Identity | `ss-identity`, `ss-crypto` | Implemented |
-| Capability | `ss-capability` | Implemented |
-| Policy | `ss-policy` | Partial / verification required |
-| Events | `ss-eventbus` | Implemented |
-| Provenance | `ss-provenance` | Implemented |
-| Kernel | `ss-kernel` | Implemented (7 services) |
-| Reference Node | `reference-node` | Implemented |
-
-See [registry/components.yaml](registry/components.yaml) for machine-readable, component-by-component status.
-
-## Quick Start
-
-```bash
-git clone https://github.com/Kubenew/SovereignStack.git
-cd SovereignStack
-cargo build --release
-./target/release/ss-node --port 8546
-```
-
-## Morpheus Reference Environment
-
-**Current v0.5**: *Morpheus Reference Environment — specification and fixture-based validation*
-*(v0.7 target: Live Morpheus Integration — validated against a running Morpheus environment)*
-
-SovereignStack v0.5 establishes Morpheus as its first enterprise reference environment and provides a specification-first path from Morpheus-managed workloads to independently verifiable cryptographic evidence.
-
-The integration demonstrates the full proof chain:
+---
 
 ```text
-SovereignStack Core
-       ↓
-core-0.1
-       ↓
-Morpheus Profile 0.1
-       ↓
-Morpheus Adapter
-       ↓
-Morpheus VM Essentials
-       ↓
-Real VM/workload
-       ↓
-Policy decision
-       ↓
-Cryptographic provenance
-       ↓
-Evidence package
-       ↓
-Independent verification
+                         AI AGENTS
+               (Claude, Astra, Custom LLMs)
+                            │
+                            │ Action Request
+                            ▼
+              ┌─────────────────────────┐
+              │      SOVEREIGNSTACK     │
+              │                         │
+              │ Identity & Workload DID │
+              │ Capability Scoping      │
+              │ Policy Evaluation       │
+              │ Pre-Action Auth Token   │
+              │ Action Envelope         │
+              │ Provenance Graph        │
+              │ Cryptographic Evidence  │
+              │ Independent Verifier    │
+              └────────────┬────────────┘
+                           │ target://scheme
+        ┌──────────────────┼──────────────────┐
+        ▼                  ▼                  ▼
+    MORPHEUS            HARNESS          KUBERNETES
+   Reference #1        Adapter #2         Adapter #3
+        │                  │                  │
+        └──────────────────┼──────────────────┘
+                           ▼
+                    REAL INFRASTRUCTURE
+              (Clouds, Bare Metal, Networks)
+                           │
+                           ▼
+                    PROVIDER EVIDENCE
+                           │
+                           ▼
+                  INDEPENDENT VERIFY
 ```
 
-Run the fixture-based validation in one command — no live Morpheus instance required:
+> **"One governance protocol. Multiple execution environments. Independently verifiable actions."**
+
+---
+
+## The Golden Path
+
+Every governed autonomous action strictly adheres to the 5-stage Golden Path:
+
+```text
+AI Agent ──► DISCOVER ──► AUTHORIZE ──┬──► [DENY] ──► RECORD DENIAL (Provider execution = 0)
+                                      │
+                                      └──► [ALLOW] ──► EXECUTE (Adapter dispatch via target://)
+                                                          │
+                                                          ▼
+                                                        RECORD (Action Envelope + Provider Audit)
+                                                          │
+                                                          ▼
+                                                        VERIFY (Independent cryptographic proof)
+```
+
+1. **DISCOVER**: Query actor capabilities, supported target schemes, and active policies.
+2. **AUTHORIZE**: Evaluate action intent against organizational policies; issue a single-use authorization token. Denied actions halt immediately with zero provider execution.
+3. **EXECUTE**: Present authorization token to dispatch execution to the target platform adapter (`target://morpheus`, `target://k8s`, `target://harness`).
+4. **RECORD**: Ingest native execution telemetry, bi-directionally bind provider action IDs, and construct a signed [Action Envelope](schemas/action-envelope.schema.json).
+5. **VERIFY**: Third-party verifiers independently validate digital signatures, hash chains, and provider audit evidence.
+
+---
+
+## 3-Minute Flagship Demo
+
+Experience the two-action showcase in one command:
 
 ```bash
-bash demo/morpheus/run.sh        # Linux/macOS (PowerShell: .\demo\morpheus\run.ps1)
+python demo/morpheus/run_v06_demo.py        # Windows / Linux / macOS
+# Or PowerShell: .\demo\morpheus\run_v06_demo.ps1
 ```
 
-The validation walks the full governance pipeline: **Discover → Authorize → Execute →
-Provenance → Evidence → Independent Verify**, and prints `STATUS: CONFORMANT`
-when the simulated evidence package independently verifies. See
-[`demo/morpheus/`](demo/morpheus/) and [`integrations/morpheus/`](integrations/morpheus/).
+### What the demo showcases:
+1. **Dangerous Action (Anti-Theater Gate):** A support agent requests `DELETE production-db-01`. Policy issues **`DENY`**. **Provider actions executed: 0.** A cryptographic denial evidence envelope is generated and verified.
+2. **Legitimate Governed Action:** The agent requests `RESTART staging-web-01`. Policy issues **`ALLOW`** with a single-use token. Morpheus executes the safe operation, returns a native task ID, and binds it to the OASA Action Envelope.
+3. **Independent Cryptographic Verification:** The resulting evidence package is verified offline with Ed25519 signature verification and hash integrity checks (**`PASS`**).
+4. **Normative Conformance:** The automated test harness runs the full 15-test suite (**`15/15 PASS — STATUS: OASA-CONFORMANT`**).
 
-## Verify & Stress Test
+---
 
-Run the one-command verification gate — builds the reference node and enforces
-the 7 Core Contract vectors:
+## Normative Conformance Test Harness
+
+Run the official OASA Conformance Suite to validate protocol compliance:
 
 ```bash
-bash verify.sh
+python tools/oasa_conformance.py --profile profiles/core/0.1.yaml
 ```
 
-You can also run the Anti-Theater Compliance harness which tests the eBPF kernel hooks against dormant capability leaks and active unauthorized exploitation:
-
-```bash
-# Run the adversarial stress-test
-bash tools/run-stress-test
+```text
+================================================================
+OASA CONFORMANCE HARNESS — Profile: profiles/core/0.1.yaml
+================================================================
+  [PASS] AUTH-001 AuthorizationPrecedesExecution
+  [PASS] AUTH-002 TestUnauthorizedActionNeverReachesProvider
+  [PASS] AUTH-003 TestAuthorizationTokenExpires
+  [PASS] AUTH-004 TestAuthorizationTokenCannotBeReplayed
+  [PASS] AUTH-005 TestCapabilityCannotBeEscalated
+  [PASS] AUTH-006 TestTargetCannotBeChangedAfterAuthorization
+  [PASS] ENV-001  TestActionEnvelopeHasUniqueId
+  [PASS] ENV-002  TestActorIsAttributable
+  [PASS] ENV-003  TestCapabilityIsExplicit
+  [PASS] ENV-004  TestTargetIsExplicit
+  [DEL]  DEL-001  TestDelegationChainIsPreserved
+  [DEL]  DEL-002  TestInvalidDelegationIsRejected
+  [PROV] PROV-001 TestProviderActionIdIsLinked
+  [EVID] EVID-001 TestAuthorizedActionProducesVerifiableEvidence
+  [EVID] EVID-002 TestTamperedEvidenceFailsVerification
+----------------------------------------------------------------
+Summary: 15/15 Passed (100%)
+STATUS: OASA-CONFORMANT
+----------------------------------------------------------------
 ```
 
-For step-by-step manual verification (see [`v0.5-Verification-Gate.md`](v0.5-Verification-Gate.md)):
+---
 
-```bash
-# Rust workspace tests
-cargo test --workspace
+## How SovereignStack Complements Existing Infrastructure
 
-# Run the Python conformance harness against the node
-pip install -r requirements/conformance.txt
-python tools/ss-conformance.py --endpoint http://localhost:8546 --profile core-0.1
-```
+We do not replace the existing infrastructure ecosystem. We make autonomous actions across it governable and independently verifiable:
 
-## Conformance
+| System | Primary Role | SovereignStack Relationship |
+| :--- | :--- | :--- |
+| **Kubernetes** | Compute orchestration | Govern workload operations |
+| **Terraform / OpenTofu** | Infrastructure provisioning | Govern Terraform actions |
+| **Harness** | Software delivery / CI/CD | Govern deployment pipelines |
+| **HPE Morpheus** | Multi-cloud infrastructure orchestration | **First reference adapter (`target://morpheus`)** |
+| **OPA / Cedar** | Policy decisions | Pluggable policy engines |
+| **OpenTelemetry (OTel)** | Observability / Tracing | Operational evidence telemetry |
+| **SIEM (Splunk/Sentinel)** | Security monitoring | Consume verifiable audit envelopes |
 
-The Core Contract is verified against 7 deterministic test vectors:
+See [docs/ECOSYSTEM_COMPLEMENTARITY_MEMO.md](docs/ECOSYSTEM_COMPLEMENTARITY_MEMO.md) for the complete partner strategy.
 
-| Vector | Description |
-|--------|-------------|
-| `identity-creation` | Ed25519 identity generation and verification |
-| `object-signing` | Cryptographic object signing and hash verification |
-| `capability-grant` | Capability registration, grant, and revocation |
-| `policy-evaluation` | Policy rule matching and enforcement |
-| `event-integrity` | Event publish/subscribe with integrity |
-| `provenance-chain` | Hash-linked provenance chain creation and tamper detection |
-| `evidence-generation` | Evidence package generation with conformance profile binding |
+---
 
-See [profiles/core/0.1.yaml](profiles/core/0.1.yaml) for the formal profile definition.
+## Traction & Maturity Status
 
-## Status
+To preserve credibility with technical evaluators, partners, and investors, SovereignStack maintains brutal transparency regarding implementation maturity:
 
-Build: ![Build](https://github.com/Kubenew/SovereignStack/actions/workflows/ci.yml/badge.svg)
+- **Specification:** [OASA v0.6 Specification](specs/OASA-CORE-v0.6-SPEC.md) (Draft Normative Standard).
+- **Core Engine:** Reference Python / Rust implementation with atomic server-side token lease state and Ed25519 canonical signing.
+- **Reference Adapter:** HPE Morpheus integration adapter (`integrations/morpheus/adapter/morpheus_adapter.py`) with full fixture-based validation.
+- **Conformance:** Passing automated test suite grants **`OASA-Conformant`** status. Formal **`OASA-Certified`** status is reserved for future accredited third-party validation programs.
+- **Commercial Status:** Open-source foundation under the [OASA Constitution](CONSTITUTION.md). Design-partner phase underway.
 
-> **Note**: OASA certification levels (L1/L2/L3) are defined as a *specification*.
-> No implementation has yet been independently certified. See [CONFORMANCE.md](CONFORMANCE.md).
-
-## Vision: Internet for Intelligence
-
-SovereignStack's long-term vision is to become the foundational protocol for sovereign,
-distributed intelligence. See the [vision/](vision/) directory for the research roadmap
-and [ROADMAP.md](ROADMAP.md) for the implementation timeline.
+---
 
 ## Documentation
 
-- [Constitution](CONSTITUTION.md) — The OASA Foundation Charter and 4-Quadrant Governance
-- [Architecture](ARCHITECTURE.md) — System architecture and layer model
-- [Conformance](CONFORMANCE.md) — OASA certification specification
-- [Components](registry/components.yaml) — Component registry with maturity status
-- [Claims](registry/claims.yaml) — Verifiable claims with evidence mapping
-- [ADR-0001](docs/adr/ADR-0001-architecture-layer-model.md) — Architecture decision record
-- [Contributing](CONTRIBUTING.md) — How to contribute
+- [Constitution](CONSTITUTION.md) — The OASA Foundation Charter and Fail-Closed Axiom
+- [Strategic Investor One-Pager](docs/STRATEGIC_INVESTOR_ONE_PAGER.md) — Market positioning and defensible moat
+- [Ecosystem Architecture Memo](docs/ECOSYSTEM_COMPLEMENTARITY_MEMO.md) — Infrastructure platform complementarity
+- [OASA Core Contract Spec](specs/OASA-CORE-v0.6-SPEC.md) — Formal v0.6 protocol specification
+- [Authoritative Profile](profiles/core/0.1.yaml) — Frozen Core 0.1 profile definition
+- [Action Envelope Schema](schemas/action-envelope.schema.json) — Formal JSON Schema for Governed Actions
+- [Conformance Framework](CONFORMANCE.md) — Conformance and certification requirements
+- [Roadmap](ROADMAP.md) — Implementation milestones through v1.0

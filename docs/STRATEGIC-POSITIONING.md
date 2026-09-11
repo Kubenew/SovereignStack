@@ -32,7 +32,7 @@ But the market cannot yet say, with evidence, that an autonomous system is compl
 - **No audit trail** — "the model did it" is not evidence.
 - **Conflicting rules** — organizational, jurisdictional, and regulatory policies collide, and the collision is resolved by whoever wrote the code first.
 
-Regulators are waking up to this: DORA, MiCA, EU AI Act, NIS2, ISO 42001 all demand ongoing, verifiable oversight of automated systems. The demand for "prove it" is about to become law everywhere.
+AI governance and audit requirements are expanding as autonomous systems move into production: frameworks like DORA, MiCA, EU AI Act, NIS2, and ISO 42001 increasingly demand verifiable oversight, operational resilience, and auditable accountability for automated infrastructure operations.
 
 ---
 

@@ -20,13 +20,19 @@ The roadmap focuses on executable milestones and reference implementations, demo
 | ✅ | Evidence | Independently verifiable evidence generation |
 | ✅ | Core Conformance | Deterministic test vectors and claims mapping |
 
-### v0.6.0 — Interoperability
+### v0.6.0 — Governed Autonomous Action (Flagship Milestone)
+> **SovereignStack v0.6 introduces Governed Autonomous Action: a vendor-neutral protocol for authorizing, executing, recording and independently verifying AI-driven infrastructure operations.**
+
+**The Golden Path:** `DISCOVER → AUTHORIZE → EXECUTE → RECORD → VERIFY`  
+**Execution Order:** OASA Core contract → minimal Core → conformance → Morpheus reference adapter → 3-minute demo → ecosystem outreach
+
 | Status | Feature | Description |
 |---|---|---|
-| 🚧 | Conformance Runner | Hardened, external conformance test execution |
-| 📅 | External Verifier | Independent verification of evidence packages |
-| 📅 | Versioned Profile | Stable Core 0.1 profile with deterministic vectors |
-| 📅 | Negative Testing | Security and attack vectors added to conformance suite |
+| 🚧 | OASA Core Contract | 5 API verbs (`/discover`, `/authorize`, `/execute`, `/record`, `/verify`), vendor-neutral `target://scheme` dispatch |
+| 📅 | Minimal Core Engine | Server-side atomic single-use tokens, canonical JSON signing, configured cryptographic keys |
+| 📅 | Normative Conformance | 13 essential tests (anti-theater denial, verifiable evidence golden path, atomic consumption, tampering detection) |
+| 📅 | Morpheus Reference Adapter | First reference execution adapter (`target://morpheus`) with native provider action ID binding |
+| 📅 | Flagship Demo | 3-minute end-to-end scenario: Deny Prod → Allow Staging → Morpheus Exec → Independent Verifier PASS |
 
 ### v0.7.0 — HPE Morpheus Integration
 | Status | Feature | Description |

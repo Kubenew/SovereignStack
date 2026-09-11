@@ -7,10 +7,10 @@ set of tests an implementation must pass to claim a given conformance level.
 
 | Profile | File | Level | Description |
 |---------|------|-------|-------------|
-| Core Node | `core-0.1.yaml` | L1 | Minimal kernel services |
-| Federation Node | `federation-node.yaml` | L2 | Core + federation |
-| Knowledge Node | `knowledge-node.yaml` | L2 | Core + knowledge/reasoning |
-| Agent Node | `agent-node.yaml` | L2 | Core + agent execution |
+| Core 0.1 (**Authoritative**) | `profiles/core/0.1.yaml` | L1 | Authoritative OASA Core Contract & Governed Autonomous Action |
+| Federation Node | `conformance/profiles/federation-node.yaml` | L2 | Core + federation |
+| Knowledge Node | `conformance/profiles/knowledge-node.yaml` | L2 | Core + knowledge/reasoning |
+| Agent Node | `conformance/profiles/agent-node.yaml` | L2 | Core + agent execution |
 
 ## Usage
 

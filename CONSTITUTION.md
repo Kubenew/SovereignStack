@@ -6,9 +6,15 @@
 ## PREAMBLE: THE CONSTITUTIONAL PRINCIPLE
 The Open Architecture Specification for Autonomous Systems (OASA) Foundation exists to enforce mathematical accountability within high-autonomy environments. As human systems transition from human-directed operation to algorithmic execution, the preservation of accountability requires an unalterable, non-repudiable infrastructure layer.
 
+The foundational axiom of the protocol is:
+
+> **"No autonomous action without attributable authority. No governed action without verifiable evidence."**
+
 The Foundation does not build products; it maintains the protocol that makes the execution of unaccountable autonomy impossible. It is governed by a strict Mission Lock: every system action must flow down a deterministic pipeline:
 
-`Identity → Capability → Policy → Action → Provenance → Evidence`
+`Identity → Capability → Policy → Action Envelope → Provenance → Evidence`
+
+**The Fail-Closed Mandate:** An autonomous infrastructure governance engine MUST fail closed. Any unknown action, unknown capability, unknown target, invalid delegation, expired authorization, or unverified signature MUST result in immediate DENY, and unauthorized commands MUST NEVER reach execution providers.
 
 ## ARTICLE I: LEGAL STRUCTURE, INTELLECTUAL PROPERTY, AND MISSION LOCK
 

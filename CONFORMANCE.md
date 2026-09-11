@@ -330,12 +330,12 @@ See [schemas/certification/oasa-certification.schema.json](../schemas/certificat
 
 ## Public Registry
 
-OASA-certified implementations are listed in a public registry. To add your implementation:
+OASA-conformant and certified implementations are listed in a public registry. To add your implementation:
 
-1. Pass the conformance test suite at your target level
-2. Submit a PR to [REGISTRY.md](../REGISTRY.md) with your details
-3. Provide machine-readable attestation
-4. Receive your badge
+1. Pass the automated conformance test suite at your target profile (achieving **OASA-Conformant** status)
+2. Submit a PR to [REGISTRY.md](../REGISTRY.md) with your test results and machine-readable attestation
+3. For **OASA-Certified** status, complete independent accredited third-party validation
+4. Receive official badge and registry entry
 
 ---
 
