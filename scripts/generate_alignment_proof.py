@@ -3,7 +3,6 @@
 
 import hashlib
 import json
-import os
 
 def hash_values_document(doc: bytes) -> str:
     return hashlib.sha256(doc).hexdigest()

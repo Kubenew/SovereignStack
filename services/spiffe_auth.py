@@ -1,6 +1,7 @@
-from fastapi import Request, HTTPException, Depends
+from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-import os, logging
+import os
+import logging
 
 logger = logging.getLogger(__name__)
 

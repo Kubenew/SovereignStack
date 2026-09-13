@@ -1,7 +1,6 @@
 """Unit tests for the Ollama adapter."""
 
 import json
-import tempfile
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 

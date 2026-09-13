@@ -1,6 +1,10 @@
 from fastapi import FastAPI, UploadFile, File, Depends
 from services.spiffe_auth import authorized_spiffe_ids, spiffe_enabled
-import hashlib, os, uuid, json, logging
+import hashlib
+import os
+import uuid
+import json
+import logging
 
 logger = logging.getLogger(__name__)
 

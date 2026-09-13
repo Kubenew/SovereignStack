@@ -11,7 +11,7 @@ import logging
 import os
 import time
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Dict
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel

@@ -1,8 +1,7 @@
 import asyncio
-import json
 import uuid
 import time
-from typing import Dict, Optional
+from typing import Dict
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from schemas.agent_schema import AgentManifest, AgentStatusResponse, AgentState

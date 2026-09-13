@@ -12,7 +12,6 @@ import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
-from ss_core.types import ContentHash, Timestamp
 from ss_crypto.envelope import SignedEnvelope
 from ss_crypto.hashing import hash_content_hex
 from ss_crypto.keys import KeyPair

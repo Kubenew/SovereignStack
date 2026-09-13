@@ -15,14 +15,12 @@ sync messages, while the federation_service handles HTTP transport.
 
 from __future__ import annotations
 
-import hashlib
-import json
 import logging
 import threading
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional
 
 from services.event_log import Event, EventLog
 

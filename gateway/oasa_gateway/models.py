@@ -6,7 +6,6 @@ including the full request/response, timing, and Merkle tree position.
 
 from __future__ import annotations
 
-from datetime import datetime
 from pydantic import BaseModel, Field
 
 from ss_core.types import AuditEventId

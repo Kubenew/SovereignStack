@@ -1,8 +1,12 @@
 from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
 from services.spiffe_auth import authorized_spiffe_ids, spiffe_enabled
-import os, json, uuid, logging, time
-from typing import Optional, Dict, Any, List
+import os
+import json
+import uuid
+import logging
+import time
+from typing import Optional, Dict, Any
 
 logger = logging.getLogger(__name__)
 

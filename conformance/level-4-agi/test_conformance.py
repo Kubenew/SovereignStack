@@ -16,12 +16,9 @@ Usage:
     pytest test_conformance.py -v --sovereign-node=http://localhost:8080
 """
 
-import json
 import time
 import uuid
 from datetime import datetime, timezone, timedelta
-from pathlib import Path
-from typing import Optional
 
 import pytest
 
@@ -381,7 +378,7 @@ class TestReputationContinuity:
         })
         transition_uri = create_resp.json().get("transition_uri")
 
-        rep_resp = sovereign_node.get(f"/reputation/agent://reputation-new")
+        rep_resp = sovereign_node.get("/reputation/agent://reputation-new")
         if rep_resp.status_code == 200:
             rep = rep_resp.json()
             assert "inherited_from" in rep or "transition_uri" in rep

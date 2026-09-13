@@ -69,7 +69,7 @@ def run_sovereign_completion():
             print("Audit Log Reference ID:", res_json.get("id"))
             return 0
         else:
-            print(f"\n[ERROR] Request rejected by Sovereign Gateway:")
+            print("\n[ERROR] Request rejected by Sovereign Gateway:")
             print(response.text)
             return 1
             

@@ -6,8 +6,6 @@ A 3-Minute Investor & Technical Showcase
 
 import sys
 import os
-import json
-import time
 
 # Add repository root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -40,8 +38,8 @@ def main():
     # -------------------------------------------------------------------------
     print_banner("SCENARIO 1: DANGEROUS ACTION (Anti-Theater Gate)")
     print(f"  Actor:      {actor}")
-    print(f"  Capability: infrastructure.vm.delete")
-    print(f"  Target:     morpheus://vm/production-db-01")
+    print("  Capability: infrastructure.vm.delete")
+    print("  Target:     morpheus://vm/production-db-01")
     print("  Dispatching to SovereignStack Core for pre-action authorization...")
 
     auth1 = engine.authorize(
@@ -67,8 +65,8 @@ def main():
     # -------------------------------------------------------------------------
     print_banner("SCENARIO 2: LEGITIMATE ACTION (Golden Path)")
     print(f"  Actor:      {actor}")
-    print(f"  Capability: infrastructure.vm.restart")
-    print(f"  Target:     morpheus://vm/staging-web-01")
+    print("  Capability: infrastructure.vm.restart")
+    print("  Target:     morpheus://vm/staging-web-01")
     print("  Dispatching to SovereignStack Core for pre-action authorization...")
 
     auth2 = engine.authorize(
@@ -94,7 +92,7 @@ def main():
     )
 
     print(f"  [STATUS]:             {exec2['status']}")
-    print(f"  [PROVIDER]:           hpe-morpheus")
+    print("  [PROVIDER]:           hpe-morpheus")
     print(f"  [PROVIDER ACTION ID]: {exec2['provider_action_id']}")
     print(f"  [PROVIDER CALLS]:     {morpheus.provider_call_count}")
 

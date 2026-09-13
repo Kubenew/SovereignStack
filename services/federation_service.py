@@ -6,7 +6,7 @@ import hmac
 import uuid
 import logging
 import time
-from typing import List, Dict, Optional
+from typing import Dict, Optional
 
 from services.event_log import EventLog, EventSigner
 from services.sync_engine import SyncEngine, SyncMessage, MessageType

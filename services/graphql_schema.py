@@ -8,7 +8,6 @@ import json
 import re
 from datetime import datetime, timezone
 from collections import defaultdict
-from fastapi import Header, Request
 from strawberry.fastapi import GraphQLRouter
 
 from services.spiffe_helper import spiffe_ctx, SPIFFE_TRUST_DOMAIN

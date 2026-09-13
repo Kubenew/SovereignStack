@@ -6,7 +6,6 @@ Specification: OASA v0.6 Governed Autonomous Action
 import json
 import hashlib
 import threading
-import time
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, Optional, List, Tuple
 from cryptography.hazmat.primitives.asymmetric import ed25519

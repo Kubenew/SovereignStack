@@ -7,14 +7,11 @@ Supports SSE (Server-Sent Events) streaming passthrough.
 
 from __future__ import annotations
 
-import hashlib
 import logging
 import time
-from typing import AsyncGenerator
 
 import httpx
 from fastapi import Request, Response
-from fastapi.responses import StreamingResponse
 
 from oasa_gateway.config import GatewayConfig
 

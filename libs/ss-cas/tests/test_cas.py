@@ -6,7 +6,7 @@ from ss_core.types import ContentHash
 from ss_crypto.hashing import hash_content
 from ss_cas.sqlite import SqliteCAS
 from ss_cas.merkle import MerkleLog
-from ss_cas.proof import MerkleProof, Direction
+from ss_cas.proof import MerkleProof
 
 
 class TestSqliteCAS:

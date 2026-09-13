@@ -6,7 +6,6 @@ Coordinates decentralized agent sessions, tracks node topology, and triggers MCT
 
 import sys
 import time
-import json
 import random
 import unittest
 from typing import Dict, List, Any

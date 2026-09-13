@@ -16,7 +16,6 @@ import logging
 import os
 import threading
 import time
-import uuid
 from typing import Dict, Optional
 
 from fastapi import FastAPI, Depends, HTTPException

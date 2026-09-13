@@ -3,7 +3,7 @@
 import json
 from typing import Optional
 from sovereignstack.objects import SovereignObject
-from sovereignstack.uri import parse_uri, UriScheme
+from sovereignstack.uri import UriScheme
 
 
 class SovereignClient:

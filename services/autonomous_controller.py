@@ -5,7 +5,6 @@ Self-healing and auto-scaling controller that polls Prometheus metrics
 and alerts, applying declarative remediation actions.
 """
 
-import json
 import logging
 import os
 import threading

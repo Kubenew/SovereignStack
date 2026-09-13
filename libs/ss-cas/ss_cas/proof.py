@@ -14,7 +14,7 @@ from enum import Enum
 from typing import Any, Self
 
 from ss_core.types import ContentHash
-from ss_crypto.hashing import hash_content, hash_concat
+from ss_crypto.hashing import hash_concat
 
 
 class Direction(Enum):

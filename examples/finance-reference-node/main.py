@@ -13,10 +13,8 @@ with full provenance tracking and compliance checks.
 
 import hashlib
 import json
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
 
 
 # ── Utility ──────────────────────────────────────────────────────
@@ -277,10 +275,10 @@ def main():
 
     # Summary
     print(f"\n  Total objects created: {len(all_objects)}")
-    print(f"  URI schemes exercised: payment, treasury, policy, settlement, evidence, chain")
-    print(f"  All signatures valid:  ✓")
-    print(f"  Provenance chain:      ✓")
-    print(f"  Compliance checks:     ✓")
+    print("  URI schemes exercised: payment, treasury, policy, settlement, evidence, chain")
+    print("  All signatures valid:  ✓")
+    print("  Provenance chain:      ✓")
+    print("  Compliance checks:     ✓")
     print()
 
 

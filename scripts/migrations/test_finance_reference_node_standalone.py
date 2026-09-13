@@ -289,7 +289,7 @@ def run_integration_test():
     print("  INTEGRATION TEST SUMMARY")
     print("=" * 70)
     print(f"  Total objects created:     {len(all_objects)}")
-    print(f"  URI schemes exercised:     payment, treasury, policy, settlement, evidence, chain")
+    print("  URI schemes exercised:     payment, treasury, policy, settlement, evidence, chain")
     def _check(val): return "[OK]" if val else "[FAIL]"
     print(f"  All objects signed:        {_check(all(o.signature for o in all_objects))}")
     print(f"  Provenance chain complete: {_check(True)}")

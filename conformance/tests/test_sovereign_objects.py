@@ -4,9 +4,8 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "sdks", "python"))
 
-import json
 import pytest
-from sovereignstack.uri import parse_uri, UriScheme, ParsedUri
+from sovereignstack.uri import parse_uri, UriScheme
 from sovereignstack.objects import (
     SovereignObject, Payment, Settlement, Treasury,
     PolicyEvaluation, AuditRecord, ProvenanceLog,

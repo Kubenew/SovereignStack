@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status, Request, Header
+from fastapi import FastAPI, status, Request, Header
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
@@ -9,14 +9,14 @@ import json
 import re
 import time
 from datetime import datetime, timezone
-from collections import defaultdict, deque
+from collections import deque
 from dotenv import load_dotenv
 import jwt
 from jwt import PyJWKClient, InvalidTokenError
 
 from services.spiffe_helper import spiffe_ctx, SPIFFE_TRUST_DOMAIN
 from services.graphql_schema import graphql_app
-from services.merkle_audit import append_event, get_current_root, get_proof_for_event, get_tree_size, get_merkle_tree
+from services.merkle_audit import append_event, get_current_root, get_tree_size, get_merkle_tree
 from services.logging_config import setup_json_logging
 import logging
 

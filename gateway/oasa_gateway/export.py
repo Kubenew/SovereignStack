@@ -7,7 +7,6 @@ the gateway's public key.
 
 from __future__ import annotations
 
-import base64
 import io
 import json
 import logging
@@ -15,8 +14,6 @@ import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-from ss_core.types import ContentHash
-from ss_crypto.hashing import hash_content_hex
 from ss_crypto.keys import KeyPair
 from ss_crypto.signing import sign
 from ss_cas.merkle import MerkleLog
