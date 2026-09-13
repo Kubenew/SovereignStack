@@ -6,7 +6,7 @@ API_BASE = "http://localhost:8546"
 def is_node_up():
     try:
         return requests.get(f"{API_BASE}/sip/v1/ping", timeout=1).status_code == 200
-    except:
+    except Exception:
         return False
 
 pytestmark = pytest.mark.skipif(not is_node_up(), reason="Reference node is not running")

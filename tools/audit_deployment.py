@@ -47,7 +47,7 @@ def _check_audit_log():
         return False, "audit.log not found"
     try:
         with open(p) as f:
-            lines = [l for l in f if l.strip()]
+            lines = [line for line in f if line.strip()]
         return True, f"{len(lines)} entries"
     except Exception as e:
         return False, str(e)

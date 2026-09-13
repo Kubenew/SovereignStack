@@ -26,7 +26,7 @@ def run_conformance(profile_path: str, output_file: str = "oasa-conformance-repo
     engine = CoreEngine()
     adapter = MorpheusAdapter()
     engine.register_adapter("morpheus", adapter)
-    setup = (engine, adapter)
+    # engine and adapter are registered; used implicitly via engine below
 
     tests = [
         ("AUTH-001", "AuthorizationPrecedesExecution", suite.test_authorization_precedes_execution),

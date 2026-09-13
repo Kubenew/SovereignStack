@@ -35,7 +35,6 @@ def verify_signature(payload_bytes: bytes, sig_block: dict, hmac_secret: str) ->
     if algo == "Ed25519":
         try:
             from cryptography.hazmat.primitives import serialization
-            from cryptography.exceptions import InvalidSignature
             
             chain = sig_block.get("certificate_chain", [])
             if not chain:

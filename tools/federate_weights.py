@@ -37,7 +37,7 @@ def cmd_shard(args):
         shard = weights[start:end]
         shard_path = os.path.join(args.output_dir, f"shard-{i}.npy")
         np.save(shard_path, shard)
-        shard_b64 = base64.b64encode(shard.tobytes()).decode()
+
         shard_payload = json.dumps(shard.tolist())
         shard_json_path = os.path.join(args.output_dir, f"shard-{i}.json")
         with open(shard_json_path, "w") as f:
@@ -82,7 +82,7 @@ def cmd_distribute(args):
     model_version = manifest["model_version"]
     for i, node in enumerate(nodes):
         node = node.strip()
-        shard_info = manifest["shards"][i]
+
         shard_json_path = os.path.join(args.shard_dir, f"shard-{i}.json")
         if not os.path.exists(shard_json_path):
             print(f"Error: {shard_json_path} not found")

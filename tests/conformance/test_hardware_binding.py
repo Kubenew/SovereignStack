@@ -9,14 +9,14 @@ from unittest.mock import patch, MagicMock
 
 def test_tpm_detection_linux():
     """TPM must be detectable on Linux via /dev/tpm0."""
-    tpm_path = Path("/dev/tpm0")
+    _tpm_path = Path("/dev/tpm0")  # noqa: F841 — documents the path under test
     # In CI, this will likely not exist — test the logic, not the hardware
     from tools.sovereign_stack import _detect_tpm
     with patch("platform.system", return_value="Linux"):
         with patch("pathlib.Path.exists", return_value=True):
             with patch("pathlib.Path.read_text", return_value="2.0\n"):
                 result = _detect_tpm()
-                assert result["present"] == True
+                assert result["present"] is True
                 assert result["version"] == "2.0"
 
 
@@ -28,7 +28,7 @@ def test_tpm_detection_windows():
         mock_result.stdout = "IsEnabled_InitialValue: True\nSpecVersion: 2.0\n"
         with patch("subprocess.run", return_value=mock_result):
             result = _detect_tpm()
-            assert result["present"] == True, "TPM should be detected as present"
+            assert result["present"] is True, "TPM should be detected as present"
 
 
 def test_tpm_not_detected():
@@ -37,7 +37,7 @@ def test_tpm_not_detected():
     with patch("platform.system", return_value="Linux"):
         with patch("pathlib.Path.exists", return_value=False):
             result = _detect_tpm()
-            assert result["present"] == False, "TPM should not be detected"
+            assert result["present"] is False, "TPM should not be detected"
 
 
 def test_cpu_fallback_config():

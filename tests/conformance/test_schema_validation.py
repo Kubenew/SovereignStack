@@ -27,7 +27,7 @@ def test_sovereign_stack_yaml_air_gapped(stack_config):
 def test_sovereign_stack_yaml_has_network_isolation(stack_config):
     infra = stack_config.get("node_infrastructure", {})
     net = infra.get("network_isolation", {})
-    assert net.get("allow_wan") == False, "WAN access must be disabled for air-gap"
+    assert net.get("allow_wan") is False, "WAN access must be disabled for air-gap"
 
 def test_sovereign_stack_yaml_has_data_ingestion(stack_config):
     assert "data_ingestion" in stack_config, "Missing 'data_ingestion' section"
@@ -56,7 +56,7 @@ def test_l2_encryption_algorithm(stack_config):
 def test_l2_tpm_binding(stack_config):
     infra = stack_config.get("node_infrastructure", {})
     storage = infra.get("storage", {})
-    assert storage.get("hardware_tpm_binding") == True, "TPM binding must be enabled for L2"
+    assert storage.get("hardware_tpm_binding") is True, "TPM binding must be enabled for L2"
 
 @pytest.mark.level("L2")
 def test_l2_volatile_memory_mode(stack_config):
@@ -68,4 +68,4 @@ def test_l2_volatile_memory_mode(stack_config):
 def test_l3_runtime_protection(stack_config):
     compute = stack_config.get("compute_execution", {})
     runtime = compute.get("runtime_protection", {})
-    assert runtime.get("enforce_compliance_lock") == True, "Compliance lock must be enforced for L3"
+    assert runtime.get("enforce_compliance_lock") is True, "Compliance lock must be enforced for L3"
