@@ -58,11 +58,16 @@ By separating **governance** from **execution**, SovereignStack preserves existi
         ┌──────────────────┼──────────────────┐
         ▼                  ▼                  ▼
     MORPHEUS            HARNESS          KUBERNETES
-   Reference #1        Adapter #2         Adapter #3
+REFERENCE/FIXTURE       Adapter          Adapter
         │                  │                  │
         └──────────────────┼──────────────────┘
                            ▼
-                    REAL INFRASTRUCTURE
+                 ┌─────────────────────┐
+                 │ Fixture / Live Mode │
+                 └─────────────────────┘
+                           │
+                           ▼
+                    INFRASTRUCTURE
               (Clouds, Bare Metal, Networks)
 ```
 

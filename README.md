@@ -28,11 +28,16 @@
         ┌──────────────────┼──────────────────┐
         ▼                  ▼                  ▼
     MORPHEUS            HARNESS          KUBERNETES
-   Reference #1        Adapter #2         Adapter #3
+REFERENCE/FIXTURE       Adapter          Adapter
         │                  │                  │
         └──────────────────┼──────────────────┘
                            ▼
-                    REAL INFRASTRUCTURE
+                 ┌─────────────────────┐
+                 │ Fixture / Live Mode │
+                 └─────────────────────┘
+                           │
+                           ▼
+                    INFRASTRUCTURE
               (Clouds, Bare Metal, Networks)
                            │
                            ▼
@@ -83,7 +88,7 @@ python demo/morpheus/run_v06_demo.py        # Windows / Linux / macOS
 1. **Dangerous Action (Anti-Theater Gate):** A support agent requests `DELETE production-db-01`. Policy issues **`DENY`**. **Provider actions executed: 0.** A cryptographic denial evidence envelope is generated and verified.
 2. **Legitimate Governed Action:** The agent requests `RESTART staging-web-01`. Policy issues **`ALLOW`** with a single-use token. Morpheus executes the safe operation, returns a native task ID, and binds it to the OASA Action Envelope.
 3. **Independent Cryptographic Verification:** The resulting evidence package is verified offline with Ed25519 signature verification and hash integrity checks (**`PASS`**).
-4. **Normative Conformance:** The automated test harness runs the full 15-test suite (**`15/15 PASS — STATUS: OASA-CONFORMANT`**).
+4. **Normative Conformance:** The automated test harness runs the full 16-test suite (**`16/16 PASS — STATUS: OASA-CONFORMANT`**).
 
 ---
 
@@ -109,16 +114,19 @@ OASA CONFORMANCE HARNESS — Profile: profiles/core/0.1.yaml
   [PASS] ENV-002  TestActorIsAttributable
   [PASS] ENV-003  TestCapabilityIsExplicit
   [PASS] ENV-004  TestTargetIsExplicit
-  [DEL]  DEL-001  TestDelegationChainIsPreserved
-  [DEL]  DEL-002  TestInvalidDelegationIsRejected
-  [PROV] PROV-001 TestProviderActionIdIsLinked
-  [EVID] EVID-001 TestAuthorizedActionProducesVerifiableEvidence
-  [EVID] EVID-002 TestTamperedEvidenceFailsVerification
+  [PASS] DEL-001  TestDelegationChainIsPreserved
+  [PASS] DEL-002  TestInvalidDelegationIsRejected
+  [PASS] PROV-001 TestProviderActionIdIsLinked
+  [PASS] EVID-001 TestAuthorizedActionProducesVerifiableEvidence
+  [PASS] EVID-002 TestTamperedEvidenceFailsVerification
+  [PASS] EVID-003 TestAuthorizedActionMustHaveProviderEvidence
 ----------------------------------------------------------------
-Summary: 15/15 Passed (100%)
+Summary: 16/16 Passed (100%)
 STATUS: OASA-CONFORMANT
 ----------------------------------------------------------------
 ```
+
+> **OASA-CONFORMANT** means that the SovereignStack reference implementation passes the normative requirements of the declared OASA profile using the specified conformance harness. It does not imply independent certification, vendor endorsement, or live-provider validation unless explicitly stated.
 
 ---
 
@@ -146,8 +154,8 @@ To preserve credibility with technical evaluators, partners, and investors, Sove
 
 - **Specification:** [OASA v0.6 Specification](specs/OASA-CORE-v0.6-SPEC.md) (Draft Normative Standard).
 - **Core Engine:** Reference Python / Rust implementation with atomic server-side token lease state and Ed25519 canonical signing.
-- **Reference Adapter:** HPE Morpheus integration adapter (`integrations/morpheus/adapter/morpheus_adapter.py`) with full fixture-based validation.
-- **Conformance:** Passing automated test suite grants **`OASA-Conformant`** status. Formal **`OASA-Certified`** status is reserved for future accredited third-party validation programs.
+- **Reference Adapter:** Morpheus reference adapter with fixture-backed provider execution and evidence binding (`integrations/morpheus/adapter/morpheus_adapter.py`).
+- **Conformance:** Passing automated test suite grants **`OASA-Conformant`** status. Formal **`OASA-Certified`** status is reserved for future accredited third-party validation programs. SovereignStack reference implementation passes all 16 OASA Core v0.6 conformance tests.
 - **Commercial Status:** Open-source foundation under the [OASA Constitution](CONSTITUTION.md). Design-partner phase underway.
 
 ---

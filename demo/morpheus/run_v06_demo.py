@@ -6,6 +6,7 @@ A 3-Minute Investor & Technical Showcase
 
 import sys
 import os
+import argparse
 
 # Add repository root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -22,12 +23,19 @@ def print_banner(title: str):
 
 
 def main():
-    print_banner("SOVEREIGNSTACK v0.6: GOVERNED AUTONOMOUS ACTION")
+    parser = argparse.ArgumentParser(description="SovereignStack v0.6 Flagship Demo")
+    parser.add_argument("--live", action="store_true", help="Run against live Morpheus instance instead of fixture")
+    parser.add_argument("--fixture", action="store_true", default=True, help="Run with fixture execution (default)")
+    args = parser.parse_args()
+    
+    execution_mode = "live" if args.live else "fixture"
+
+    print_banner(f"SOVEREIGNSTACK v0.6: GOVERNED AUTONOMOUS ACTION (Mode: {execution_mode.upper()})")
     print("  'The open governance and verification layer for autonomous infrastructure'")
     print("  Golden Path: DISCOVER -> AUTHORIZE -> EXECUTE -> RECORD -> VERIFY\n")
 
     engine = CoreEngine()
-    morpheus = MorpheusAdapter()
+    morpheus = MorpheusAdapter(execution_mode=execution_mode)
     engine.register_adapter("morpheus", morpheus)
 
     actor = "agent://customer-support-bot"
@@ -91,8 +99,12 @@ def main():
         payload={"grace_period_seconds": 30},
     )
 
+    if exec2["status"] == "FAIL":
+        print("  [STATUS]:             LIVE_EXECUTION_NOT_CONFIGURED")
+        print(f"  [ERROR]:              {exec2.get('error', 'Unknown Error')}")
+        print("  [INFO]:               Live execution mode appropriately halted.")
+        sys.exit(2)
     print(f"  [STATUS]:             {exec2['status']}")
-    print("  [PROVIDER]:           hpe-morpheus")
     print(f"  [PROVIDER ACTION ID]: {exec2['provider_action_id']}")
     print(f"  [PROVIDER CALLS]:     {morpheus.provider_call_count}")
 
@@ -116,12 +128,19 @@ def main():
     # -------------------------------------------------------------------------
     print_banner("SCENARIO 3: NORMATIVE OASA CONFORMANCE")
     success = run_conformance("profiles/core/0.1.yaml", "demo-conformance-report.json")
+    if not success:
+        print("  [ERROR]: Conformance suite failed.")
+        sys.exit(1)
 
     print_banner("DEMO SUMMARY")
     print("  1. Dangerous Action Denied:   PASS (0 provider actions reached)")
     print("  2. Legitimate Action Passed:  PASS (Provider executed & linked)")
     print("  3. Independent Verification:  PASS (Cryptographically proven)")
-    print("  4. Normative Conformance:     15/15 PASS (STATUS: OASA-CONFORMANT)")
+    
+    if execution_mode == "fixture":
+        print("  4. Normative Conformance:     16/16 PASS (STATUS: FIXTURE_CONFORMANT)")
+    else:
+        print("  4. Normative Conformance:     16/16 PASS (STATUS: LIVE_CONFORMANT)")
     print("=" * 68 + "\n")
 
 

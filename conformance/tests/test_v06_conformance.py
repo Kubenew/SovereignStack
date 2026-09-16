@@ -1,5 +1,5 @@
 """
-SovereignStack v0.6 Normative Conformance Test Suite (15 Tests)
+SovereignStack v0.6 Normative Conformance Test Suite (16 Tests)
 Specification: OASA v0.6 Governed Autonomous Action
 """
 
@@ -347,3 +347,53 @@ def test_tampered_evidence_fails_verification(setup_engine):
     valid, checks = CoreEngine.verify(tampered_envelope)
     assert valid is False
     assert checks["signature"] == "FAIL: Signature mismatch"
+
+# ---------------------------------------------------------------------------
+# EVID-003: Authorized Action Must Have Provider Evidence
+# ---------------------------------------------------------------------------
+def test_authorized_action_must_have_provider_evidence(setup_engine):
+    engine, _ = setup_engine
+    auth = engine.authorize("agent://ops-bot", "agent", "infrastructure.vm.restart", "morpheus://vm/staging-web-01")
+    action_id = auth["action_id"]
+    token_id = auth["token_id"]
+
+    exec_result = engine.execute(action_id, token_id, "agent://ops-bot", "morpheus://vm/staging-web-01")
+    envelope = exec_result["envelope"]
+
+    import copy
+
+    # Tampering A: remove provider_action_id but keep status SUCCESS
+    tampered_env_a = copy.deepcopy(envelope)
+    tampered_env_a["execution"].pop("provider_action_id", None)
+    
+    ev_a = tampered_env_a.pop("evidence")
+    from conformance.action_envelope import canonical_json_bytes, sha256_hex
+    ev_a["hashes"]["execution"] = sha256_hex(canonical_json_bytes({
+        "provider": tampered_env_a["execution"].get("provider"),
+        "provider_action_id": tampered_env_a["execution"].get("provider_action_id")
+    }))
+
+    payload_to_sign_a = {k: v for k, v in tampered_env_a.items()}
+    payload_to_sign_a["evidence_hashes"] = ev_a["hashes"]
+    sig_a = engine.signer.sign_payload(payload_to_sign_a)
+    tampered_env_a["evidence"] = ev_a
+    tampered_env_a["evidence"]["signature"] = sig_a
+    
+    valid_a, checks_a = CoreEngine.verify(tampered_env_a)
+    assert valid_a is False
+    assert checks_a.get("provider_linkage", "") == "FAIL: Missing provider_action_id for successful action"
+
+    # Tampering B: remove provider_audit from hashes
+    tampered_env_b = copy.deepcopy(envelope)
+    ev_b = tampered_env_b.pop("evidence")
+    ev_b["hashes"].pop("provider_audit", None)
+    
+    payload_to_sign_b = {k: v for k, v in tampered_env_b.items()}
+    payload_to_sign_b["evidence_hashes"] = ev_b["hashes"]
+    sig_b = engine.signer.sign_payload(payload_to_sign_b)
+    tampered_env_b["evidence"] = ev_b
+    tampered_env_b["evidence"]["signature"] = sig_b
+
+    valid_b, checks_b = CoreEngine.verify(tampered_env_b)
+    assert valid_b is False
+    assert checks_b.get("provider_linkage", "") == "FAIL: Missing provider_audit evidence for successful action"

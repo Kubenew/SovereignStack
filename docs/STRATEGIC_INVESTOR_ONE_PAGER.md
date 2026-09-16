@@ -32,11 +32,16 @@ AI AGENTS (Astra, Claude, Custom LLM)
        ┌───────┼───────┐
        ▼       ▼       ▼
     MORPHEUS  HARNESS  KUBERNETES
-   (Ref #1)  (Target)  (Target)
+REF/FIXTURE  (Target)  (Target)
        │       │       │
        └───────┼───────┘
                ▼
-      REAL INFRASTRUCTURE
+     ┌───────────────────┐
+     │ Fixture/Live Mode │
+     └───────────────────┘
+               │
+               ▼
+      INFRASTRUCTURE
 ```
 
 > **"One governance protocol. Multiple execution environments. Independently verifiable actions."**

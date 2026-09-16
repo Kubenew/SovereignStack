@@ -12,13 +12,27 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.exceptions import InvalidSignature
 
 
+def _reject_unsupported(obj: Any):
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if not isinstance(k, str):
+                raise TypeError(f"deterministic-json-v1 requires string keys, got: {type(k)}")
+            _reject_unsupported(v)
+    elif isinstance(obj, list):
+        for item in obj:
+            _reject_unsupported(item)
+    elif not isinstance(obj, (str, int, float, bool, type(None))):
+        raise TypeError(f"deterministic-json-v1 rejects unsupported type: {type(obj)}")
+
 def canonical_json_bytes(obj: Any) -> bytes:
     """
-    Serialize Python dictionary to canonical JSON bytes according to RFC 8785.
-    - Sorted keys
-    - No whitespace between separators
-    - UTF-8 encoded
+    Serialize Python dictionary to `deterministic-json-v1` bytes.
+    - UTF-8 encoding
+    - JSON object keys sorted lexicographically
+    - No insignificant whitespace
+    - Unsupported values rejected (not a full RFC 8785 implementation)
     """
+    _reject_unsupported(obj)
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
 
@@ -142,7 +156,7 @@ class ActionEnvelopeBuilder:
         target_uri: str,
         decision: str,
         token_id: Optional[str] = None,
-        delegation: Optional[List[str]] = None,
+        delegation: Optional[List[Dict[str, Any]]] = None,
         policy_id: Optional[str] = None,
         provider: Optional[str] = None,
         provider_action_id: Optional[str] = None,
@@ -181,6 +195,8 @@ class ActionEnvelopeBuilder:
             hashes["provider_audit"] = audit_hash
 
         envelope: Dict[str, Any] = {
+            "oasa_version": "0.6",
+            "envelope_version": "0.1",
             "action_id": action_id,
             "actor": {
                 "id": actor_id,
@@ -225,7 +241,11 @@ class ActionEnvelopeBuilder:
         return envelope
 
     @staticmethod
-    def verify_envelope(envelope: Dict[str, Any]) -> Tuple[bool, Dict[str, str]]:
+    def verify_envelope(
+        envelope: Dict[str, Any],
+        request_payload: Optional[Dict[str, Any]] = None,
+        provider_audit_payload: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[bool, Dict[str, str]]:
         """
         Independently verifies all cryptographic links and signatures on an Action Envelope.
         """
@@ -260,14 +280,62 @@ class ActionEnvelopeBuilder:
         if "request" not in hashes or not hashes["request"]:
             results["hashes"] = "FAIL: Missing request hash"
             return False, results
+
+        if request_payload is not None:
+            expected_req_hash = sha256_hex(canonical_json_bytes(request_payload))
+            if hashes["request"] != expected_req_hash:
+                results["hashes"] = "FAIL: Request hash mismatch"
+                return False, results
+
+        if "authorization" in hashes and "authorization" in envelope:
+            expected_auth_hash = sha256_hex(canonical_json_bytes(envelope["authorization"]))
+            if hashes["authorization"] != expected_auth_hash:
+                results["hashes"] = "FAIL: Authorization hash mismatch"
+                return False, results
+
+        if "execution" in hashes and "execution" in envelope:
+            expected_exec_hash = sha256_hex(canonical_json_bytes({
+                "provider": envelope["execution"].get("provider"),
+                "provider_action_id": envelope["execution"].get("provider_action_id")
+            }))
+            if hashes["execution"] != expected_exec_hash:
+                results["hashes"] = "FAIL: Execution hash mismatch"
+                return False, results
+
+        if "provider_audit" in hashes and provider_audit_payload is not None:
+            expected_audit_hash = sha256_hex(canonical_json_bytes(provider_audit_payload))
+            if hashes["provider_audit"] != expected_audit_hash:
+                results["hashes"] = "FAIL: Provider audit hash mismatch"
+                return False, results
+
         results["hashes"] = "PASS"
 
-        # 4. Provider action ID linkage (if authorized and executed)
-        if envelope.get("authorization", {}).get("decision") == "allow":
-            exec_block = envelope.get("execution")
-            if not exec_block or not exec_block.get("provider_action_id"):
-                results["provider_linkage"] = "FAIL: Missing provider action linkage for executed action"
+        # 4. Provider action ID linkage and Evidence (EVID-003)
+        auth = envelope.get("authorization", {})
+        exec_block = envelope.get("execution", {})
+        
+        if auth.get("decision") == "allow" and exec_block.get("status") == "SUCCESS":
+            prov_action_id = exec_block.get("provider_action_id")
+            if not prov_action_id:
+                results["provider_linkage"] = "FAIL: Missing provider_action_id for successful action"
                 return False, results
+            
+            if "provider_audit" not in hashes:
+                results["provider_linkage"] = "FAIL: Missing provider_audit evidence for successful action"
+                return False, results
+                
+            if provider_audit_payload is not None:
+                if provider_audit_payload.get("provider_action_id") != prov_action_id:
+                    results["provider_linkage"] = "FAIL: Provider audit payload does not bind to provider_action_id"
+                    return False, results
+
+            results["provider_linkage"] = "PASS"
+        elif auth.get("decision") == "allow":
+            # If not SUCCESS, we might not have a provider action ID, but if we do, it shouldn't fail EVID-003.
+            # We'll just mark PASS if it's allowed but failed execution (e.g. LIVE_EXECUTION_NOT_CONFIGURED)
+            results["provider_linkage"] = "PASS"
+        else:
+            # Denied actions
             results["provider_linkage"] = "PASS"
 
         return True, results

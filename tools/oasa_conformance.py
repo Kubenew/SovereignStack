@@ -44,6 +44,7 @@ def run_conformance(profile_path: str, output_file: str = "oasa-conformance-repo
         ("PROV-001", "TestProviderActionIdIsLinked", suite.test_provider_action_id_is_linked),
         ("EVID-001", "TestAuthorizedActionProducesVerifiableEvidence", suite.test_authorized_action_produces_verifiable_evidence),
         ("EVID-002", "TestTamperedEvidenceFailsVerification", suite.test_tampered_evidence_fails_verification),
+        ("EVID-003", "TestAuthorizedActionMustHaveProviderEvidence", suite.test_authorized_action_must_have_provider_evidence),
     ]
 
     results = []

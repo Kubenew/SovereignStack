@@ -1,8 +1,12 @@
 # OASA Core Conformance Profile (Authoritative)
 # Specification: OASA v0.6 Governed Autonomous Action
-profile: oasa-core-0.1
-version: "0.6.0"
-status: authoritative
+profile:
+  id: oasa-core
+  version: "0.1"
+  protocol: oasa
+  protocol_version: "0.6"
+  normative_tests: 16
+  status: frozen
 description: "Authoritative normative requirements for an OASA v0.6 Core conformant implementation"
 
 golden_path:
@@ -18,7 +22,7 @@ requirements:
     - attributable_actor        # ENV-002
     - explicit_capability       # ENV-003
     - explicit_target_uri       # ENV-004
-    - canonical_json_digest     # RFC 8785 SHA-256
+    - canonical_json_digest     # deterministic-json-v1 SHA-256
     - cryptographic_signature   # Ed25519 or ECDSA
 
   authorization_lifecycle:
@@ -74,3 +78,5 @@ normative_tests:
     name: TestAuthorizedActionProducesVerifiableEvidence
   - id: EVID-002
     name: TestTamperedEvidenceFailsVerification
+  - id: EVID-003
+    name: TestAuthorizedActionMustHaveProviderEvidence

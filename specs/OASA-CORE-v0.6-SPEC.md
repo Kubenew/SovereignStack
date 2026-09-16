@@ -104,7 +104,7 @@ Evaluates action intent against organizational and jurisdictional policies.
   {
     "decision": "ALLOW",
     "action_id": "act-01HZY88A72BC...",
-    "authorization_token": "<signed_jwt_with_jti>",
+    "authorization_token": "<opaque_authorization_token_or_jwt>",
     "expires_at": "2026-09-11T08:15:00Z"
   }
   ```
@@ -124,7 +124,7 @@ Submits an authorized action for execution by presenting the single-use token.
   ```json
   {
     "action_id": "act-01HZY88A72BC...",
-    "authorization_token": "<signed_jwt_with_jti>",
+    "authorization_token": "<opaque_authorization_token_or_jwt>",
     "target_uri": "morpheus://cloud-east/vms/web-prod-01",
     "payload": { "force": false }
   }
@@ -184,13 +184,13 @@ The following normative requirements address and remediate prototype vulnerabili
 - Prototypes MUST NOT rely on static or hardcoded global placeholder keys. Unconfigured key verification must raise a fatal initialization error.
 
 ### 4.2 Server-Side Atomic Single-Use Token State
-- A JWT format does not, by itself, enforce single-use semantics.
+- Authorization credentials MUST contain a unique authorization identifier and MUST be cryptographically bound to the authorized action. Single-use semantics MUST be enforced by server-side atomic state. A JWT is an implementation option, but by itself does not enforce single-use semantics.
 - The Core server MUST maintain an atomic token ledger (`TokenStateStore`) tracking token IDs (`jti`), issue timestamps, expiry, and consumption status (`consumed_at`).
 - Consumption during `POST /execute` MUST be performed via an atomic Compare-And-Swap (CAS) or synchronized mutex lock to eliminate race conditions.
 - Replaying a token MUST immediately return `409 Conflict` (`TOKEN_ALREADY_CONSUMED`), preventing duplicate infrastructure execution.
 
 ### 4.3 Cryptographic Envelope Signing (`SignEnvelope()`)
-- Action envelopes MUST be canonically serialized (RFC 8785 JSON Canonicalization Scheme) and hashed using SHA-256.
+- Action envelopes MUST be canonically serialized (`deterministic-json-v1`) and hashed using SHA-256.
 - The resulting digest MUST be cryptographically signed using the Core's private key (Ed25519).
 - Dummy signatures or empty payloads MUST be rejected.
 
@@ -198,11 +198,30 @@ The following normative requirements address and remediate prototype vulnerabili
 - Verification MUST compute the canonical digest of the envelope payload and verify the digital signature against the signing authority's registered public key.
 - Acceptance of arbitrary non-empty signature strings is strictly prohibited. Any signature mismatch or payload modification MUST fail verification immediately.
 
+### 4.5 Hash Definitions & Canonicalization
+- `deterministic-json-v1` is defined as a SovereignStack protocol primitive. It is **not claimed to be RFC 8785/JCS compliant**.
+- Characteristics of `deterministic-json-v1`:
+  - UTF-8 encoding (characters preserved).
+  - JSON object keys sorted lexicographically.
+  - No insignificant whitespace (no whitespace between separators).
+  - Deterministic separators.
+  - Deterministic representation of supported scalar values.
+  - **Unsupported/non-deterministic values rejected** (it must not silently serialize arbitrary Python objects).
+- The canonical payload for hashes MUST be explicitly defined:
+  - `request_hash`: SHA-256 of the `deterministic-json-v1` serialization of the request payload.
+  - `authorization_hash`: SHA-256 of the `deterministic-json-v1` serialization of the authorization block.
+  - `execution_hash`: SHA-256 of the `deterministic-json-v1` serialization of the provider execution block (minus timestamps/status).
+  - `provider_audit_hash`: SHA-256 of the `deterministic-json-v1` serialization of the native provider audit log payload.
+
+### 4.6 Delegation Relationships
+- For v0.6, delegation relationships are represented via structural typing (e.g. nested capability scope dicts) and are preserved in provenance.
+- Cryptographically verifiable delegation links (signatures between delegator and delegate) are scoped for a future v0.7 evolution.
+
 ---
 
 ## 5. Normative Conformance Test Suite (v0.6)
 
-The initial conformance suite establishes 13 essential normative tests. Passing this suite awards **OASA-Conformant** status (reserving "OASA-Certified" for formal third-party programs).
+The initial conformance suite establishes 16 normative tests. Passing this suite awards **OASA-Conformant** status (reserving "OASA-Certified" for formal third-party programs).
 
 ### 5.1 The Anti-Theater Gate (P0 Killer Test)
 #### `TestUnauthorizedActionNeverReachesProvider`
@@ -244,6 +263,7 @@ Verifies the complete Golden Path:
 11. **`TestEvidenceHashValidation`**: Hashing evidence payload matches the envelope claim.
 12. **`TestEnvelopeSignatureValidation`**: Modifying any payload field invalidates the cryptographic signature.
 13. **`TestVerificationDetectsTampering`**: Independent verifier rejects modified envelopes.
+14. **`TestAuthorizedActionMustHaveProviderEvidence`** (`EVID-003`): An authorized action cannot become "successful" without attributable provider execution evidence.
 
 ---
 
@@ -254,7 +274,7 @@ OASA Core Contract (This Spec)
          ↓
 Minimal Core Engine (Go/Rust: 5 API routes, atomic store, crypto signing)
          ↓
-Normative Conformance Suite (13 tests verifying anti-theater & crypto invariants)
+Normative Conformance Suite (16 tests verifying anti-theater & crypto invariants)
          ↓
 Morpheus Reference Adapter (First live reference environment)
          ↓

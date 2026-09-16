@@ -235,5 +235,13 @@ class CoreEngine:
 
     # 5. VERIFY
     @staticmethod
-    def verify(envelope: Dict[str, Any]) -> Tuple[bool, Dict[str, str]]:
-        return ActionEnvelopeBuilder.verify_envelope(envelope)
+    def verify(
+        envelope: Dict[str, Any],
+        request_payload: Optional[Dict[str, Any]] = None,
+        provider_audit_payload: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[bool, Dict[str, str]]:
+        return ActionEnvelopeBuilder.verify_envelope(
+            envelope,
+            request_payload=request_payload,
+            provider_audit_payload=provider_audit_payload
+        )

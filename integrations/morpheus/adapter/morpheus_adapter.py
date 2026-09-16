@@ -23,9 +23,10 @@ class MorpheusAdapter:
 
     SCHEME = "morpheus"
 
-    def __init__(self, endpoint: str = "https://morpheus.internal.local", live_client: Optional[Any] = None):
+    def __init__(self, endpoint: str = "https://morpheus.internal.local", live_client: Optional[Any] = None, execution_mode: str = "fixture"):
         self.endpoint = endpoint
         self.live_client = live_client
+        self.execution_mode = execution_mode
         self.provider_call_count = 0
         self.executed_actions: Dict[str, Dict[str, Any]] = {}
 
@@ -77,6 +78,9 @@ class MorpheusAdapter:
 
         target_uri = action_envelope.get("target", {}).get("uri", "")
         cap_id = action_envelope.get("capability", {}).get("id", "")
+
+        if self.execution_mode == "live":
+            raise NotImplementedError("Live execution against Morpheus is not yet configured. Use fixture mode.")
 
         # Increment provider execution counter
         self.provider_call_count += 1

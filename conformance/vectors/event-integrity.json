@@ -2,7 +2,7 @@
   "id": "EVT-001",
   "version": "0.5.0",
   "description": "Event publish and integrity check",
-  "canonicalization": "JCS (RFC 8785)",
+  "canonicalization": "deterministic-json-v1",
   "cryptographic_algorithm": "Ed25519",
   "hash_algorithm": "SHA-256",
   "inputs": {

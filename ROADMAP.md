@@ -30,7 +30,7 @@ The roadmap focuses on executable milestones and reference implementations, demo
 |---|---|---|
 | 🚧 | OASA Core Contract | 5 API verbs (`/discover`, `/authorize`, `/execute`, `/record`, `/verify`), vendor-neutral `target://scheme` dispatch |
 | 📅 | Minimal Core Engine | Server-side atomic single-use tokens, canonical JSON signing, configured cryptographic keys |
-| 📅 | Normative Conformance | 13 essential tests (anti-theater denial, verifiable evidence golden path, atomic consumption, tampering detection) |
+| 📅 | Normative Conformance | 16 essential tests (anti-theater denial, verifiable evidence golden path, atomic consumption, tampering detection, provider evidence) |
 | 📅 | Morpheus Reference Adapter | First reference execution adapter (`target://morpheus`) with native provider action ID binding |
 | 📅 | Flagship Demo | 3-minute end-to-end scenario: Deny Prod → Allow Staging → Morpheus Exec → Independent Verifier PASS |
 
