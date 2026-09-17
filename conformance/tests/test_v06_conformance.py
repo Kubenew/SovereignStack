@@ -6,6 +6,12 @@ Specification: OASA v0.6 Governed Autonomous Action
 import time
 import pytest
 from conformance.core_engine import CoreEngine
+from conformance.action_envelope import (
+    build_evidence_package,
+    verify_evidence_package,
+    canonical_json_bytes,
+    sha256_hex,
+)
 from integrations.morpheus.adapter.morpheus_adapter import MorpheusAdapter
 
 
@@ -54,7 +60,10 @@ def test_unauthorized_action_never_reaches_provider(setup_engine):
         actor_type="agent",
         capability_id="infrastructure.vm.delete",
         target_uri="morpheus://vm/production-db-01",
-        delegation=["human://operator", "agent://supervisor", "agent://customer-support-bot"],
+        delegation=[
+            {"delegator": "human://operator", "delegate": "agent://supervisor"},
+            {"delegator": "agent://supervisor", "delegate": "agent://customer-support-bot"},
+        ],
     )
 
     # 1. Assert Decision is DENY
@@ -253,7 +262,10 @@ def test_target_is_explicit(setup_engine):
 # ---------------------------------------------------------------------------
 def test_delegation_chain_is_preserved(setup_engine):
     engine, _ = setup_engine
-    chain = ["human://lead-architect", "agent://supervisor", "agent://worker"]
+    chain = [
+        {"delegator": "human://lead-architect", "delegate": "agent://supervisor"},
+        {"delegator": "agent://supervisor", "delegate": "agent://worker"},
+    ]
     auth = engine.authorize(
         actor_id="agent://worker",
         actor_type="agent",
@@ -270,7 +282,10 @@ def test_delegation_chain_is_preserved(setup_engine):
 # ---------------------------------------------------------------------------
 def test_invalid_delegation_is_rejected(setup_engine):
     engine, _ = setup_engine
-    malformed_chain = ["human://lead-architect", "unverified-anonymous-entity"]
+    malformed_chain = [
+        {"delegator": "human://lead-architect", "delegate": "agent://supervisor"},
+        {"delegator": "unverified-anonymous-entity", "delegate": "agent://worker"},
+    ]
     auth = engine.authorize(
         actor_id="agent://worker",
         actor_type="agent",
@@ -367,7 +382,6 @@ def test_authorized_action_must_have_provider_evidence(setup_engine):
     tampered_env_a["execution"].pop("provider_action_id", None)
     
     ev_a = tampered_env_a.pop("evidence")
-    from conformance.action_envelope import canonical_json_bytes, sha256_hex
     ev_a["hashes"]["execution"] = sha256_hex(canonical_json_bytes({
         "provider": tampered_env_a["execution"].get("provider"),
         "provider_action_id": tampered_env_a["execution"].get("provider_action_id")
@@ -397,3 +411,63 @@ def test_authorized_action_must_have_provider_evidence(setup_engine):
     valid_b, checks_b = CoreEngine.verify(tampered_env_b)
     assert valid_b is False
     assert checks_b.get("provider_linkage", "") == "FAIL: Missing provider_audit evidence for successful action"
+
+    # EVID-003 STRENGTHENING: provider evidence must exist AND be independently
+    # resolvable and verifiable via the OASA Evidence Package.
+    provider_audit = exec_result["provider_audit"]
+
+    # Positive case: valid evidence package independently verifies PASS.
+    package = build_evidence_package(
+        envelope,
+        request_payload={},
+        provider_audit_payload=provider_audit,
+    )
+    valid_pkg, checks_pkg = verify_evidence_package(package)
+    assert valid_pkg is True
+    assert checks_pkg["hashes"] == "PASS"
+    assert checks_pkg["provider_linkage"] == "PASS"
+
+    # Tampering C (P1.5): provider-audit payload does not match its claimed hash.
+    tampered_audit = dict(provider_audit)
+    tampered_audit["audit_event"] = {"event_type": "TAMPERED_LOG_ENTRY"}
+    package_bad_audit = build_evidence_package(
+        envelope,
+        request_payload={},
+        provider_audit_payload=tampered_audit,
+    )
+    valid_bad_audit, checks_bad_audit = verify_evidence_package(package_bad_audit)
+    assert valid_bad_audit is False
+    assert checks_bad_audit.get("hashes", "") == "FAIL: Provider audit hash mismatch"
+
+    # Tampering C': request payload does not match its claimed hash.
+    package_bad_req = build_evidence_package(
+        envelope,
+        request_payload={"grace_period_seconds": 99},
+        provider_audit_payload=provider_audit,
+    )
+    valid_bad_req, checks_bad_req = verify_evidence_package(package_bad_req)
+    assert valid_bad_req is False
+    assert checks_bad_req.get("hashes", "") == "FAIL: Request hash mismatch"
+
+    # Tampering D (P1.6): provider_action_id in the audit payload diverges from
+    # the envelope's execution block. Re-sign a forged envelope whose audit hash
+    # matches the tampered payload so the linkage cross-check is what catches it.
+    mismatched_audit = dict(provider_audit)
+    mismatched_audit["provider_action_id"] = "morph-task-99999999"
+
+    forged_env = copy.deepcopy(envelope)
+    ev_d = forged_env.pop("evidence")
+    ev_d["hashes"]["provider_audit"] = sha256_hex(canonical_json_bytes(mismatched_audit))
+    payload_to_sign_d = {k: v for k, v in forged_env.items()}
+    payload_to_sign_d["evidence_hashes"] = ev_d["hashes"]
+    forged_env["evidence"] = ev_d
+    forged_env["evidence"]["signature"] = engine.signer.sign_payload(payload_to_sign_d)
+
+    package_mismatch = build_evidence_package(
+        forged_env,
+        request_payload={},
+        provider_audit_payload=mismatched_audit,
+    )
+    valid_mismatch, checks_mismatch = verify_evidence_package(package_mismatch)
+    assert valid_mismatch is False
+    assert checks_mismatch.get("provider_linkage", "") == "FAIL: Provider audit payload does not bind to provider_action_id"

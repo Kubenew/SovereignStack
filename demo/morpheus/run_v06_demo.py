@@ -12,6 +12,7 @@ import argparse
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from conformance.core_engine import CoreEngine
+from conformance.action_envelope import build_evidence_package, verify_evidence_package
 from integrations.morpheus.adapter.morpheus_adapter import MorpheusAdapter
 from tools.oasa_conformance import run_conformance
 
@@ -24,8 +25,9 @@ def print_banner(title: str):
 
 def main():
     parser = argparse.ArgumentParser(description="SovereignStack v0.6 Flagship Demo")
-    parser.add_argument("--live", action="store_true", help="Run against live Morpheus instance instead of fixture")
-    parser.add_argument("--fixture", action="store_true", default=True, help="Run with fixture execution (default)")
+    mode_group = parser.add_mutually_exclusive_group()
+    mode_group.add_argument("--live", action="store_true", help="Run against live Morpheus instance instead of fixture")
+    mode_group.add_argument("--fixture", action="store_true", help="Run with fixture execution (default)")
     args = parser.parse_args()
     
     execution_mode = "live" if args.live else "fixture"
@@ -39,7 +41,10 @@ def main():
     engine.register_adapter("morpheus", morpheus)
 
     actor = "agent://customer-support-bot"
-    delegation = ["human://sysadmin", "agent://supervisor-bot", actor]
+    delegation = [
+        {"delegator": "human://sysadmin", "delegate": "agent://supervisor-bot"},
+        {"delegator": "agent://supervisor-bot", "delegate": actor},
+    ]
 
     # -------------------------------------------------------------------------
     # SCENARIO 1: Dangerous Action (Anti-Theater Gate)
@@ -115,11 +120,17 @@ def main():
     print(f"  [EXECUTION HASH]:  {envelope2['evidence']['hashes']['execution'][:24]}...")
     print(f"  [ED25519 SIG]:     {envelope2['evidence']['signature'][:24]}...")
 
-    print("\n  [4. INDEPENDENT VERIFICATION]: Running third-party verifier...")
-    valid2, checks2 = CoreEngine.verify(envelope2)
+    print("\n  [4. INDEPENDENT VERIFICATION]: Running third-party verifier on OASA evidence package...")
+    package2 = build_evidence_package(
+        envelope2,
+        request_payload={"grace_period_seconds": 30},
+        provider_audit_payload=exec2["provider_audit"],
+    )
+    valid2, checks2 = verify_evidence_package(package2)
+    print(f"  Package Format:     {package2['format']} v{package2['version']}")
     print(f"  Structure Check:   {checks2['structure']}")
     print(f"  Signature Check:   {checks2['signature']}")
-    print(f"  Hashes Check:      {checks2['hashes']}")
+    print(f"  Hashes Check:      {checks2['hashes']} (recomputed from request & provider-audit payloads)")
     print(f"  Provider Linkage:  {checks2['provider_linkage']}")
     print(f"  OVERALL RESULT:    {'PASS - MATHEMATICALLY VERIFIED' if valid2 else 'FAIL'}")
 

@@ -35,9 +35,22 @@
     "delegation": {
       "type": "array",
       "items": {
-        "type": "string"
+        "type": "object",
+        "required": ["delegator", "delegate"],
+        "properties": {
+          "delegator": {
+            "type": "string",
+            "pattern": "^(human|agent)://",
+            "description": "Authority granting the delegation step"
+          },
+          "delegate": {
+            "type": "string",
+            "pattern": "^(human|agent)://",
+            "description": "Party to which the delegation step is granted"
+          }
+        }
       },
-      "description": "Ordered chain of delegation from root human authority down to acting agent"
+      "description": "Ordered chain of structural delegation links from root human authority down to the acting agent"
     },
     "capability": {
       "type": "object",

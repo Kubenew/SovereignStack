@@ -214,8 +214,28 @@ The following normative requirements address and remediate prototype vulnerabili
   - `provider_audit_hash`: SHA-256 of the `deterministic-json-v1` serialization of the native provider audit log payload.
 
 ### 4.6 Delegation Relationships
-- For v0.6, delegation relationships are represented via structural typing (e.g. nested capability scope dicts) and are preserved in provenance.
+- For v0.6, delegation relationships are represented as an ordered list of structural link objects — `{"delegator": "<uri>", "delegate": "<uri>"}` — spanning from a root human authority down to the acting agent, and are preserved in provenance.
 - Cryptographically verifiable delegation links (signatures between delegator and delegate) are scoped for a future v0.7 evolution.
+
+### 4.7 Evidence Package (Portable Independent-Verification Artifact)
+- Completed actions MUST be verifiable outside the issuing Core via a portable OASA Evidence Package.
+- An evidence package MUST contain the signed `envelope`, the original `request_payload`, and the native `provider_audit_payload`.
+- An independent verifier MUST recompute the request and provider-audit SHA-256 digests from those payloads and confirm they match the envelope's `evidence.hashes` claims, and MUST confirm the provider audit payload's `provider_action_id` matches the envelope's `execution.provider_action_id`.
+- Package shape:
+  ```json
+  {
+    "format": "oasa-evidence-package",
+    "version": "0.1",
+    "oasa_version": "0.6",
+    "envelope": { "…": "signed OASA action envelope" },
+    "request_payload": { "…": "original governed-action request" },
+    "provider_audit_payload": { "…": "native provider audit event" },
+    "verification": {
+      "algorithm": "SHA-256",
+      "canonicalization": "deterministic-json-v1"
+    }
+  }
+  ```
 
 ---
 
@@ -229,7 +249,7 @@ Verifies that SovereignStack acts as an active gate rather than a passive logger
 1. Agent requests `DELETE` on a production target.
 2. Core checks identity (`PASS`) and capabilities (`FAIL`).
 3. Core issues `DENY` decision.
-4. Core attempts to query provider action records.
+4. Core records the denial locally without invoking the provider execution interface.
 5. **Assertions:**
    - Decision == `DENY`
    - Provider actions executed == `0` (provider is never contacted)
@@ -263,7 +283,7 @@ Verifies the complete Golden Path:
 11. **`TestEvidenceHashValidation`**: Hashing evidence payload matches the envelope claim.
 12. **`TestEnvelopeSignatureValidation`**: Modifying any payload field invalidates the cryptographic signature.
 13. **`TestVerificationDetectsTampering`**: Independent verifier rejects modified envelopes.
-14. **`TestAuthorizedActionMustHaveProviderEvidence`** (`EVID-003`): An authorized action cannot become "successful" without attributable provider execution evidence.
+14. **`TestAuthorizedActionMustHaveProviderEvidence`** (`EVID-003`): An authorized action cannot become "successful" without attributable provider execution evidence. The evidence must exist and be independently resolvable and verifiable via the OASA evidence package (payload digests recomputed, `provider_action_id` cross-bound).
 
 ---
 
@@ -276,7 +296,7 @@ Minimal Core Engine (Go/Rust: 5 API routes, atomic store, crypto signing)
          ↓
 Normative Conformance Suite (16 tests verifying anti-theater & crypto invariants)
          ↓
-Morpheus Reference Adapter (First live reference environment)
+Morpheus Reference Adapter
          ↓
 Flagship 3-Minute Demo (Deny Prod -> Allow Staging -> Morpheus Exec -> Verifier Pass)
          ↓

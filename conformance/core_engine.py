@@ -64,7 +64,7 @@ class CoreEngine:
         actor_type: str,
         capability_id: str,
         target_uri: str,
-        delegation: Optional[List[str]] = None,
+        delegation: Optional[List[Dict[str, Any]]] = None,
         parameters: Optional[Dict[str, Any]] = None,
         ttl_seconds: int = 300,
     ) -> Dict[str, Any]:
@@ -94,7 +94,18 @@ class CoreEngine:
 
         # Check delegation chain integrity
         for link in delegation_chain:
-            if not (link.startswith("human://") or link.startswith("agent://")):
+            if not isinstance(link, dict):
+                is_denied = True
+                denial_reason = f"Invalid delegation link format: {link}"
+                break
+            delegator = link.get("delegator")
+            delegate = link.get("delegate")
+            if not (
+                isinstance(delegator, str)
+                and isinstance(delegate, str)
+                and (delegator.startswith("human://") or delegator.startswith("agent://"))
+                and (delegate.startswith("human://") or delegate.startswith("agent://"))
+            ):
                 is_denied = True
                 denial_reason = f"Invalid delegation link format: {link}"
                 break

@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [v0.6.0] — 2026-09-17
+
+### Added
+
+#### Governed Autonomous Action (OASA v0.6)
+- OASA Governed Autonomous Action: 5-Golden-Path Core engine (`DISCOVER → AUTHORIZE → EXECUTE → RECORD → VERIFY`) in `conformance/core_engine.py`
+- Signed Action Envelope with `deterministic-json-v1` canonicalization (not claimed to be RFC 8785/JCS) and Ed25519 signatures
+- Portable OASA Evidence Package (`oasa-evidence-package` v0.1): request and provider-audit digests are recomputed from the actual payloads by the independent verifier, and `provider_action_id` is cross-bound between envelope and audit payload
+- Normative conformance suite (16 tests: anti-theater gate, atomic single-use tokens, delegation, evidence/verification invariants) — see `specs/OASA-CORE-v0.6-SPEC.md`
+- Flagship v0.6 demo (`demo/morpheus/run_v06_demo.py`) with mutually exclusive `--fixture` (default) / `--live` execution modes
+- Protocol-claims self-audit tool (`tools/check_protocol_claims.py`)
+
+### Changed
+- Delegation unified to a single structural representation: an ordered list of `{"delegator": "<uri>", "delegate": "<uri>"}` link objects across builder, Core, conformance tests, schema, and spec
+- Spec wording corrected: denial bookkeeping is local-only (the provider execution interface is never invoked — `provider calls == 0` invariant); "Morpheus Reference Adapter" no longer claims a live reference environment (reserved for v0.7)
+
+---
+
 ## [v0.5.0] — 2026-08-12
 
 ### Added

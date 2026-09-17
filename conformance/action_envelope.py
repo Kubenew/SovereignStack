@@ -339,3 +339,72 @@ class ActionEnvelopeBuilder:
             results["provider_linkage"] = "PASS"
 
         return True, results
+
+
+EVIDENCE_PACKAGE_FORMAT = "oasa-evidence-package"
+EVIDENCE_PACKAGE_VERSION = "0.1"
+
+
+def build_evidence_package(
+    envelope: Dict[str, Any],
+    request_payload: Optional[Dict[str, Any]] = None,
+    provider_audit_payload: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """
+    Assemble a portable OASA Evidence Package.
+
+    The package carries the signed envelope together with the original
+    request and provider-audit payloads so that an independent verifier
+    can recompute the claimed digests (rather than trusting them).
+    """
+    return {
+        "format": EVIDENCE_PACKAGE_FORMAT,
+        "version": EVIDENCE_PACKAGE_VERSION,
+        "oasa_version": "0.6",
+        "envelope": envelope,
+        "request_payload": request_payload,
+        "provider_audit_payload": provider_audit_payload,
+        "verification": {
+            "algorithm": "SHA-256",
+            "canonicalization": "deterministic-json-v1",
+        },
+    }
+
+
+def verify_evidence_package(package: Dict[str, Any]) -> Tuple[bool, Dict[str, str]]:
+    """
+    Independently resolve and verify an OASA Evidence Package.
+
+    - Recomputes the request digest from `request_payload`.
+    - Recomputes the provider-audit digest from `provider_audit_payload`.
+    - Confirms the provider audit payload binds to the envelope's
+      `execution.provider_action_id`.
+    - Re-validates the envelope signature and structural integrity.
+    """
+    if not isinstance(package, dict):
+        return False, {"package": "FAIL: Invalid evidence package"}
+    if package.get("format") != EVIDENCE_PACKAGE_FORMAT:
+        return False, {"package": "FAIL: Invalid evidence package format"}
+    if package.get("version") != EVIDENCE_PACKAGE_VERSION:
+        return False, {"package": "FAIL: Unsupported evidence package version"}
+
+    envelope = package.get("envelope")
+    if not isinstance(envelope, dict):
+        return False, {"package": "FAIL: Missing envelope in evidence package"}
+
+    request_payload = package.get("request_payload")
+    provider_audit_payload = package.get("provider_audit_payload")
+
+    auth = envelope.get("authorization", {})
+    exec_block = envelope.get("execution", {})
+    if auth.get("decision") == "allow" and exec_block.get("status") == "SUCCESS":
+        if request_payload is None:
+            return False, {"package": "FAIL: Missing request payload for independent verification"}
+        if provider_audit_payload is None:
+            return False, {"package": "FAIL: Missing provider audit payload for independent verification"}
+
+    return ActionEnvelopeBuilder.verify_envelope(
+        envelope,
+        request_payload=request_payload,
+        provider_audit_payload=provider_audit_payload,
+    )

@@ -87,7 +87,7 @@ python demo/morpheus/run_v06_demo.py        # Windows / Linux / macOS
 ### What the demo showcases:
 1. **Dangerous Action (Anti-Theater Gate):** A support agent requests `DELETE production-db-01`. Policy issues **`DENY`**. **Provider actions executed: 0.** A cryptographic denial evidence envelope is generated and verified.
 2. **Legitimate Governed Action:** The agent requests `RESTART staging-web-01`. Policy issues **`ALLOW`** with a single-use token. Morpheus executes the safe operation, returns a native task ID, and binds it to the OASA Action Envelope.
-3. **Independent Cryptographic Verification:** The resulting evidence package is verified offline with Ed25519 signature verification and hash integrity checks (**`PASS`**).
+3. **Independent Cryptographic Verification:** The resulting OASA evidence package is verified offline — Ed25519 signature verification, request/provider-audit digests recomputed from the actual payloads, and `provider_action_id` cross-bound (**`PASS`**).
 4. **Normative Conformance:** The automated test harness runs the full 16-test suite (**`16/16 PASS — STATUS: OASA-CONFORMANT`**).
 
 ---
