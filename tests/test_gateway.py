@@ -1,4 +1,5 @@
 import os
+import tempfile
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
@@ -9,22 +10,28 @@ os.environ["OASA_ENFORCE_AUTH"] = "DEVELOPMENT"
 os.environ["OASA_ENFORCE_POLICY"] = "DEVELOPMENT"
 os.environ["COMPUTE_URL"] = "http://mock-compute"
 os.environ["MEMORY_URL"] = "http://mock-memory"
-os.environ["DATA_DIR"] = "./data_test"
+_test_data_dir = tempfile.mkdtemp(prefix="ss_gateway_test_")
+os.environ["DATA_DIR"] = _test_data_dir
 os.environ["INFERENCE_BACKEND"] = "legacy"
 
-from services.gateway_service import app
+from services.gateway_service import app  # noqa: E402
 
 client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def clean_test_data():
-    # Clean up test audit logs
-    if os.path.exists("./data_test/audit.log"):
+    audit_file = os.path.join(_test_data_dir, "audit.log")
+    if os.path.exists(audit_file):
         try:
-            os.remove("./data_test/audit.log")
+            os.remove(audit_file)
         except OSError:
             pass
     yield
+    if os.path.exists(audit_file):
+        try:
+            os.remove(audit_file)
+        except OSError:
+            pass
 
 def test_gateway_health():
     response = client.get("/health")

@@ -20,7 +20,7 @@ class SovereignObject:
     """Base class for all SovereignStack objects."""
     uri: str
     kind: str
-    data: dict[str, Any]
+    data: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=_timestamp)
     signature: str = ""
 

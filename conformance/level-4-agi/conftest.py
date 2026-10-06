@@ -52,4 +52,9 @@ class SovereignNodeClient:
 @pytest.fixture(scope="session")
 def sovereign_node(sovereign_node_url):
     """Provide a SovereignNodeClient connected to the target node."""
-    return SovereignNodeClient(sovereign_node_url)
+    client = SovereignNodeClient(sovereign_node_url, timeout=1.0)
+    try:
+        client.get("/health")
+    except Exception as exc:
+        pytest.skip(f"SovereignStack node not available at {sovereign_node_url}: {exc}")
+    return client
