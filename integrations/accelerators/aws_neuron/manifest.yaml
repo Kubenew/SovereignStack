@@ -1,0 +1,31 @@
+name: aws-neuron
+version: 0.2.0
+kind: accelerator-backend
+framework: pytorch
+supported_frameworks:
+  - torchneuron      # Native PyTorch 2.x neuron device
+  - torch-neuronx    # Trainium / Inferentia2 XLA & trace compilation
+  - torch-neuron     # Inferentia 1 legacy TorchScript compiler
+optional_dependencies:
+  - torch
+  - torch-neuronx
+  - torch-neuron
+  - torch-xla
+hardware:
+  native: [trn2, trn3]
+  xla: [inf2, trn1, trn2]
+  legacy: [inf1]
+operations:
+  - accelerator:neuron:detect
+  - accelerator:neuron:load
+  - accelerator:neuron:compile
+  - accelerator:neuron:trace
+  - accelerator:neuron:infer
+  - accelerator:neuron:artifact_export
+security:
+  policy_required: true
+  provenance_required: true
+  independent_verification_required: true
+  cpu_fallback_default: false
+  anti_theater_enforcement: true
+  compliance_profile: "oasa-profile://accelerator-neuron/v0.1"

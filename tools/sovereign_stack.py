@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import os
 import platform
 import re
 import socket
@@ -109,7 +110,13 @@ def cmd_validate(args: argparse.Namespace) -> int:
         print("ERROR: 'jsonschema' required. Run: pip install jsonschema", file=sys.stderr)
         return 1
 
-    banner("OASA Compliance Validation")
+    schema_path = Path(args.schema) if args.schema else SCHEMAS_DIR / "oasa-compliance.schema.json"
+    if not schema_path.exists():
+        print(f"ERROR: Schema not found: {schema_path}", file=sys.stderr)
+        return 2
+
+    schema = load_json(schema_path)
+    banner(f"OASA Compliance Validation  (Schema: {schema_path.name})")
 
     files: list[Path] = [Path(f) for f in args.files]
     all_passed = True
@@ -141,30 +148,6 @@ def cmd_validate(args: argparse.Namespace) -> int:
                 all_passed = False
                 continue
 
-        # Dynamic Schema Auto-Detection
-        if args.schema:
-            selected_schema_path = Path(args.schema)
-        else:
-            if isinstance(document, dict) and (("node" in document and "oasa_version" in document) or ("version" in document and "metadata" in document and "node_infrastructure" in document)):
-                selected_schema_path = SCHEMAS_DIR / "sovereign-stack.schema.json"
-            elif isinstance(document, dict) and ("node_id" in document or "deployed_models" in document):
-                selected_schema_path = SCHEMAS_DIR / "oasa-node-manifest.schema.json"
-            else:
-                selected_schema_path = SCHEMAS_DIR / "oasa-compliance.schema.json"
-
-        if not selected_schema_path.exists():
-            status(str(filepath), f"Schema file not found: {selected_schema_path}", ok=False)
-            all_passed = False
-            continue
-
-        try:
-            schema = load_json(selected_schema_path)
-        except Exception as exc:
-            status(str(filepath), f"Failed to load schema {selected_schema_path.name}: {exc}", ok=False)
-            all_passed = False
-            continue
-
-        print(f"  Validating {filepath.name} against schema: {selected_schema_path.name}")
         validator = Draft202012Validator(schema)
         errors = list(validator.iter_errors(document))
 
@@ -217,24 +200,18 @@ def audit_host_infrastructure(config: dict[str, Any]) -> list[str]:
             pass # Local environment confirmed air-gapped
 
     # 2. Hardware Security (TPM 2.0 Inspection)
-    tpm_required = config.get("hardware_security", {}).get("tpm_required", False) or config.get("node", {}).get("tpm_required", False)
-    if tpm_required:
+    if config.get("hardware_security", {}).get("tpm_required", False):
         if platform.system() == "Linux":
             tpm_path = Path("/dev/tpm0")
             if not tpm_path.exists():
                 audit_errors.append("[HARDWARE] TPM device node (/dev/tpm0) absent. Hardware identity unverified.")
         elif platform.system() == "Windows":
             try:
-                result = subprocess.run(
-                    ["powershell", "-Command",
-                     "Get-CimInstance -Namespace root/cimv2/security/microsofttpm "
-                     "-ClassName Win32_Tpm | Select-Object -Property IsEnabled_InitialValue"],
-                    capture_output=True, text=True, timeout=10,
-                )
-                if "True" not in result.stdout:
+                out = subprocess.check_output("wmic /namespace:\\\\root\\CIMV2\\Security\\MicrosoftTpm path Win32_Tpm get IsEnabled_InitialValue", shell=True)
+                if b"TRUE" not in out:
                     audit_errors.append("[HARDWARE] Windows TPM verification failed or disabled.")
-            except Exception:
-                audit_errors.append("[HARDWARE] Failed executing TPM telemetry script command via PowerShell.")
+            except subprocess.SubprocessError:
+                audit_errors.append("[HARDWARE] Failed executing TPM telemetry script command (Run as Administrator).")
 
     # 3. Accelerator Verification (VRAM Allocation Safety Caps)
     # Check if this is a sovereign-stack.yaml (has compute.models) or oasa-compliance.schema.json (has compute)
@@ -244,13 +221,16 @@ def audit_host_infrastructure(config: dict[str, Any]) -> list[str]:
     target_budget = 0
     if isinstance(compute_section.get("vram_budget_gb"), (int, float)):
         target_budget = compute_section["vram_budget_gb"]
+    elif isinstance(compute_section.get("hardware", {}).get("vram_budget_gb"), (int, float)):
+        target_budget = compute_section["hardware"]["vram_budget_gb"]
     elif models:
         target_budget = sum([m.get("vram_budget_gb", 0) for m in models])
 
     backends = compute_section.get("accelerator_backends", [])
     hardware_target = compute_section.get("hardware_target", "")
+    accel_type = compute_section.get("hardware", {}).get("accelerator", "")
     
-    if "NVIDIA_CUDA" in backends or hardware_target == "cuda":
+    if "NVIDIA_CUDA" in backends or hardware_target == "cuda" or accel_type == "NVIDIA_CUDA":
         try:
             vram_raw = subprocess.check_output(
                 ["nvidia-smi", "--query-gpu=memory.total", "--format=csv,noheader,nounits"],
@@ -261,6 +241,16 @@ def audit_host_infrastructure(config: dict[str, Any]) -> list[str]:
                 audit_errors.append(f"[COMPUTE] VRAM shortfall. Target requires {target_budget}GB, found {total_vram}GB.")
         except (subprocess.SubprocessError, FileNotFoundError, ValueError):
             audit_errors.append("[COMPUTE] CUDA system runtime tools (nvidia-smi) missing or unreadable.")
+
+    if "AWS_NEURON" in backends or hardware_target in ("neuron", "aws_neuron") or accel_type == "AWS_NEURON":
+        neuron_devs = _detect_neuron_accelerators()
+        if not neuron_devs:
+            if not compute_section.get("hardware", {}).get("allow_cpu_fallback", False):
+                audit_errors.append("[COMPUTE] AWS Neuron runtime tools (neuron-ls) or /dev/neuron* devices missing or unreadable.")
+        else:
+            total_neuron_mem = sum(d.get("vram_gb", 0) for d in neuron_devs)
+            if target_budget > 0 and total_neuron_mem < target_budget:
+                audit_errors.append(f"[COMPUTE] Neuron memory shortfall. Target requires {target_budget}GB, found {total_neuron_mem}GB.")
 
     return audit_errors
 
@@ -292,6 +282,43 @@ def _detect_nvidia_gpus() -> list[dict[str, Any]]:
     except (FileNotFoundError, subprocess.TimeoutExpired):
         pass
     return gpus
+
+
+def _detect_neuron_accelerators() -> list[dict[str, Any]]:
+    """Detect AWS Neuron accelerators (Inferentia/Trainium) via neuron-ls or sysfs."""
+    devices = []
+    # 1. Try neuron-ls --json
+    try:
+        result = subprocess.run(["neuron-ls", "-j"], capture_output=True, text=True, timeout=5)
+        if result.returncode == 0 and result.stdout.strip():
+            data = json.loads(result.stdout)
+            for item in data:
+                mem_bytes = item.get("memory_size", 0)
+                devices.append({
+                    "name": f"AWS Neuron Device {item.get('neuron_device_id', 0)}",
+                    "vram_gb": round(mem_bytes / (1024**3), 1),
+                    "cores": item.get("neuron_core_count", 2),
+                    "pci_bdf": item.get("pci_bdf", "unknown"),
+                    "backend": "AWS_NEURON",
+                })
+            return devices
+    except (FileNotFoundError, subprocess.TimeoutExpired, Exception):
+        pass
+
+    # 2. Check /sys/class/neuron or /dev/neuron*
+    if platform.system() == "Linux":
+        dev_dir = Path("/dev")
+        if dev_dir.exists():
+            neuron_nodes = list(dev_dir.glob("neuron*"))
+            if neuron_nodes:
+                for node in neuron_nodes:
+                    devices.append({
+                        "name": f"AWS Neuron Device ({node.name})",
+                        "vram_gb": 32.0,
+                        "cores": 2,
+                        "backend": "AWS_NEURON",
+                    })
+    return devices
 
 
 def _detect_apple_gpu() -> list[dict[str, Any]]:
@@ -404,18 +431,21 @@ def cmd_check_hardware(args: argparse.Namespace) -> int:
         pass
     status("System RAM", f"{total_ram_gb} GB" if total_ram_gb else "unknown")
 
-    # --- GPU ---
-    print("\n  GPU Detection:")
+    # --- Accelerators / GPUs ---
+    print("\n  Accelerator & GPU Detection:")
     gpus = _detect_nvidia_gpus()
     if not gpus:
         gpus = _detect_apple_gpu()
     if not gpus:
-        status("GPU", "No NVIDIA/Apple GPU detected. CPU-only mode.", ok=None)
+        gpus = _detect_neuron_accelerators()
+    if not gpus:
+        status("Accelerator", "No NVIDIA/Apple/Neuron accelerator detected. CPU-only mode.", ok=None)
         total_vram = 0
     else:
         total_vram = 0
         for i, gpu in enumerate(gpus):
-            status(f"GPU[{i}]", f"{gpu['name']} — {gpu['vram_gb']} GB VRAM ({gpu['backend']})", ok=True)
+            extra = f", {gpu['cores']} cores" if "cores" in gpu else ""
+            status(f"Accelerator[{i}]", f"{gpu['name']} — {gpu['vram_gb']} GB VRAM{extra} ({gpu['backend']})", ok=True)
             total_vram += gpu["vram_gb"]
         if len(gpus) > 1:
             status("Total VRAM", f"{total_vram} GB")
@@ -468,22 +498,6 @@ def cmd_check_hardware(args: argparse.Namespace) -> int:
         issues.append("No GPU detected (CPU-only mode reduces throughput)")
     if total_ram_gb < 16:
         issues.append(f"Low RAM ({total_ram_gb} GB) — minimum 16 GB recommended")
-
-    # --- Dynamic Context Window Recommendations ---
-    if total_vram > 0:
-        print("\n  Dynamic Context Window Recommendations:")
-        print(f"  {'Model':<25} {'Quant':<8} {'Context':<12} {'VRAM Used':<10}")
-        print(f"  {'-'*25} {'-'*8} {'-'*12} {'-'*10}")
-        for model in MODEL_RECOMMENDATIONS[:5]:
-            model_vram = model["vram_min"]
-            if model_vram <= total_vram:
-                weight_gb = model_vram
-                max_ctx = min(
-                    int((total_vram - weight_gb - 1) * (1024**3) / (2 * 80 * 8 * 128 * 2 / 1)),
-                    131072
-                )
-                ctx_display = f"{max(max_ctx, 4096):,}" if max_ctx > 0 else "4,096"
-                print(f"  {model['name']:<25} {model['quant']:<8} {ctx_display:<12} {model_vram:<10}")
 
     if issues:
         print("  OASA Compliance Issues:")
